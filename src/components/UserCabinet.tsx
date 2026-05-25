@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useAppStore } from '@/stores/app-store';
+import { useState, lazy, Suspense } from 'react';
+import { useAppStore, FavoritePrediction } from '@/stores/app-store';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
+const LazyPredictionDetailModal = lazy(() =>
+  import('@/components/PredictionDetailModal').then((mod) => ({ default: mod.PredictionDetailModal }))
+);
 
 const tierConfig = {
   free: { label: 'Бесплатный', color: 'text-gray-400', bg: 'bg-gray-500/20', border: 'border-gray-500/30', icon: <Zap className="w-4 h-4" /> },
@@ -65,12 +69,14 @@ const DEMO_USER = {
 };
 
 export function UserCabinet() {
-  const { user, logout, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
+  const { user, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
   const { signOut } = useAuth();
   const [notifications, setNotifications] = useState(defaultNotifications);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<'name' | 'email' | 'password' | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [selectedPrediction, setSelectedPrediction] = useState<FavoritePrediction | null>(null);
+  const [predictionModalOpen, setPredictionModalOpen] = useState(false);
 
   const currentUser = user ?? DEMO_USER;
 
@@ -113,8 +119,8 @@ export function UserCabinet() {
       return;
     }
     if (editingField === 'password') {
-      if (editValue.length < 6) {
-        toast.error('Пароль должен быть не менее 6 символов');
+      if (editValue.length < 8) {
+        toast.error('Пароль должен быть не менее 8 символов');
         return;
       }
       toast.success('Пароль изменён');
@@ -412,7 +418,11 @@ export function UserCabinet() {
                 ) : (
                   <div className="space-y-2">
                     {favoritePredictions.map(pred => (
-                      <div key={pred.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                      <div
+                        key={pred.id}
+                        className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30 cursor-pointer hover:bg-gray-900/70 transition-colors"
+                        onClick={() => { setSelectedPrediction(pred); setPredictionModalOpen(true); }}
+                      >
                         <div className="flex-1">
                           <p className="text-sm font-medium text-white">{pred.matchTitle}</p>
                           <p className="text-xs text-gray-500">{pred.expertName}: {pred.prediction}</p>
@@ -557,7 +567,7 @@ export function UserCabinet() {
                 <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                   <div>
                     <p className="text-sm text-white">Пароль</p>
-                    <p className="text-xs text-gray-500">Последнее изменение: 15.03.2026</p>
+                    <p className="text-xs text-gray-500">Установите надёжный пароль</p>
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('password')}>
                     Сменить
@@ -652,7 +662,7 @@ export function UserCabinet() {
             <DialogDescription className="text-gray-400">
               {editingField === 'name' && 'Введите новое имя'}
               {editingField === 'email' && 'Введите новый email'}
-              {editingField === 'password' && 'Введите новый пароль (мин. 6 символов)'}
+              {editingField === 'password' && 'Введите новый пароль (мин. 8 символов)'}
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
@@ -680,6 +690,27 @@ export function UserCabinet() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Prediction detail modal */}
+      <Suspense fallback={null}>
+        <LazyPredictionDetailModal
+          prediction={selectedPrediction ? {
+            id: selectedPrediction.id,
+            expertId: '',
+            expertName: selectedPrediction.expertName,
+            matchId: '',
+            sport: 'football',
+            matchTitle: selectedPrediction.matchTitle,
+            prediction: selectedPrediction.prediction,
+            odds: selectedPrediction.odds,
+            confidence: 50,
+            analysis: '',
+            createdAt: '',
+          } : null}
+          open={predictionModalOpen}
+          onClose={() => { setPredictionModalOpen(false); setSelectedPrediction(null); }}
+        />
+      </Suspense>
     </div>
   );
 }

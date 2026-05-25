@@ -28,7 +28,6 @@ import { HotStreaks } from '@/components/HotStreaks';
 import { MatchComparison } from '@/components/MatchComparison';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DailyTips } from '@/components/DailyTips';
-import { createDemoUser } from '@/lib/demo';
 import { ValueBetScanner } from '@/components/ValueBetScanner';
 import { RecentWinsFeed } from '@/components/RecentWinsFeed';
 import { OnboardingModal } from '@/components/OnboardingModal';
@@ -40,9 +39,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
 import { ActiveSection } from '@/types/navigation';
 import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
-import { useAuth } from '@/hooks/use-auth';
 import { Toaster } from 'sonner';
-import { toast } from 'sonner';
 
 // Lazy load heavy sections for performance
 const LazyStatsSection = lazy(() =>
@@ -74,8 +71,7 @@ export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [sportFilter, setSportFilter] = useState<string | null>(null);
-  const { isLoggedIn, login, subscriptionModalOpen, setSubscriptionModalOpen } = useAppStore();
-  const { isAuthenticated } = useAuth();
+  const { isLoggedIn, subscriptionModalOpen, setSubscriptionModalOpen } = useAppStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window !== 'undefined') {

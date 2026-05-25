@@ -91,10 +91,6 @@ interface AppStore {
   // Subscription modal
   subscriptionModalOpen: boolean;
   setSubscriptionModalOpen: (open: boolean) => void;
-
-  // Profile section
-  profileOpen: boolean;
-  setProfileOpen: (open: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -241,12 +237,6 @@ export const useAppStore = create<AppStore>()(
       subscriptionModalOpen: false,
       setSubscriptionModalOpen: (open) => {
         set({ subscriptionModalOpen: open });
-      },
-
-      // Profile section
-      profileOpen: false,
-      setProfileOpen: (open) => {
-        set({ profileOpen: open });
       },
     }),
     {

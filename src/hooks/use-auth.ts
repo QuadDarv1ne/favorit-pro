@@ -50,7 +50,10 @@ export function useAuth() {
         logout();
       }
     }
-  }, [session, status, login, logout, isLoggedIn, user]);
+    // Intentionally omitting user/isLoggedIn — this effect syncs session state only,
+    // responding to store changes would cause redundant re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, status, login, logout]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const result = await nextAuthSignIn('credentials', {
