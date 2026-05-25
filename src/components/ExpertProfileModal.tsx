@@ -37,9 +37,13 @@ function generatePerformanceData(expert: Expert) {
 export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModalProps) {
   const { favoriteExperts, toggleFavoriteExpert, subscribedExperts, toggleSubscription } = useAppStore();
 
+  const performanceData = useMemo(() => {
+    if (!expert) return [];
+    return generatePerformanceData(expert);
+  }, [expert]);
+
   if (!expert) return null;
 
-  const performanceData = useMemo(() => generatePerformanceData(expert), [expert.id]);
   const lastResults = expert.lastResults;
   const isFavorite = favoriteExperts.includes(expert.id);
   const isSubscribed = subscribedExperts.includes(expert.id);

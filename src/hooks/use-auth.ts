@@ -39,13 +39,15 @@ export function useAuth() {
     if (status === 'authenticated' && session?.user) {
       const profile = sessionToProfile(session);
       if (profile) {
-        // Fetch real server data (tier, balance, subscriptions)
-        fetch('/api/subscription/status')
+        const abortController = new AbortController();
+
+        fetch('/api/subscription/status', { signal: abortController.signal })
           .then((res) => {
             if (!res.ok) return null;
             return res.json() as Promise<{ user: { tier: string; balance: number }; subscribedExperts: string[] }>;
           })
           .then((serverData) => {
+            if (abortController.signal.aborted) return;
             const merged = serverData
               ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
               : profile;
@@ -56,10 +58,15 @@ export function useAuth() {
               : merged;
             login(final);
           })
-          .catch(() => {
+          .catch((error) => {
+            if (error.name === 'AbortError') return;
             // Fallback to session-only profile if server fetch fails
             login(profile);
           });
+
+        return () => {
+          abortController.abort();
+        };
       }
     } else if (status === 'unauthenticated') {
       if (isLoggedIn) {

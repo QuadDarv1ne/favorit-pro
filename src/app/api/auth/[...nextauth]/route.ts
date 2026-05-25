@@ -4,6 +4,13 @@ import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { sanitizeString } from '@/lib/api-helpers';
 
+// Validate critical environment variables at startup
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error(
+    'NEXTAUTH_SECRET environment variable is required. Set it in your .env file.',
+  );
+}
+
 const SALT_ROUNDS = 10;
 const RATE_LIMIT_TTL = 60_000;
 const CLEANUP_INTERVAL = 5 * 60_000;
