@@ -43,7 +43,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <p className="text-sm text-gray-400 mb-2">
               Произошла непредвиденная ошибка при отображении страницы.
             </p>
-            {this.state.error && (
+            {process.env.NODE_ENV !== 'production' && this.state.error && (
               <p className="text-xs text-gray-500 bg-gray-900/50 rounded-lg p-3 mb-4 font-mono break-all">
                 {this.state.error.message}
               </p>
