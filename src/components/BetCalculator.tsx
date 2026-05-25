@@ -213,17 +213,17 @@ export function BetCalculator() {
 
               <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/20">
                 <p className="text-sm text-gray-300 mb-1">
-                  Система <span className="text-emerald-400 font-medium">{systemSize} из {expressLegs.length}</span>
+                  Система <span className="text-emerald-400 font-medium">{systemSize || '?'} из {expressLegs.length}</span>
                 </p>
                 <p className="text-xs text-gray-400">
                   Количество комбинаций: <span className="text-white font-medium">
-                    {combinations(expressLegs.length, parseInt(systemSize))}
+                    {systemSize ? combinations(expressLegs.length, parseInt(systemSize)) : '—'}
                   </span>
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  Макс. выигрыш при всех проходах:{' '}
+                  Общая ставка:{' '}
                   <span className="text-emerald-400 font-medium">
-                    {(singleStake * expressTotalOdds).toFixed(2)} ₽
+                    {systemSize ? `${(singleStake * combinations(expressLegs.length, parseInt(systemSize))).toFixed(2)} ₽` : '—'}
                   </span>
                 </p>
               </div>

@@ -56,10 +56,10 @@ function mapApiMatch(m: ApiMatch): Match {
 
 export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: LiveMatchesProps) {
   const addBet = useAppStore((s) => s.addBet);
-  const betSlip = useAppStore((s) => s.betSlip);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
   const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
+  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const storeRef = useRef(useAppStore.getState);
 
   // React Query hook with fallback to mock data
   const { data } = useMatches('live');
@@ -200,8 +200,12 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       sport: match.sport,
       league: match.league,
     });
-    const isInSlip = betSlip.find((b) => b.id === betId);
+    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
     if (!isInSlip) {
+      toast.info('Удалено из купона', {
+        description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
+      });
+    } else {
       toast.success('Добавлено в купон', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction} @ ${odds.toFixed(2)}`,
         action: {
@@ -223,8 +227,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       startTime: match.startTime,
     };
     toggleFavoriteMatch(favMatch);
-    const isFav = favoriteMatches.find((f) => f.id === match.id);
-    toast[isFav ? 'info' : 'success'](isFav ? 'Удалено из избранного' : 'Добавлено в избранное', {
+    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toast[isFav ? 'success' : 'info'](isFav ? 'Добавлено в избранное' : 'Удалено из избранного', {
       description: `${match.homeTeam} — ${match.awayTeam}`,
     });
   };

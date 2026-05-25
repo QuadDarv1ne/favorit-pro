@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Введите email').email('Некорректный email'),
-  password: z.string().min(1, 'Введите пароль').min(6, 'Минимум 6 символов'),
+  password: z.string().min(1, 'Введите пароль').min(8, 'Минимум 8 символов'),
 });
 
 const registerSchema = z.object({

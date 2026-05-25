@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { Prediction } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -17,9 +18,10 @@ interface PredictionDetailModalProps {
 }
 
 export function PredictionDetailModal({ prediction, open, onClose }: PredictionDetailModalProps) {
-  const { favoritePredictions, toggleFavoritePrediction, addBet, betSlip, setBetSlipOpen } = useAppStore();
+  const { favoritePredictions, toggleFavoritePrediction, addBet, setBetSlipOpen } = useAppStore();
+  const storeRef = useRef(useAppStore.getState);
 
-  if (!prediction) return null;
+  if (!prediction || !open) return null;
 
   const sportEmoji = prediction.sport === 'football' ? '⚽' : prediction.sport === 'hockey' ? '🏒' : prediction.sport === 'basketball' ? '🏀' : prediction.sport === 'tennis' ? '🎾' : '🎮';
   const sportName = prediction.sport === 'football' ? 'Футбол' : prediction.sport === 'hockey' ? 'Хоккей' : prediction.sport === 'basketball' ? 'Баскетбол' : prediction.sport === 'tennis' ? 'Теннис' : 'Киберспорт';
@@ -34,8 +36,9 @@ export function PredictionDetailModal({ prediction, open, onClose }: PredictionD
       expertName: prediction.expertName,
     };
     toggleFavoritePrediction(fav);
-    toast[isFavorite ? 'info' : 'success'](
-      isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное',
+    const isFav = storeRef.current().favoritePredictions.find((f) => f.id === prediction.id);
+    toast[isFav ? 'success' : 'info'](
+      isFav ? 'Добавлено в избранное' : 'Удалено из избранного',
       { description: prediction.matchTitle }
     );
   };
@@ -50,7 +53,7 @@ export function PredictionDetailModal({ prediction, open, onClose }: PredictionD
       sport: prediction.sport,
       league: sportName,
     });
-    const isInSlip = betSlip.find((b) => b.id === betId);
+    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
     if (!isInSlip) {
       toast.success('Добавлено в купон', {
         description: `${prediction.matchTitle}: ${prediction.prediction} @ ${prediction.odds.toFixed(2)}`,

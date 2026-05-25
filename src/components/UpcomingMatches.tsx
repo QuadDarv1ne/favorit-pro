@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { upcomingMatches, Match } from '@/lib/data';
 import { useMatches, ApiMatch } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
@@ -59,10 +60,10 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
     : upcomingMatches;
 
   const addBet = useAppStore((s) => s.addBet);
-  const betSlip = useAppStore((s) => s.betSlip);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
   const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
+  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const storeRef = useRef(useAppStore.getState);
 
   const handleOddsClick = (e: React.MouseEvent, match: Match, type: '1' | 'X' | '2', odds: number) => {
     e.stopPropagation();
@@ -76,8 +77,12 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
       sport: match.sport,
       league: match.league,
     });
-    const isInSlip = betSlip.find((b) => b.id === betId);
+    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
     if (!isInSlip) {
+      toast.info('Удалено из купона', {
+        description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
+      });
+    } else {
       toast.success('Добавлено в купон', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction} @ ${odds.toFixed(2)}`,
         action: { label: 'Открыть', onClick: () => setBetSlipOpen(true) },
@@ -96,8 +101,8 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
       startTime: match.startTime,
     };
     toggleFavoriteMatch(favMatch);
-    const isFav = favoriteMatches.find((f) => f.id === match.id);
-    toast[isFav ? 'info' : 'success'](isFav ? 'Удалено из избранного' : 'Добавлено в избранное', {
+    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toast[isFav ? 'success' : 'info'](isFav ? 'Добавлено в избранное' : 'Удалено из избранного', {
       description: `${match.homeTeam} — ${match.awayTeam}`,
     });
   };

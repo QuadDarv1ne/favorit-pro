@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Match } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -20,17 +20,18 @@ interface MatchDetailModalProps {
 }
 
 export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps) {
-  const { addBet, betSlip, setBetSlipOpen, favoriteMatches, toggleFavoriteMatch } = useAppStore();
+  const store = useAppStore();
+  const storeRef = useRef(useAppStore.getState);
 
-  if (!match) return null;
+  if (!match || !open) return null;
 
   const sportEmoji = match.sport === 'football' ? '⚽' : match.sport === 'hockey' ? '🏒' : match.sport === 'basketball' ? '🏀' : match.sport === 'tennis' ? '🎾' : '🎮';
-  const isFavorite = favoriteMatches.find((f) => f.id === match.id);
+  const isFavorite = store.favoriteMatches.find((f) => f.id === match.id);
 
   const handleOddsClick = (type: '1' | 'X' | '2', odds: number) => {
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
     const betId = `${match.id}-${type}`;
-    addBet({
+    store.addBet({
       id: betId,
       matchTitle: `${match.homeTeam} — ${match.awayTeam}`,
       prediction,
@@ -38,11 +39,15 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
       sport: match.sport,
       league: match.league,
     });
-    const isInSlip = betSlip.find((b) => b.id === betId);
+    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
     if (!isInSlip) {
+      toast.info('Удалено из купона', {
+        description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
+      });
+    } else {
       toast.success('Добавлено в купон', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction} @ ${odds.toFixed(2)}`,
-        action: { label: 'Открыть', onClick: () => setBetSlipOpen(true) },
+        action: { label: 'Открыть', onClick: () => store.setBetSlipOpen(true) },
       });
     }
   };
@@ -56,9 +61,10 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
       sport: match.sport,
       startTime: match.startTime,
     };
-    toggleFavoriteMatch(favMatch);
-    toast[isFavorite ? 'info' : 'success'](
-      isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное',
+    store.toggleFavoriteMatch(favMatch);
+    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toast[isFav ? 'success' : 'info'](
+      isFav ? 'Добавлено в избранное' : 'Удалено из избранного',
       { description: `${match.homeTeam} — ${match.awayTeam}` }
     );
   };
