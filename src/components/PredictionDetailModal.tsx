@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, ThumbsUp, Share2, Bookmark, Clock, User, BarChart3, AlertCircle, Heart, ShoppingCart } from 'lucide-react';
+import { TrendingUp, Share2, Clock, User, BarChart3, AlertCircle, Heart, ShoppingCart } from 'lucide-react';
 import { useAppStore, FavoritePrediction } from '@/stores/app-store';
 import { toast } from 'sonner';
 

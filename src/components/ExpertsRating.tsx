@@ -34,8 +34,8 @@ function mapApiExpert(e: ApiExpert): Expert {
 export const ExpertsRating = React.memo(function ExpertsRating({ detailed = false, onExpertClick }: ExpertsRatingProps) {
   // React Query hook with fallback to mock data
   const { data } = useExperts();
-  const expertsList = (data?.experts?.length ?? 0) > 0
-    ? data!.experts.map(mapApiExpert)
+  const expertsList = data?.experts?.length
+    ? data.experts.map(mapApiExpert)
     : experts;
 
   const displayedExperts = detailed ? expertsList : expertsList.slice(0, 4);

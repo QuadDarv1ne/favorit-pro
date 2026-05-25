@@ -115,7 +115,9 @@ model Subscription {
 model NewsArticle {
   id          String   @id @default(cuid())
   title       String
+  slug        String   @unique
   excerpt     String
+  content     String   @default("") // markdown body
   category    String
   imageUrl    String?
   publishedAt DateTime @default(now())

@@ -115,7 +115,7 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
           </button>
           {match.drawOdds && (
             <button
-              onClick={() => handleOddsClick('X', match.drawOdds!)}
+              onClick={() => { const draw = match.drawOdds; if (draw != null) handleOddsClick('X', draw); }}
               className="bg-gray-800/50 hover:bg-gray-600/50 rounded-xl p-3 text-center transition-colors"
             >
               <span className="text-xs text-gray-400 block mb-1">X</span>
@@ -277,51 +277,52 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
   );
 }
 
+// Deterministic pseudo-random rating based on input string hash
+function getSeededRating(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return 6 + (Math.abs(hash) % 30) / 10;
+}
+
+function generateLineup(teamName: string, _isHome: boolean, sport: string) {
+  const isRacketSport = sport === 'tennis';
+  if (isRacketSport) {
+    return {
+      formation: null,
+      players: [
+        { number: 0, name: teamName, position: 'Игрок', rating: getSeededRating(teamName).toFixed(1) },
+      ],
+    };
+  }
+
+  const surnames = ['Иванов', 'Петров', 'Сидоров', 'Козлов', 'Новиков', 'Морозов', 'Волков', 'Соколов', 'Лебедев', 'Кузнецов', 'Попов'];
+  const positions = sport === 'football'
+    ? ['ВР', 'ЗЩ', 'ЗЩ', 'ЗЩ', 'ЗЩ', 'ПЗ', 'ПЗ', 'ПЗ', 'НП', 'НП', 'НП']
+    : sport === 'hockey'
+    ? ['ВР', 'ЗЩ', 'ЗЩ', 'НП', 'НП', 'НП', 'ЗЩ', 'ЗЩ', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП']
+    : ['Разыгр.', 'Защ.', 'Защ.', 'Форвард', 'Форвард'];
+
+  const formation = sport === 'football' ? '4-3-3' : sport === 'hockey' ? '3-2-1' : null;
+
+  return {
+    formation,
+    players: positions.map((pos, i) => ({
+      number: i + 1,
+      name: surnames[i % surnames.length],
+      position: pos,
+      rating: getSeededRating(surnames[i % surnames.length] + pos).toFixed(1),
+    })),
+  };
+}
+
 // Lineups tab component with simulated team lineups
 function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam: string; sport: string }) {
   const isRacketSport = sport === 'tennis';
 
-  // Deterministic pseudo-random rating based on input string hash
-  const getSeededRating = (seed: string): number => {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-      hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return 6 + (Math.abs(hash) % 30) / 10;
-  };
-
-  const generateLineup = (teamName: string, _isHome: boolean) => {
-    if (isRacketSport) {
-      return {
-        formation: null,
-        players: [
-          { number: 0, name: teamName, position: 'Игрок', rating: getSeededRating(teamName).toFixed(1) },
-        ],
-      };
-    }
-
-    const surnames = ['Иванов', 'Петров', 'Сидоров', 'Козлов', 'Новиков', 'Морозов', 'Волков', 'Соколов', 'Лебедев', 'Кузнецов', 'Попов'];
-    const positions = sport === 'football'
-      ? ['ВР', 'ЗЩ', 'ЗЩ', 'ЗЩ', 'ЗЩ', 'ПЗ', 'ПЗ', 'ПЗ', 'НП', 'НП', 'НП']
-      : sport === 'hockey'
-      ? ['ВР', 'ЗЩ', 'ЗЩ', 'НП', 'НП', 'НП', 'ЗЩ', 'ЗЩ', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП', 'НП']
-      : ['Разыгр.', 'Защ.', 'Защ.', 'Форвард', 'Форвард'];
-
-    const formation = sport === 'football' ? '4-3-3' : sport === 'hockey' ? '3-2-1' : null;
-
-    return {
-      formation,
-      players: positions.map((pos, i) => ({
-        number: i + 1,
-        name: surnames[i % surnames.length],
-        position: pos,
-        rating: getSeededRating(surnames[i % surnames.length] + pos).toFixed(1),
-      })),
-    };
-  };
-
-  const homeLineup = useMemo(() => generateLineup(homeTeam, true), [homeTeam]);
-  const awayLineup = useMemo(() => generateLineup(awayTeam, false), [awayTeam]);
+  const homeLineup = useMemo(() => generateLineup(homeTeam, true, sport), [homeTeam, sport]);
+  const awayLineup = useMemo(() => generateLineup(awayTeam, false, sport), [awayTeam, sport]);
 
   if (isRacketSport) {
     return (

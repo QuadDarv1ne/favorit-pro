@@ -34,11 +34,12 @@ import { RecentWinsFeed } from '@/components/RecentWinsFeed';
 import { OnboardingModal } from '@/components/OnboardingModal';
 import { FavoritesSection } from '@/components/FavoritesSection';
 import { Leaderboard } from '@/components/Leaderboard';
+import { ArticlesSection } from '@/components/ArticlesSection';
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from '@/components/KeyboardShortcuts';
 import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
 import { ActiveSection } from '@/types/navigation';
-import { useAppStore } from '@/stores/app-store';
+import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
 
@@ -81,8 +82,8 @@ export default function Home() {
     return false;
   });
 
-  const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
+  const handleMatchClick = (match: Match | FavoriteMatch) => {
+    setSelectedMatch(match as Match);
     setMatchModalOpen(true);
   };
 
@@ -91,8 +92,8 @@ export default function Home() {
     setExpertModalOpen(true);
   };
 
-  const handlePredictionClick = (prediction: Prediction) => {
-    setSelectedPrediction(prediction);
+  const handlePredictionClick = (prediction: Prediction | FavoritePrediction) => {
+    setSelectedPrediction(prediction as Prediction);
     setPredictionModalOpen(true);
   };
 
@@ -171,6 +172,8 @@ export default function Home() {
         );
       case 'news':
         return <NewsSection detailed />;
+      case 'articles':
+        return <ArticlesSection detailed />;
       case 'results':
         return <ResultsSection onMatchClick={handleMatchClick} />;
       case 'calculator':

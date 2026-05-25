@@ -4,7 +4,7 @@ import { upcomingMatches, Match } from '@/lib/data';
 import { useMatches, ApiMatch } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Flame, TrendingUp, Heart, Bell } from 'lucide-react';
+import { Calendar, Flame, TrendingUp, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore, FavoriteMatch } from '@/stores/app-store';
 import { toast } from 'sonner';
@@ -54,8 +54,8 @@ function mapApiMatch(m: ApiMatch): Match {
 export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
   // React Query hook with fallback to mock data
   const { data } = useMatches('upcoming');
-  const matches = (data?.matches?.length ?? 0) > 0
-    ? data!.matches.map(mapApiMatch)
+  const matches = data?.matches?.length
+    ? data.matches.map(mapApiMatch)
     : upcomingMatches;
 
   const addBet = useAppStore((s) => s.addBet);
@@ -157,9 +157,9 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
                         <span className="text-[10px] text-gray-500 block">1</span>
                         <span className="text-sm font-semibold text-emerald-400">{match.homeOdds.toFixed(2)}</span>
                       </div>
-                      {match.drawOdds && (
+                      {match.drawOdds != null && (
                         <div
-                          onClick={(e) => handleOddsClick(e, match, 'X', match.drawOdds!)}
+                          onClick={(e) => { const draw = match.drawOdds; if (draw != null) handleOddsClick(e, match, 'X', draw); }}
                           className="bg-gray-700/50 hover:bg-gray-600/50 rounded-lg px-3 py-1.5 text-center min-w-[52px] transition-colors cursor-pointer"
                         >
                           <span className="text-[10px] text-gray-500 block">X</span>

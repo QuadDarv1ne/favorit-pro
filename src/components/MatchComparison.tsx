@@ -43,7 +43,6 @@ const mockTeamStats: Record<string, TeamStats> = {
 };
 
 const allMatches = [...liveMatches, ...upcomingMatches];
-const teamNames = Array.from(new Set(allMatches.flatMap((m) => [m.homeTeam, m.awayTeam])));
 
 function getTeamNames(matchId: string): [string, string] {
   const match = allMatches.find((m) => m.id === matchId);

@@ -146,13 +146,13 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             className="absolute top-full left-0 right-0 mt-2 bg-[#151b23] border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 z-50 max-h-[400px] overflow-y-auto"
           >
             {/* Matches */}
-            {results!.matches.length > 0 && (
+            {results && results.matches.length > 0 && (
               <div className="p-3">
                 <div className="flex items-center gap-1.5 mb-2">
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Матчи</span>
                 </div>
-                {results!.matches.map((match) => (
+                {results.matches.map((match) => (
                   <button
                     key={match.id}
                     onClick={() => {
@@ -174,13 +174,13 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             )}
 
             {/* Experts */}
-            {results!.experts.length > 0 && (
+            {results && results.experts.length > 0 && (
               <div className="p-3 border-t border-gray-700/50">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Trophy className="w-3.5 h-3.5 text-yellow-400" />
                   <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Эксперты</span>
                 </div>
-                {results!.experts.map((expert) => (
+                {results.experts.map((expert) => (
                   <div
                     key={expert.id}
                     className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors"
@@ -198,13 +198,13 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             )}
 
             {/* Predictions */}
-            {results!.predictions.length > 0 && (
+            {results && results.predictions.length > 0 && (
               <div className="p-3 border-t border-gray-700/50">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Newspaper className="w-3.5 h-3.5 text-teal-400" />
                   <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Прогнозы</span>
                 </div>
-                {results!.predictions.map((pred) => (
+                {results.predictions.map((pred) => (
                   <div
                     key={pred.id}
                     className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors"

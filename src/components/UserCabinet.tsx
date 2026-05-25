@@ -1,22 +1,31 @@
 'use client';
 
+import { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
 import {
   User, Wallet, Trophy, TrendingUp, Star, Bell, Settings,
   Crown, Gem, Zap, LogOut, Plus, ChevronRight, Heart,
-  Calendar, Target, BarChart3, Users
+  Calendar, Target, BarChart3, Users, Check, X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { experts, topPredictions, liveMatches, upcomingMatches } from '@/lib/data';
+import { experts } from '@/lib/data';
 import { toast } from 'sonner';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { BankrollTracker } from '@/components/BankrollTracker';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const tierConfig = {
   free: { label: 'Бесплатный', color: 'text-gray-400', bg: 'bg-gray-500/20', border: 'border-gray-500/30', icon: <Zap className="w-4 h-4" /> },
@@ -32,23 +41,36 @@ const recentActivity = [
   { id: '5', type: 'subscription', text: 'Подписка на Алексей Капперов', amount: '-1500 ₽', time: '3 д назад' },
 ];
 
-export function UserCabinet() {
-  const { user, isLoggedIn, logout, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen } = useAppStore();
+const defaultNotifications = [
+  { id: 'expert_predictions', label: 'Прогнозы экспертов', desc: 'Новые прогнозы от подписанных экспертов', enabled: true },
+  { id: 'bet_results', label: 'Результаты ставок', desc: 'Уведомления о результатах прогнозов', enabled: true },
+  { id: 'hot_matches', label: 'Горячие матчи', desc: 'Уведомления о начале важных матчей', enabled: false },
+  { id: 'odds_changes', label: 'Изменения коэффициентов', desc: 'Существенные изменения в линиях', enabled: false },
+  { id: 'promotions', label: 'Акции и бонусы', desc: 'Специальные предложения и промокоды', enabled: true },
+];
 
-  // Create a demo user if logged in
-  const currentUser = user || {
-    id: 'demo',
-    name: 'Демо Пользователь',
-    email: 'demo@favoritpro.ru',
-    avatar: 'ДП',
-    role: 'user' as const,
-    tier: 'free' as const,
-    balance: 3500,
-    totalBets: 47,
-    wonBets: 31,
-    totalProfit: 12400,
-    joinedAt: '01.03.2026',
-  };
+const DEMO_USER = {
+  id: 'demo',
+  name: 'Демо Пользователь',
+  email: 'demo@favoritpro.ru',
+  avatar: 'ДП',
+  role: 'user' as const,
+  tier: 'free' as const,
+  balance: 3500,
+  totalBets: 47,
+  wonBets: 31,
+  totalProfit: 12400,
+  joinedAt: '01.03.2026',
+};
+
+export function UserCabinet() {
+  const { user, logout, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen } = useAppStore();
+  const [notifications, setNotifications] = useState(defaultNotifications);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [editingField, setEditingField] = useState<'name' | 'email' | 'password' | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  const currentUser = user ?? DEMO_USER;
 
   const tier = tierConfig[currentUser.tier];
   const winRate = currentUser.totalBets > 0 ? Math.round((currentUser.wonBets / currentUser.totalBets) * 100) : 0;
@@ -57,9 +79,53 @@ export function UserCabinet() {
     toast.success('Пополнение баланса', { description: 'Функция будет доступна в полной версии' });
   };
 
-  const handleLogout = () => {
+  const handleLogoutRequest = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    setLogoutDialogOpen(false);
     logout();
     toast.info('Вы вышли из аккаунта');
+  };
+
+  const handleToggleNotification = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, enabled: !n.enabled } : n))
+    );
+    const target = notifications.find((n) => n.id === id);
+    if (target) {
+      toast.success(target.enabled ? `${target.label} отключены` : `${target.label} включены`);
+    }
+  };
+
+  const handleEditProfile = (field: 'name' | 'email' | 'password') => {
+    setEditingField(field);
+    setEditValue(field === 'password' ? '' : currentUser[field]);
+  };
+
+  const handleSaveProfile = () => {
+    if (!editValue.trim()) {
+      toast.error('Поле не может быть пустым');
+      return;
+    }
+    if (editingField === 'password') {
+      if (editValue.length < 6) {
+        toast.error('Пароль должен быть не менее 6 символов');
+        return;
+      }
+      toast.success('Пароль изменён');
+    } else if (editingField === 'email') {
+      if (!editValue.includes('@')) {
+        toast.error('Некорректный email');
+        return;
+      }
+      toast.success('Email обновлён');
+    } else {
+      toast.success('Имя обновлено');
+    }
+    setEditingField(null);
+    setEditValue('');
   };
 
   return (
@@ -75,12 +141,10 @@ export function UserCabinet() {
           <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
           <CardContent className="p-6 relative">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-              {/* Avatar */}
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-emerald-500/20 shrink-0">
                 {currentUser.avatar}
               </div>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
                   <h2 className="text-xl font-bold text-white">{currentUser.name}</h2>
@@ -106,7 +170,6 @@ export function UserCabinet() {
                 </div>
               </div>
 
-              {/* Balance & Actions */}
               <div className="flex flex-col items-end gap-3 shrink-0 w-full sm:w-auto">
                 <div className="text-right">
                   <p className="text-xs text-gray-500 mb-0.5">Баланс</p>
@@ -146,7 +209,7 @@ export function UserCabinet() {
           { icon: <Trophy className="w-5 h-5 text-yellow-400" />, label: 'Серия', value: '3 W', sub: 'Текущая' },
         ].map((stat, i) => (
           <motion.div
-            key={i}
+            key={stat.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
@@ -165,10 +228,8 @@ export function UserCabinet() {
         ))}
       </div>
 
-      {/* Achievement Badges */}
       <AchievementBadges />
 
-      {/* Tabs content */}
       <Tabs defaultValue="activity" className="space-y-6">
         <TabsList className="bg-gray-800/50 border-gray-700/50">
           <TabsTrigger value="activity" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
@@ -227,7 +288,6 @@ export function UserCabinet() {
             </CardContent>
           </Card>
 
-          {/* Win rate visualization */}
           <Card className="bg-gray-800/50 border-gray-700/50 mt-6">
             <CardHeader className="pb-3">
               <CardTitle className="text-base text-white">Статистика ставок</CardTitle>
@@ -254,7 +314,6 @@ export function UserCabinet() {
             </CardContent>
           </Card>
 
-          {/* Bankroll Tracker */}
           <div className="mt-6">
             <BankrollTracker />
           </div>
@@ -263,7 +322,6 @@ export function UserCabinet() {
         {/* Favorites tab */}
         <TabsContent value="favorites">
           <div className="space-y-6">
-            {/* Favorite experts */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
@@ -297,7 +355,6 @@ export function UserCabinet() {
               </CardContent>
             </Card>
 
-            {/* Favorite matches */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
@@ -330,7 +387,6 @@ export function UserCabinet() {
               </CardContent>
             </Card>
 
-            {/* Favorite predictions */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
@@ -413,7 +469,6 @@ export function UserCabinet() {
             </CardContent>
           </Card>
 
-          {/* Current plan info */}
           <Card className="bg-gradient-to-br from-gray-800/80 via-gray-800/50 to-emerald-900/10 border-gray-700/50 mt-6">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
@@ -470,36 +525,40 @@ export function UserCabinet() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Name */}
                 <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                   <div>
                     <p className="text-sm text-white">Имя</p>
                     <p className="text-xs text-gray-500">{currentUser.name}</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300">
+                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('name')}>
                     Изменить
                   </Button>
                 </div>
+                {/* Email */}
                 <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                   <div>
                     <p className="text-sm text-white">Email</p>
                     <p className="text-xs text-gray-500">{currentUser.email}</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300">
+                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('email')}>
                     Изменить
                   </Button>
                 </div>
+                {/* Password */}
                 <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                   <div>
                     <p className="text-sm text-white">Пароль</p>
                     <p className="text-xs text-gray-500">Последнее изменение: 15.03.2026</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300">
+                  <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('password')}>
                     Сменить
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Notifications */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
@@ -508,28 +567,22 @@ export function UserCabinet() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {[
-                  { label: 'Прогнозы экспертов', desc: 'Новые прогнозы от подписанных экспертов', enabled: true },
-                  { label: 'Результаты ставок', desc: 'Уведомления о результатах прогнозов', enabled: true },
-                  { label: 'Горячие матчи', desc: 'Уведомления о начале важных матчей', enabled: false },
-                  { label: 'Изменения коэффициентов', desc: 'Существенные изменения в линиях', enabled: false },
-                  { label: 'Акции и бонусы', desc: 'Специальные предложения и промокоды', enabled: true },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                {notifications.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                     <div>
                       <p className="text-sm text-white">{item.label}</p>
                       <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
-                    <button
-                      className={`relative w-10 h-5 rounded-full transition-colors ${item.enabled ? 'bg-emerald-500' : 'bg-gray-700'}`}
-                    >
-                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${item.enabled ? 'left-5' : 'left-0.5'}`} />
-                    </button>
+                    <Switch
+                      checked={item.enabled}
+                      onCheckedChange={() => handleToggleNotification(item.id)}
+                    />
                   </div>
                 ))}
               </CardContent>
             </Card>
 
+            {/* Logout */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
@@ -540,7 +593,7 @@ export function UserCabinet() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleLogout}
+                    onClick={handleLogoutRequest}
                     className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300 text-xs"
                   >
                     <LogOut className="w-3.5 h-3.5 mr-1.5" />
@@ -556,6 +609,69 @@ export function UserCabinet() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Logout confirmation dialog */}
+      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <DialogContent className="bg-[#151b23] border-gray-700/50">
+          <DialogHeader>
+            <DialogTitle className="text-white">Подтверждение выхода</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Вы уверены, что хотите выйти из аккаунта? Для повторного входа потребуется авторизация.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setLogoutDialogOpen(false)} className="border-gray-600 text-gray-300">
+              <X className="w-3.5 h-3.5 mr-1" />
+              Отмена
+            </Button>
+            <Button size="sm" onClick={handleLogoutConfirm} className="bg-red-500 hover:bg-red-600 text-white">
+              <Check className="w-3.5 h-3.5 mr-1" />
+              Выйти
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit profile dialog */}
+      <Dialog open={editingField !== null} onOpenChange={(open) => !open && setEditingField(null)}>
+        <DialogContent className="bg-[#151b23] border-gray-700/50">
+          <DialogHeader>
+            <DialogTitle className="text-white">
+              {editingField === 'name' && 'Изменить имя'}
+              {editingField === 'email' && 'Изменить email'}
+              {editingField === 'password' && 'Сменить пароль'}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              {editingField === 'name' && 'Введите новое имя'}
+              {editingField === 'email' && 'Введите новый email'}
+              {editingField === 'password' && 'Введите новый пароль (мин. 6 символов)'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <input
+              type={editingField === 'password' ? 'password' : 'text'}
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
+              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+              placeholder={
+                editingField === 'name' ? 'Ваше имя' :
+                editingField === 'email' ? 'email@example.com' :
+                'Новый пароль'
+              }
+              autoFocus
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setEditingField(null)} className="border-gray-600 text-gray-300">
+              Отмена
+            </Button>
+            <Button size="sm" onClick={handleSaveProfile} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+              Сохранить
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,8 +8,9 @@ import { BetSlip } from '@/components/BetSlip';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAppStore } from '@/stores/app-store';
 import { useState } from 'react';
+import Image from 'next/image';
 import {
-  Menu, X, TrendingUp, Trophy, BarChart3, Newspaper, CheckCircle, Calculator, Search, User, Heart, Crown
+  Menu, X, TrendingUp, Trophy, BarChart3, Newspaper, CheckCircle, Calculator, Search, User, Heart, Crown, FileText
 } from 'lucide-react';
 
 const navItems: { id: ActiveSection; label: string; icon: React.ReactNode }[] = [
@@ -17,6 +18,7 @@ const navItems: { id: ActiveSection; label: string; icon: React.ReactNode }[] = 
   { id: 'sports', label: 'Спорт', icon: <TrendingUp className="w-4 h-4" /> },
   { id: 'experts', label: 'Эксперты', icon: <CheckCircle className="w-4 h-4" /> },
   { id: 'leaderboard', label: 'Лидерборд', icon: <Crown className="w-4 h-4" /> },
+  { id: 'articles', label: 'Статьи', icon: <FileText className="w-4 h-4" /> },
   { id: 'stats', label: 'Статистика', icon: <BarChart3 className="w-4 h-4" /> },
   { id: 'calculator', label: 'Калькулятор', icon: <Calculator className="w-4 h-4" /> },
   { id: 'news', label: 'Медиа', icon: <Newspaper className="w-4 h-4" /> },
@@ -43,7 +45,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
             onClick={() => onSectionChange('main')}
             className="flex items-center gap-2 shrink-0"
           >
-            <img src="/logo.png" alt="ФП" className="w-8 h-8 rounded-lg" />
+            <Image src="/logo.png" alt="ФП" width={32} height={32} className="rounded-lg" />
             <span className="text-base font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent hidden sm:inline">
               ФаворитПро
             </span>

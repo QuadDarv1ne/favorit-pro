@@ -1,15 +1,15 @@
 'use client';
 
 import { ActiveSection } from '@/types/navigation';
-import { Trophy, TrendingUp, CheckCircle, BarChart3, Calculator, ShoppingCart, User } from 'lucide-react';
+import { Trophy, TrendingUp, CheckCircle, Calculator, ShoppingCart, User, FileText } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 
 const bottomNavItems: { id: ActiveSection; label: string; icon: React.ReactNode }[] = [
   { id: 'main', label: 'Главная', icon: <Trophy className="w-5 h-5" /> },
   { id: 'sports', label: 'Спорт', icon: <TrendingUp className="w-5 h-5" /> },
   { id: 'experts', label: 'Эксперты', icon: <CheckCircle className="w-5 h-5" /> },
+  { id: 'articles', label: 'Статьи', icon: <FileText className="w-5 h-5" /> },
   { id: 'calculator', label: 'Кальк.', icon: <Calculator className="w-5 h-5" /> },
-  { id: 'stats', label: 'Стат.', icon: <BarChart3 className="w-5 h-5" /> },
 ];
 
 interface BottomNavProps {

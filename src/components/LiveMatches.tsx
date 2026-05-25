@@ -63,8 +63,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
   // React Query hook with fallback to mock data
   const { data } = useMatches('live');
-  const matches = (data?.matches?.length ?? 0) > 0
-    ? data!.matches.map(mapApiMatch)
+  const matches = data?.matches?.length
+    ? data.matches.map(mapApiMatch)
     : liveMatches;
 
   // Ref for simulation effects to always see current matches
@@ -106,6 +106,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
   // Simulate live odds changes
   useEffect(() => {
+    const timeoutIds = timeoutIdsRef.current;
     const interval = setInterval(() => {
       const currentMatches = matchesRef.current.filter(m => m.status === 'live');
       if (currentMatches.length === 0) return;
@@ -130,7 +131,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
         // Clear direction after 3 seconds
         const timeoutId = setTimeout(() => {
-          timeoutIdsRef.current.delete(timeoutId);
+          timeoutIds.delete(timeoutId);
           setMatchOddsMap(current => {
             if (current[match.id]) {
               return {
@@ -144,7 +145,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
             return current;
           });
         }, 3000);
-        timeoutIdsRef.current.add(timeoutId);
+        timeoutIds.add(timeoutId);
 
         return updated;
       });
@@ -152,9 +153,9 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
     return () => {
       clearInterval(interval);
-      const timeouts = timeoutIdsRef.current;
+      const timeouts = Array.from(timeoutIds);
       timeouts.forEach(clearTimeout);
-      timeouts.clear();
+      timeoutIds.clear();
     };
   }, []);
 
@@ -322,8 +323,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                     <div onClick={(e) => handleOddsClick(e, match, '1', currentOdds.home)}>
                       <AnimatedOdds odds={currentOdds.home} direction={currentOdds.homeDirection} matchId={match.id} type="1" />
                     </div>
-                    {currentOdds.draw && (
-                      <div onClick={(e) => handleOddsClick(e, match, 'X', currentOdds.draw!)}>
+                    {currentOdds.draw != null && (
+                      <div onClick={(e) => { const draw = currentOdds.draw; if (draw != null) handleOddsClick(e, match, 'X', draw); }}>
                         <AnimatedOdds odds={currentOdds.draw} direction={currentOdds.drawDirection} matchId={match.id} type="X" />
                       </div>
                     )}

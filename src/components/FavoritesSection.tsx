@@ -1,20 +1,20 @@
 'use client';
 
 import React from 'react';
-import { useAppStore } from '@/stores/app-store';
-import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions } from '@/lib/data';
+import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
+import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions, Match, Expert, Prediction } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Trophy, TrendingUp, Clock, Trash2, Users, Radio, Calendar } from 'lucide-react';
+import { Heart, TrendingUp, Trash2, Users, Radio, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface FavoritesSectionProps {
-  onMatchClick?: (match: any) => void;
-  onExpertClick?: (expert: any) => void;
-  onPredictionClick?: (prediction: any) => void;
+  onMatchClick?: (match: Match | FavoriteMatch) => void;
+  onExpertClick?: (expert: Expert) => void;
+  onPredictionClick?: (prediction: Prediction | FavoritePrediction) => void;
 }
 
 const sportEmoji = (sport: string) =>
@@ -51,7 +51,7 @@ export function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClic
 
   const totalFavorites = resolvedMatches.length + resolvedExperts.length + resolvedPredictions.length;
 
-  const handleRemoveMatch = (match: any) => {
+  const handleRemoveMatch = (match: Match | FavoriteMatch) => {
     toggleFavoriteMatch({
       id: match.id, homeTeam: match.homeTeam, awayTeam: match.awayTeam,
       league: match.league, sport: match.sport, startTime: match.startTime,
@@ -65,7 +65,7 @@ export function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClic
     toast.info('Удалено из избранного', { description: expert?.name });
   };
 
-  const handleRemovePrediction = (pred: any) => {
+  const handleRemovePrediction = (pred: Prediction | FavoritePrediction) => {
     toggleFavoritePrediction({
       id: pred.id, matchTitle: pred.matchTitle, prediction: pred.prediction,
       odds: pred.odds, expertName: pred.expertName,

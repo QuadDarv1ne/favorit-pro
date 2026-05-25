@@ -27,7 +27,9 @@ function mapApiNews(n: ApiNewsArticle): NewsItem {
   return {
     id: n.id,
     title: n.title,
+    slug: n.slug,
     excerpt: n.excerpt,
+    content: n.content,
     category: n.category,
     image: n.imageUrl || '/placeholder.jpg',
     publishedAt: formatApiDate(n.publishedAt),
@@ -38,8 +40,8 @@ function mapApiNews(n: ApiNewsArticle): NewsItem {
 export const NewsSection = React.memo(function NewsSection({ detailed = false }: NewsSectionProps) {
   // React Query hook with fallback to mock data
   const { data } = useNews();
-  const newsList = (data?.news?.length ?? 0) > 0
-    ? data!.news.map(mapApiNews)
+  const newsList = data?.news?.length
+    ? data.news.map(mapApiNews)
     : newsItems;
 
   const displayedNews = detailed ? newsList : newsList.slice(0, 3);

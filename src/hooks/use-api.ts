@@ -64,7 +64,9 @@ interface ApiPrediction {
 interface ApiNewsArticle {
   id: string;
   title: string;
+  slug: string;
   excerpt: string;
+  content: string;
   category: string;
   imageUrl?: string | null;
   publishedAt: string;

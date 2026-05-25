@@ -51,8 +51,8 @@ function mapApiPrediction(p: ApiPrediction): Prediction {
 export const TopPredictions = React.memo(function TopPredictions({ onPredictionClick }: TopPredictionsProps) {
   // React Query hook with fallback to mock data
   const { data } = usePredictions();
-  const predictionsList = (data?.predictions?.length ?? 0) > 0
-    ? data!.predictions.map(mapApiPrediction)
+  const predictionsList = data?.predictions?.length
+    ? data.predictions.map(mapApiPrediction)
     : topPredictions;
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

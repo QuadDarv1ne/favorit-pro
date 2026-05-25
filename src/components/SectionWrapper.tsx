@@ -4,7 +4,6 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MatchCardSkeleton, PredictionCardSkeleton } from '@/components/Skeletons';
 
 interface SectionWrapperProps {
   children: ReactNode;
@@ -32,12 +31,12 @@ function GenericSkeleton({ count = 3 }: { count?: number }) {
 
 export function SectionWrapper({
   children,
-  isLoading,
+  isLoading: _isLoading,
   isError,
   error,
   onRetry,
-  skeletonType = 'generic',
-  skeletonCount = 3,
+  skeletonType: _skeletonType,
+  skeletonCount: _skeletonCount,
   title,
   className = '',
 }: SectionWrapperProps) {

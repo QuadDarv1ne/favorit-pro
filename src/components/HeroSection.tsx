@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Flame, Zap, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 function useCountUp(end: number, duration: number = 2000, startOnMount: boolean = true) {
   const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(startOnMount);
 
   useEffect(() => {
-    if (!started) return;
+    if (!startOnMount) return;
     let startTime: number;
     let animationFrame: number;
 
@@ -27,7 +27,7 @@ function useCountUp(end: number, duration: number = 2000, startOnMount: boolean 
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, started]);
+  }, [end, duration, startOnMount]);
 
   return count;
 }
@@ -64,7 +64,7 @@ export function HeroSection() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <img src="/logo.png" alt="ФаворитПро" className="w-14 h-14 rounded-xl shadow-lg shadow-emerald-500/20" />
+              <Image src="/logo.png" alt="ФаворитПро" width={56} height={56} className="rounded-xl shadow-lg shadow-emerald-500/20" />
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
                 <Flame className="w-4 h-4" />
                 <span>Горячие прогнозы сегодня</span>

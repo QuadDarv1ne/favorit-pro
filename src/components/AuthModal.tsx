@@ -104,6 +104,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
     }, 500);
   };
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- watch() is standard RHF API
   const watchedPassword = registerForm.watch('password');
   const strength = getPasswordStrength(watchedPassword || '');
 
