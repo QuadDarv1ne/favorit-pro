@@ -10,6 +10,8 @@ import { Mail, Lock, User, Eye, EyeOff, Gift, ArrowRight, CheckCircle, AlertCirc
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useAuth } from '@/hooks/use-auth';
+import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Введите email').email('Некорректный email'),
@@ -57,6 +59,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const { signIn, register: registerAuth, signInDemo } = useAuth();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -68,13 +71,17 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
     defaultValues: { name: '', email: '', password: '', terms: false },
   });
 
-  const handleLoginSubmit = loginForm.handleSubmit(async (_data) => {
+  const handleLoginSubmit = loginForm.handleSubmit(async (data) => {
     setServerError(null);
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      onLogin?.();
+      const result = await signIn(data.email, data.password);
+      if (result?.error) {
+        setServerError(result.error === 'CredentialsSignin' ? 'Неверный email или пароль' : result.error);
+      } else {
+        toast.success('Вход выполнен');
+        onLogin?.();
+      }
     } catch {
       setServerError('Ошибка входа. Попробуйте ещё раз.');
     } finally {
@@ -82,13 +89,17 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
     }
   });
 
-  const handleRegisterSubmit = registerForm.handleSubmit(async (_data) => {
+  const handleRegisterSubmit = registerForm.handleSubmit(async (data) => {
     setServerError(null);
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      onLogin?.();
+      const result = await registerAuth(data.name, data.email, data.password);
+      if (result?.error) {
+        setServerError(result.error === 'CredentialsSignin' ? 'Ошибка регистрации. Попробуйте ещё раз.' : result.error);
+      } else {
+        toast.success('Регистрация успешна');
+        onLogin?.();
+      }
     } catch {
       setServerError('Ошибка регистрации. Попробуйте ещё раз.');
     } finally {
@@ -98,10 +109,11 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
 
   const handleDemoLogin = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    requestAnimationFrame(() => {
+      signInDemo();
+      toast.success('Демо-режим активирован');
       onLogin?.();
-    }, 500);
+    });
   };
 
   // eslint-disable-next-line react-hooks/incompatible-library -- watch() is standard RHF API

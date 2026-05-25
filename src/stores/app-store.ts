@@ -75,6 +75,7 @@ interface AppStore {
   isLoggedIn: boolean;
   login: (user: UserProfile) => void;
   logout: () => void;
+  updateUser: (updates: Partial<UserProfile>) => void;
   updateBalance: (amount: number) => void;
   setTier: (tier: 'free' | 'pro' | 'vip') => void;
 
@@ -168,6 +169,8 @@ export const useAppStore = create<AppStore>()(
         const newTheme = get().theme === 'dark' ? 'light' : 'dark';
         set({ theme: newTheme });
         document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', newTheme === 'dark' ? '#10b981' : '#ffffff');
       },
 
       // User
@@ -180,6 +183,13 @@ export const useAppStore = create<AppStore>()(
 
       logout: () => {
         set({ user: null, isLoggedIn: false, subscribedExperts: [] });
+      },
+
+      updateUser: (updates) => {
+        const user = get().user;
+        if (user) {
+          set({ user: { ...user, ...updates } });
+        }
       },
 
       updateBalance: (amount) => {

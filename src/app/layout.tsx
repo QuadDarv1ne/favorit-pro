@@ -69,12 +69,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className="dark" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="ФаворитПро" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('favoritpro-store');
+                  var theme = 'dark';
+                  if (stored) {
+                    var parsed = JSON.parse(stored);
+                    if (parsed.state && parsed.state.theme) theme = parsed.state.theme;
+                  }
+                  document.documentElement.classList.toggle('dark', theme === 'dark');
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0d1117] text-gray-100`}

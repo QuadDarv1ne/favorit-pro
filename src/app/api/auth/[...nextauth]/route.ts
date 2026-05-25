@@ -5,9 +5,21 @@ import bcrypt from 'bcryptjs';
 import { sanitizeString } from '@/lib/api-helpers';
 
 const SALT_ROUNDS = 10;
+const RATE_LIMIT_TTL = 60_000;
+const CLEANUP_INTERVAL = 5 * 60_000;
 const LOGIN_RATE_LIMIT = new Map<string, { count: number; resetAt: number }>();
 const MAX_NAME_LENGTH = 50;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function cleanupExpiredEntries() {
+  const now = Date.now();
+  for (const [key, entry] of LOGIN_RATE_LIMIT) {
+    if (now >= entry.resetAt) LOGIN_RATE_LIMIT.delete(key);
+  }
+}
+
+const cleanupTimer = setInterval(cleanupExpiredEntries, CLEANUP_INTERVAL);
+if (cleanupTimer.unref) cleanupTimer.unref();
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
@@ -17,7 +29,7 @@ function checkRateLimit(ip: string): boolean {
     entry.count++;
     return true;
   }
-  LOGIN_RATE_LIMIT.set(ip, { count: 1, resetAt: now + 60_000 });
+  LOGIN_RATE_LIMIT.set(ip, { count: 1, resetAt: now + RATE_LIMIT_TTL });
   return true;
 }
 
@@ -48,12 +60,16 @@ export const authOptions: NextAuthOptions = {
             const valid = await bcrypt.compare(credentials.password, user.passwordHash);
             if (!valid) return null;
           }
+          await db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
           return { id: user.id, name: user.name ?? user.email, email: user.email, role: user.role };
         }
 
+        // Registration: only when name is provided (explicit registration, not accidental login)
         if (credentials.name) {
           const sanitizedName = sanitizeString(credentials.name, MAX_NAME_LENGTH);
           if (!sanitizedName) return null;
+
+          if (credentials.password.length < 8) return null;
 
           const hash = await bcrypt.hash(credentials.password, SALT_ROUNDS);
           const newUser = await db.user.create({

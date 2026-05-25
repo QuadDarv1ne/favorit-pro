@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,7 +65,8 @@ const DEMO_USER = {
 };
 
 export function UserCabinet() {
-  const { user, logout, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen } = useAppStore();
+  const { user, logout, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
+  const { signOut } = useAuth();
   const [notifications, setNotifications] = useState(defaultNotifications);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<'name' | 'email' | 'password' | null>(null);
@@ -83,20 +85,21 @@ export function UserCabinet() {
     setLogoutDialogOpen(true);
   };
 
-  const handleLogoutConfirm = () => {
+  const handleLogoutConfirm = async () => {
     setLogoutDialogOpen(false);
-    logout();
+    await signOut();
     toast.info('Вы вышли из аккаунта');
   };
 
   const handleToggleNotification = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, enabled: !n.enabled } : n))
-    );
-    const target = notifications.find((n) => n.id === id);
-    if (target) {
-      toast.success(target.enabled ? `${target.label} отключены` : `${target.label} включены`);
-    }
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, enabled: !n.enabled } : n));
+      const target = updated.find((n) => n.id === id);
+      if (target) {
+        toast.success(target.enabled ? `${target.label} включены` : `${target.label} отключены`);
+      }
+      return updated;
+    });
   };
 
   const handleEditProfile = (field: 'name' | 'email' | 'password') => {
@@ -120,8 +123,13 @@ export function UserCabinet() {
         toast.error('Некорректный email');
         return;
       }
+      const initials = editValue.split('@')[0].slice(0, 2).toUpperCase();
+      updateUser({ email: editValue.trim(), avatar: initials || '??' });
       toast.success('Email обновлён');
     } else {
+      const parts = editValue.trim().split(/\s+/);
+      const initials = parts.map((p) => p[0]).join('').toUpperCase().slice(0, 2);
+      updateUser({ name: editValue.trim(), avatar: initials || '??' });
       toast.success('Имя обновлено');
     }
     setEditingField(null);
