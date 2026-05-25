@@ -70,6 +70,29 @@ function buildRateLimitHeaders(
   };
 }
 
+function createRateLimitedResponse(
+  error: string,
+  status: number,
+  remaining: number,
+  resetAt: number
+): NextResponse {
+  const response = NextResponse.json({ error }, { status });
+  applyRateLimitHeaders(response, remaining, resetAt);
+  applySecurityHeaders(response);
+  return response;
+}
+
+function applyRateLimitHeaders(
+  response: NextResponse,
+  remaining: number,
+  resetAt: number
+) {
+  const headers = buildRateLimitHeaders(remaining, resetAt);
+  for (const [key, value] of Object.entries(headers)) {
+    response.headers.set(key, value);
+  }
+}
+
 const API_READ_PREFIXES = ['/api/experts', '/api/matches', '/api/sports', '/api/predictions'];
 const API_WRITE_PREFIXES = ['/api/predictions', '/api/subscribe', '/api/likes'];
 
@@ -115,17 +138,17 @@ export function middleware(request: NextRequest) {
     const rateKey = `write:${clientIp}:${pathname}`;
     const result = checkRateLimit(rateKey, 10);
     if (!result.allowed) {
-      const response = NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
+      return createRateLimitedResponse(
+        'Too many requests. Please try again later.',
+        429,
+        result.remaining,
+        result.resetAt
       );
-      const headers = buildRateLimitHeaders(result.remaining, result.resetAt);
-      for (const [key, value] of Object.entries(headers)) {
-        response.headers.set(key, value);
-      }
-      applySecurityHeaders(response);
-      return response;
     }
+    const response = NextResponse.next();
+    applyRateLimitHeaders(response, result.remaining, result.resetAt);
+    applySecurityHeaders(response);
+    return response;
   }
 
   // Read endpoints: higher limit.
@@ -133,17 +156,17 @@ export function middleware(request: NextRequest) {
     const readKey = `read:${clientIp}`;
     const result = checkRateLimit(readKey, RATE_LIMIT_MAX_REQUESTS);
     if (!result.allowed) {
-      const response = NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
+      return createRateLimitedResponse(
+        'Too many requests. Please try again later.',
+        429,
+        result.remaining,
+        result.resetAt
       );
-      const headers = buildRateLimitHeaders(result.remaining, result.resetAt);
-      for (const [key, value] of Object.entries(headers)) {
-        response.headers.set(key, value);
-      }
-      applySecurityHeaders(response);
-      return response;
     }
+    const response = NextResponse.next();
+    applyRateLimitHeaders(response, result.remaining, result.resetAt);
+    applySecurityHeaders(response);
+    return response;
   }
 
   // Auth endpoints: very strict limit.
@@ -151,17 +174,17 @@ export function middleware(request: NextRequest) {
     const authKey = `auth:${clientIp}`;
     const result = checkRateLimit(authKey, RATE_LIMIT_MAX_AUTH);
     if (!result.allowed) {
-      const response = NextResponse.json(
-        { error: 'Too many login attempts. Please try again later.' },
-        { status: 429 }
+      return createRateLimitedResponse(
+        'Too many login attempts. Please try again later.',
+        429,
+        result.remaining,
+        result.resetAt
       );
-      const headers = buildRateLimitHeaders(result.remaining, result.resetAt);
-      for (const [key, value] of Object.entries(headers)) {
-        response.headers.set(key, value);
-      }
-      applySecurityHeaders(response);
-      return response;
     }
+    const response = NextResponse.next();
+    applyRateLimitHeaders(response, result.remaining, result.resetAt);
+    applySecurityHeaders(response);
+    return response;
   }
 
   const response = NextResponse.next();
