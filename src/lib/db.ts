@@ -1,13 +1,5 @@
-import { PrismaClient } from '@prisma/client'
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query'] : [],
-  })
-
-globalForPrisma.prisma = db
+// Universal database export — uses db-factory to resolve to Prisma or MongoDB at runtime.
+// For direct Prisma access (migrations, seed), import from './db-prisma' instead.
+export { db } from './db-prisma';
+export { initDb, getDb, getDbType, disconnectDb, isPrismaDb, isMongoDb } from './db-factory';
+export type { DatabaseClient } from './db-factory';
