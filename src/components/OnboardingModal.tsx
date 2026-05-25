@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Target, BarChart3, TrendingUp } from 'lucide-react';
@@ -64,6 +65,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
       <DialogContent className="bg-[#0d1117] border-gray-700/50 text-white max-w-md p-0 overflow-hidden">
+        <DialogTitle className="sr-only">Добро пожаловать в Favorit Pro</DialogTitle>
         <div className="relative">
           {/* Background glow */}
           <div

@@ -131,7 +131,14 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
       setTier(tierId);
       if (data.user?.balance !== undefined) {
         const currentUser = useAppStore.getState().user;
-        login({ ...currentUser, balance: data.user.balance, tier: tierId });
+        if (currentUser) {
+      login({
+        ...currentUser,
+        id: currentUser.id, // Явное указание, что id не может быть undefined
+        balance: data.user.balance,
+        tier: tierId as UserProfile['tier'],
+      });
+    }
       }
 
       if (price > 0) {
