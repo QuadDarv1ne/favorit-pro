@@ -55,16 +55,18 @@ function checkRateLimit(
 
   const entry = rateLimitStore.get(key);
 
-  if (entry && now < entry.resetAt) {
-    if (entry.count >= max) {
-      return { allowed: false, remaining: 0, resetAt: entry.resetAt };
-    }
-    entry.count++;
-    return { allowed: true, remaining: max - entry.count, resetAt: entry.resetAt };
+  // Create or reset entry atomically
+  if (!entry || now >= entry.resetAt) {
+    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: max - 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
   }
 
-  rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-  return { allowed: true, remaining: max - 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  // Atomically increment and check
+  entry.count++;
+  if (entry.count > max) {
+    return { allowed: false, remaining: 0, resetAt: entry.resetAt };
+  }
+  return { allowed: true, remaining: max - entry.count, resetAt: entry.resetAt };
 }
 
 function buildRateLimitHeaders(
@@ -109,6 +111,10 @@ const SECURITY_HEADERS: Record<string, string> = {
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+  'X-XSS-Protection': '0',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
 function applySecurityHeaders(response: NextResponse) {

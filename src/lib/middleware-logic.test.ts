@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // We test the middleware logic by extracting and testing the rate limit functions directly
 // Since middleware is a Next.js edge function, we test the logic in isolation

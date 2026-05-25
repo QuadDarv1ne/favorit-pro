@@ -3,12 +3,12 @@ import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/api-helpers';
 
 export async function GET() {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const { userId } = auth;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const { userId } = auth;
+
     const user = await db.user.findUnique({
       where: { id: userId },
       select: {

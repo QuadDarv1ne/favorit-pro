@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
+
+const expertsQuerySchema = z.object({
+  sportId: z.string().min(1).max(50).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20).optional(),
+});
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const sportId = searchParams.get('sportId');
-    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
-    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 100) : 20;
+    const validation = expertsQuerySchema.safeParse({
+      sportId: searchParams.get('sportId') || undefined,
+      limit: searchParams.get('limit') || undefined,
+    });
+
+    const { sportId, limit = 20 } = validation.success ? validation.data : { limit: 20 };
 
     const where: Prisma.ExpertWhereInput = {};
     if (sportId) where.specialtyId = sportId;

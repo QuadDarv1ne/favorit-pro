@@ -23,17 +23,23 @@ const TIER_PRICES: Record<string, number> = {
   vip: 3990,
 };
 
+const TIER_LEVELS: Record<string, number> = {
+  free: 0,
+  pro: 1,
+  vip: 2,
+};
+
 export async function POST(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const validation = await validateBody(request, upgradeSchema);
-  if ('error' in validation) return validation.error;
-
-  const { tier } = validation.data;
-  const { userId } = auth;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, upgradeSchema);
+    if ('error' in validation) return validation.error;
+
+    const { tier } = validation.data;
+    const { userId } = auth;
+
     const updated = await db.$transaction(async (tx) => {
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!user) {
@@ -42,6 +48,13 @@ export async function POST(request: Request) {
 
       if (user.tier === tier) {
         throw new ApiError('Already on this tier', 400);
+      }
+
+      // Prevent downgrades: users can only upgrade to higher tiers
+      const currentLevel = TIER_LEVELS[user.tier] ?? 0;
+      const targetLevel = TIER_LEVELS[tier] ?? 0;
+      if (targetLevel <= currentLevel) {
+        throw new ApiError('Downgrades are not allowed. Contact support to change your tier.', 400);
       }
 
       const price = TIER_PRICES[tier] ?? 0;

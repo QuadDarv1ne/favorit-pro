@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
+
+const matchesQuerySchema = z.object({
+  status: z.enum(['live', 'upcoming', 'finished']).optional(),
+  sportId: z.string().min(1).max(50).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20).optional(),
+});
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const sportId = searchParams.get('sportId');
-    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
-    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 100) : 20;
+    const validation = matchesQuerySchema.safeParse({
+      status: searchParams.get('status') || undefined,
+      sportId: searchParams.get('sportId') || undefined,
+      limit: searchParams.get('limit') || undefined,
+    });
+
+    const { status, sportId, limit = 20 } = validation.success ? validation.data : { limit: 20 };
 
     const where: Prisma.MatchWhereInput = {};
     if (status) where.status = status;

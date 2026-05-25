@@ -9,16 +9,16 @@ const profileSchema = z.object({
 });
 
 export async function PATCH(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const validation = await validateBody(request, profileSchema);
-  if ('error' in validation) return validation.error;
-
-  const { userId } = auth;
-  const updates = validation.data;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, profileSchema);
+    if ('error' in validation) return validation.error;
+
+    const { userId } = auth;
+    const updates = validation.data;
+
     const existingUser = await db.user.findUnique({ where: { id: userId } });
     if (!existingUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
