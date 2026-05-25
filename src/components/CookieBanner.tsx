@@ -21,6 +21,11 @@ export function CookieBanner() {
     setVisible(false);
   };
 
+  const acceptMinimal = () => {
+    localStorage.setItem('cookie-consent', 'minimal');
+    setVisible(false);
+  };
+
   return (
     <AnimatePresence>
       {visible && (
@@ -49,7 +54,7 @@ export function CookieBanner() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={accept}
+                  onClick={acceptMinimal}
                   className="border-gray-700 text-gray-400 text-xs hover:text-white"
                 >
                   Только необходимые

@@ -115,7 +115,6 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
     setProcessingTier(tierId);
 
     try {
-      // Tier upgrade is handled locally via store; API /api/subscribe is for expert subs
       setTier(tierId);
       if (price > 0) {
         updateBalance(-price);
@@ -127,16 +126,10 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
       }
       onClose();
     } catch {
-      setTier(tierId);
-      if (price > 0) {
-        updateBalance(-price);
-        toast.success(`Тариф ${tierId.toUpperCase()} активирован!`, {
-          description: `Списано ${price.toLocaleString()} ₽ с вашего баланса`,
-        });
-      } else {
-        toast.info('Вы на бесплатном тарифе');
-      }
-      onClose();
+      setError('Не удалось активировать тариф. Попробуйте позже.');
+      toast.error('Ошибка активации тарифа', {
+        description: 'Произошла ошибка при обработке. Ваш баланс не изменён.',
+      });
     } finally {
       setProcessingTier(null);
     }

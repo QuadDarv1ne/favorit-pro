@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { newsItems, NewsItem } from '@/lib/data';
 import { useNews, ApiNewsArticle } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
@@ -34,7 +35,7 @@ function mapApiNews(n: ApiNewsArticle): NewsItem {
   };
 }
 
-export function NewsSection({ detailed = false }: NewsSectionProps) {
+export const NewsSection = React.memo(function NewsSection({ detailed = false }: NewsSectionProps) {
   // React Query hook with fallback to mock data
   const { data } = useNews();
   const newsList = (data?.news?.length ?? 0) > 0
@@ -109,4 +110,4 @@ export function NewsSection({ detailed = false }: NewsSectionProps) {
       )}
     </section>
   );
-}
+});

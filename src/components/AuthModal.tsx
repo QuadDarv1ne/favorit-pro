@@ -128,7 +128,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
           </div>
         )}
 
-        <Tabs defaultValue={defaultTab}>
+        <Tabs defaultValue={defaultTab} onValueChange={() => setServerError(null)}>
           <TabsList className="bg-gray-800/50 border-gray-700/50 w-full mb-4">
             <TabsTrigger value="login" className="flex-1 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
               Вход

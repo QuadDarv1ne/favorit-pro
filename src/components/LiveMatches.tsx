@@ -101,8 +101,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   // Live score updates
   const [matchScores, setMatchScores] = useState<Record<string, { home: number; away: number }>>(initialScores);
 
-  // Track previous odds for direction comparison
-  const prevOddsRef = useRef<Record<string, { home: number; draw?: number; away: number }>>({});
+  // Track pending timeouts for cleanup
+  const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   // Simulate live odds changes
   useEffect(() => {
@@ -129,7 +129,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
         }
 
         // Clear direction after 3 seconds
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+          timeoutIdsRef.current.delete(timeoutId);
           setMatchOddsMap(current => {
             if (current[match.id]) {
               return {
@@ -143,12 +144,18 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
             return current;
           });
         }, 3000);
+        timeoutIdsRef.current.add(timeoutId);
 
         return updated;
       });
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      const timeouts = timeoutIdsRef.current;
+      timeouts.forEach(clearTimeout);
+      timeouts.clear();
+    };
   }, []);
 
   // Simulate occasional score changes
