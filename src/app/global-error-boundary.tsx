@@ -40,7 +40,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
             <p className="text-sm text-gray-400 mb-6">
               Произошла непредвиденная ошибка. Попробуйте обновить страницу.
             </p>
-            {this.state.error && (
+            {this.state.error && process.env.NODE_ENV === 'development' && (
               <details className="text-left bg-gray-800/50 rounded-lg p-3 mb-6 text-xs text-gray-500 font-mono max-h-32 overflow-auto">
                 {this.state.error.message}
               </details>

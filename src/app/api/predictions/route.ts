@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { requireAuth, validateBody } from '@/lib/api-helpers';
 
 const predictionSchema = z.object({
   matchId: z.string().min(1, 'matchId required'),
@@ -46,44 +45,35 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const auth = await requireAuth();
+  if ('error' in auth) return auth.error;
 
-    const body = await request.json();
-    const parsed = predictionSchema.safeParse(body);
+  const validation = await validateBody(request, predictionSchema);
+  if ('error' in validation) return validation.error;
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400 }
-      );
-    }
+  const { matchId, prediction, odds, confidence, analysis } = validation.data;
+  const { userId: expertId } = auth;
 
-    const { matchId, prediction, odds, confidence, analysis } = parsed.data;
-    const expertId = (session.user as { id: string }).id;
-
-    const newPrediction = await db.prediction.create({
-      data: {
-        expertId,
-        matchId,
-        prediction,
-        odds,
-        confidence,
-        analysis: analysis || '',
-        result: 'pending',
-      },
-      include: {
-        expert: true,
-        match: { include: { sport: true } },
-      },
-    });
-
-    return NextResponse.json({ prediction: newPrediction }, { status: 201 });
-  } catch (error) {
-    console.error('Failed to create prediction:', error);
-    return NextResponse.json({ error: 'Failed to create prediction' }, { status: 500 });
+  const match = await db.match.findUnique({ where: { id: matchId } });
+  if (!match) {
+    return NextResponse.json({ error: 'Match not found' }, { status: 404 });
   }
+
+  const newPrediction = await db.prediction.create({
+    data: {
+      expertId,
+      matchId,
+      prediction,
+      odds,
+      confidence,
+      analysis: analysis || '',
+      result: 'pending',
+    },
+    include: {
+      expert: true,
+      match: { include: { sport: true } },
+    },
+  });
+
+  return NextResponse.json({ prediction: newPrediction }, { status: 201 });
 }

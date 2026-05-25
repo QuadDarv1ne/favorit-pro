@@ -2,9 +2,12 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { sanitizeString } from '@/lib/api-helpers';
 
 const SALT_ROUNDS = 10;
 const LOGIN_RATE_LIMIT = new Map<string, { count: number; resetAt: number }>();
+const MAX_NAME_LENGTH = 50;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
@@ -30,10 +33,15 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const ip = (req.headers?.['x-forwarded-for'] as string) || 'unknown';
+        const ip = req.headers?.['x-forwarded-for']
+          ? (req.headers['x-forwarded-for'] as string).split(',')[0].trim()
+          : 'unknown';
         if (!checkRateLimit(ip)) return null;
 
-        const user = await db.user.findUnique({ where: { email: credentials.email } });
+        const email = credentials.email.toLowerCase().trim();
+        if (!EMAIL_REGEX.test(email)) return null;
+
+        const user = await db.user.findUnique({ where: { email } });
 
         if (user) {
           if (user.passwordHash) {
@@ -44,11 +52,14 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (credentials.name) {
+          const sanitizedName = sanitizeString(credentials.name, MAX_NAME_LENGTH);
+          if (!sanitizedName) return null;
+
           const hash = await bcrypt.hash(credentials.password, SALT_ROUNDS);
           const newUser = await db.user.create({
             data: {
-              email: credentials.email,
-              name: credentials.name,
+              email,
+              name: sanitizedName,
               passwordHash: hash,
               role: 'user',
             },
