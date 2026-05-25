@@ -61,7 +61,7 @@ export function CookieBanner() {
                 </Button>
               </div>
             </div>
-            <button onClick={accept} className="text-gray-500 hover:text-gray-300 shrink-0">
+            <button onClick={accept} aria-label="Закрыть баннер cookie" className="text-gray-500 hover:text-gray-300 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const q = rawQ.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s-]/g, '').trim().slice(0, 100).toLowerCase();
 
     if (!q || q.length < 2) {
-      return NextResponse.json({ matches: [], experts: [], predictions: [] });
+      return NextResponse.json({ error: 'Search query must be at least 2 characters', matches: [], experts: [], predictions: [] }, { status: 400 });
     }
 
     // Search matches

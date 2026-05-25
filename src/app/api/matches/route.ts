@@ -29,6 +29,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ matches });
   } catch (error) {
     console.error('Failed to fetch matches:', error);
-    return NextResponse.json({ error: 'Failed to fetch matches' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch matches' },
+      { status: 500 }
+    );
   }
 }

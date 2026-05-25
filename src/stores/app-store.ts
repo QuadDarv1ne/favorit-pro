@@ -178,7 +178,9 @@ export const useAppStore = create<AppStore>()(
       },
 
       logout: () => {
-        set({ user: null, isLoggedIn: false, subscribedExperts: [] });
+        set({ user: null, isLoggedIn: false, subscribedExperts: [], betSlip: [] });
+        // Clear persisted localStorage to prevent stale auth state on reload
+        localStorage.removeItem('favoritpro-store');
       },
 
       updateUser: (updates) => {

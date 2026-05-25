@@ -11,6 +11,10 @@ export async function GET() {
     return NextResponse.json({ news });
   } catch (error) {
     console.error('Failed to fetch news:', error);
-    return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch news' },
+      { status: 500 }
+    );
   }
 }

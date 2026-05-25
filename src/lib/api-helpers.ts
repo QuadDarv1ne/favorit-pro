@@ -8,7 +8,11 @@ export async function requireAuth() {
   if (!session?.user) {
     return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   }
-  return { session, userId: (session.user as { id: string }).id };
+  const userId = (session.user as { id?: string }).id;
+  if (!userId) {
+    return { error: NextResponse.json({ error: 'Unauthorized: missing user ID' }, { status: 401 }) };
+  }
+  return { session, userId };
 }
 
 export async function validateBody<T extends z.ZodType>(

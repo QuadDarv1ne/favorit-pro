@@ -196,6 +196,10 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                     toast.error('Введите сумму ставки');
                     return;
                   }
+                  if (!useAppStore.getState().isLoggedIn) {
+                    toast.error('Войдите в аккаунт, чтобы сделать ставку');
+                    return;
+                  }
                   onPlaceBet?.(betSlip, stakeNum, activeTab as 'single' | 'express' | 'system');
                   toast.success('Ставка принята', { description: `${betSlip.length} ${betSlip.length === 1 ? 'событие' : 'событий'}, ${stakeNum} ₽` });
                   clearBetSlip();

@@ -29,6 +29,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ experts });
   } catch (error) {
     console.error('Failed to fetch experts:', error);
-    return NextResponse.json({ error: 'Failed to fetch experts' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch experts' },
+      { status: 500 }
+    );
   }
 }
