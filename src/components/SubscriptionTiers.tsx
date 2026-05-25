@@ -86,7 +86,7 @@ const tiers = [
 ];
 
 export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
-  const { setTier, user, updateBalance, isLoggedIn } = useAppStore();
+  const { setTier, user, updateBalance, isLoggedIn, login } = useAppStore();
   const [processingTier, setProcessingTier] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -115,9 +115,26 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
     setProcessingTier(tierId);
 
     try {
+      const res = await fetch('/api/subscription/upgrade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier: tierId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upgrade tier');
+      }
+
+      // Sync Zustand store with server response
       setTier(tierId);
+      if (data.user?.balance !== undefined) {
+        // Set exact balance from server instead of computing client-side
+        login({ ...user!, balance: data.user.balance, tier: tierId });
+      }
+
       if (price > 0) {
-        updateBalance(-price);
         toast.success(`Тариф ${tierId.toUpperCase()} активирован!`, {
           description: `Списано ${price.toLocaleString()} ₽ с вашего баланса`,
         });
@@ -125,10 +142,11 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
         toast.info('Вы на бесплатном тарифе');
       }
       onClose();
-    } catch {
-      setError('Не удалось активировать тариф. Попробуйте позже.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Не удалось активировать тариф';
+      setError(message);
       toast.error('Ошибка активации тарифа', {
-        description: 'Произошла ошибка при обработке. Ваш баланс не изменён.',
+        description: message,
       });
     } finally {
       setProcessingTier(null);

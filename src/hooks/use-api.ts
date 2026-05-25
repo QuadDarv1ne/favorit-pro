@@ -173,21 +173,25 @@ export function useSearch(query: string) {
   });
 }
 
-// Subscribe mutation
+// Subscribe mutation (server implements toggle: subscribe if not subscribed, unsubscribe if already)
 export function useSubscribe() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ expertId, action }: { expertId: string; action: 'subscribe' | 'unsubscribe' }) => {
+    mutationFn: async ({ expertId }: { expertId: string }) => {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expertId, action }),
+        body: JSON.stringify({ expertId }),
       });
-      if (!res.ok) throw new Error('Failed to update subscription');
-      return res.json();
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Failed to update subscription' }));
+        throw new Error(error.error);
+      }
+      return res.json() as Promise<{ subscribed: boolean }>;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experts'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-status'] });
     },
   });
 }

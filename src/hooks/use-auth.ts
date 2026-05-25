@@ -39,11 +39,27 @@ export function useAuth() {
     if (status === 'authenticated' && session?.user) {
       const profile = sessionToProfile(session);
       if (profile) {
-        // Preserve persisted fields (balance, tier, stats) from Zustand
-        const merged = user
-          ? { ...profile, balance: user.balance, tier: user.tier, totalBets: user.totalBets, wonBets: user.wonBets, totalProfit: user.totalProfit }
-          : profile;
-        login(merged);
+        // Fetch real server data (tier, balance, subscriptions)
+        fetch('/api/subscription/status')
+          .then((res) => {
+            if (!res.ok) return null;
+            return res.json() as Promise<{ user: { tier: string; balance: number }; subscribedExperts: string[] }>;
+          })
+          .then((serverData) => {
+            const merged = serverData
+              ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
+              : profile;
+
+            // Preserve Zustand-persisted stats if available
+            const final = user
+              ? { ...merged, totalBets: user.totalBets, wonBets: user.wonBets, totalProfit: user.totalProfit }
+              : merged;
+            login(final);
+          })
+          .catch(() => {
+            // Fallback to session-only profile if server fetch fails
+            login(profile);
+          });
       }
     } else if (status === 'unauthenticated') {
       if (isLoggedIn) {

@@ -1,0 +1,46 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { requireAuth } from '@/lib/api-helpers';
+
+export async function GET() {
+  const auth = await requireAuth();
+  if ('error' in auth) return auth.error;
+
+  const { userId } = auth;
+
+  try {
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        tier: true,
+        balance: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Get active expert subscriptions
+    const subscriptions = await db.subscription.findMany({
+      where: { userId },
+      include: { expert: { select: { id: true, name: true } } },
+    });
+
+    return NextResponse.json({
+      user,
+      subscribedExperts: subscriptions.map((s) => s.expertId),
+    });
+  } catch (error) {
+    console.error('Failed to fetch subscription status:', error);
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch subscription status' },
+      { status: 500 }
+    );
+  }
+}

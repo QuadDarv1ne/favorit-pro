@@ -100,7 +100,7 @@ export function UserCabinet() {
     setEditValue(field === 'password' ? '' : currentUser[field]);
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     if (!editValue.trim()) {
       toast.error('Поле не может быть пустым');
       return;
@@ -110,21 +110,49 @@ export function UserCabinet() {
         toast.error('Пароль должен быть не менее 8 символов');
         return;
       }
+      // Password change is client-only notification since no /api/password endpoint exists yet
       toast.success('Пароль изменён');
-    } else if (editingField === 'email') {
-      if (!editValue.includes('@')) {
-        toast.error('Некорректный email');
-        return;
-      }
-      const initials = editValue.split('@')[0].slice(0, 2).toUpperCase();
-      updateUser({ email: editValue.trim(), avatar: initials || '??' });
-      toast.success('Email обновлён');
-    } else {
-      const parts = editValue.trim().split(/\s+/);
-      const initials = parts.map((p) => p[0]).join('').toUpperCase().slice(0, 2);
-      updateUser({ name: editValue.trim(), avatar: initials || '??' });
-      toast.success('Имя обновлено');
+      setEditingField(null);
+      setEditValue('');
+      return;
     }
+
+    try {
+      const body: Record<string, string> = {};
+      if (editingField === 'email') {
+        if (!editValue.includes('@')) {
+          toast.error('Некорректный email');
+          return;
+        }
+        body.email = editValue.trim();
+      } else {
+        body.name = editValue.trim();
+      }
+
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      // Sync Zustand store with server response
+      if (data.user) {
+        updateUser(data.user);
+      }
+
+      toast.success(editingField === 'email' ? 'Email обновлён' : 'Имя обновлено');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Не удалось обновить профиль';
+      toast.error('Ошибка обновления профиля', { description: message });
+      return;
+    }
+
     setEditingField(null);
     setEditValue('');
   };
