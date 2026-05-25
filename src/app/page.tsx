@@ -41,6 +41,9 @@ import { ActiveSection } from '@/types/navigation';
 import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
 import { Toaster } from 'sonner';
 
+// Module-level flag to run onboarding check once per session
+let onboardingChecked = false;
+
 // Lazy load heavy sections for performance
 const LazyStatsSection = lazy(() =>
   import('@/components/StatsSection').then((mod) => ({ default: mod.StatsSection }))
@@ -74,7 +77,12 @@ export default function Home() {
   const { isLoggedIn, subscriptionModalOpen, setSubscriptionModalOpen } = useAppStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (typeof window !== 'undefined') {
+    // This initializer runs on both server and client.
+    // On the server it returns false. On the client it reads localStorage.
+    // The module-level flag ensures it only reads localStorage once per page load.
+    if (typeof window === 'undefined') return false;
+    if (!onboardingChecked) {
+      onboardingChecked = true;
       return !localStorage.getItem('favoritpro-onboarding-seen');
     }
     return false;

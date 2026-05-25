@@ -33,7 +33,7 @@ function sessionToProfile(session: { user?: { id?: string; name?: string | null;
 
 export function useAuth() {
   const { data: session, status } = useSession();
-  const { login, logout, user, isLoggedIn } = useAppStore();
+  const { login, logout } = useAppStore();
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
@@ -52,15 +52,15 @@ export function useAuth() {
               ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
               : profile;
 
-            // Preserve Zustand-persisted stats if available
-            const final = user
-              ? { ...merged, totalBets: user.totalBets, wonBets: user.wonBets, totalProfit: user.totalProfit }
+            // Read current user from store at resolution time to avoid stale closure
+            const currentUser = useAppStore.getState().user;
+            const final = currentUser
+              ? { ...merged, totalBets: currentUser.totalBets, wonBets: currentUser.wonBets, totalProfit: currentUser.totalProfit }
               : merged;
             login(final);
           })
           .catch((error) => {
             if (error.name === 'AbortError') return;
-            // Fallback to session-only profile if server fetch fails
             login(profile);
           });
 
@@ -69,13 +69,10 @@ export function useAuth() {
         };
       }
     } else if (status === 'unauthenticated') {
-      if (isLoggedIn) {
+      if (useAppStore.getState().isLoggedIn) {
         logout();
       }
     }
-    // Intentionally omitting user/isLoggedIn — this effect syncs session state only,
-    // responding to store changes would cause redundant re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, status, login, logout]);
 
   const signIn = useCallback(async (email: string, password: string) => {

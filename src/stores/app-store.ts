@@ -249,8 +249,6 @@ export const useAppStore = create<AppStore>()(
         favoriteMatches: state.favoriteMatches,
         favoritePredictions: state.favoritePredictions,
         theme: state.theme,
-        user: state.user,
-        isLoggedIn: state.isLoggedIn,
         subscribedExperts: state.subscribedExperts,
       }),
     }

@@ -22,15 +22,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Expert not found' }, { status: 404 });
   }
 
-  const existing = await db.subscription.findUnique({
-    where: { userId_expertId: { userId, expertId } },
-  });
+  try {
+    // Use transaction to prevent race condition on concurrent subscribe/unsubscribe
+    const result = await db.$transaction(async (tx) => {
+      const existing = await tx.subscription.findUnique({
+        where: { userId_expertId: { userId, expertId } },
+      });
 
-  if (existing) {
-    await db.subscription.delete({ where: { id: existing.id } });
-    return NextResponse.json({ subscribed: false });
+      if (existing) {
+        await tx.subscription.delete({ where: { id: existing.id } });
+        return { subscribed: false };
+      }
+
+      await tx.subscription.create({ data: { userId, expertId } });
+      return { subscribed: true };
+    });
+
+    return NextResponse.json(result, result.subscribed ? { status: 201 } : undefined);
+  } catch (error) {
+    // Handle unique constraint violation from concurrent creates
+    if (error instanceof Error && 'code' in error && error.code === 'P2002') {
+      return NextResponse.json({ subscribed: true, message: 'Already subscribed' }, { status: 200 });
+    }
+    throw error;
   }
-
-  await db.subscription.create({ data: { userId, expertId } });
-  return NextResponse.json({ subscribed: true }, { status: 201 });
 }
