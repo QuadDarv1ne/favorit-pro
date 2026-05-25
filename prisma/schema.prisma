@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Sport {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  icon        String
+  color       String
+  matchCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  matches     Match[]
+  experts     Expert[]
+}
+
+model Match {
+  id           String   @id @default(cuid())
+  sportId      String
+  league       String
+  homeTeam     String
+  awayTeam     String
+  homeOdds     Float
+  drawOdds     Float?
+  awayOdds     Float
+  startTime    DateTime
+  status       String   @default("upcoming") // live, upcoming, finished
+  homeScore    Int?
+  awayScore    Int?
+  isHot        Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sport        Sport    @relation(fields: [sportId], references: [id])
+  predictions  Prediction[]
+}
+
+model Expert {
+  id               String   @id @default(cuid())
+  name             String
+  avatar           String
+  specialtyId      String
+  winRate          Float    @default(0)
+  totalPredictions Int      @default(0)
+  roi              Float    @default(0)
+  streak           Int      @default(0)
+  lastResults      String   @default("") // W,L,W,W,L comma-separated
+  bio              String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  specialty        Sport    @relation(fields: [specialtyId], references: [id])
+  predictions      Prediction[]
+  subscribers      Subscription[]
+}
+
+model Prediction {
+  id          String   @id @default(cuid())
+  expertId    String
+  matchId     String
+  prediction  String
+  odds        Float
+  confidence  Int
+  analysis    String
+  result      String   @default("pending") // win, loss, pending
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expert      Expert   @relation(fields: [expertId], references: [id])
+  match       Match    @relation(fields: [matchId], references: [id])
+  likes       Like[]
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  role          String         @default("user") // user, expert, admin
+  balance       Float          @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  likes         Like[]
+  subscriptions Subscription[]
+}
+
+model Like {
+  id            String     @id @default(cuid())
+  userId        String
+  predictionId  String
+  createdAt     DateTime   @default(now())
+  user          User       @relation(fields: [userId], references: [id])
+  prediction    Prediction @relation(fields: [predictionId], references: [id])
+
+  @@unique([userId, predictionId])
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  expertId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  expert    Expert   @relation(fields: [expertId], references: [id])
+
+  @@unique([userId, expertId])
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  title       String
+  excerpt     String
+  category    String
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+  readTime    Int      @default(3)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
