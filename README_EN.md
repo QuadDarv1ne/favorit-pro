@@ -100,7 +100,6 @@ Clicking odds on any match adds the selection to the bet slip with toast notific
 | **Framer Motion** | 12 | Smooth animations and transitions |
 | **React Hook Form** | 7.60 | Form management |
 | **Zod** | 4.0 | Schema validation |
-| **Socket.IO** | 4.8 | WebSocket for real-time updates |
 | **next-auth** | 4.24 | Authentication |
 | **next-intl** | 4.3 | Internationalization |
 
@@ -188,7 +187,6 @@ favorit-pro/
 │   │   ├── use-api.ts         # React Query API hooks
 │   │   ├── use-toast.ts       # Toast notifications
 │   │   ├── use-mobile.ts      # Mobile device detection
-│   │   └── use-live-updates.ts # WebSocket live updates
 │   ├── stores/
 │   │   └── app-store.ts       # Zustand store (bet slip, favorites, theme)
 │   ├── types/
@@ -227,7 +225,6 @@ favorit-pro/
 - [x] User cabinet
 - [x] Subscription tiers (Free/Pro/VIP)
 - [x] Real-time animated odds
-- [x] WebSocket LIVE updates
 - [x] Achievement system
 - [x] API search
 - [x] Team comparison

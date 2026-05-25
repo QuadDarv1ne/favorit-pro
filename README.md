@@ -103,7 +103,7 @@ npm run db:reset     # Сбросить БД
 | **Recharts 2** | Интерактивные графики и диаграммы |
 | **Framer Motion 12** | Анимации и переходы |
 | **React Hook Form + Zod** | Валидация форм |
-| **Socket.IO** | WebSocket для LIVE-обновлений |
+| **TanStack React Query** | Кеширование и управление данными |
 | **next-auth** | Аутентификация |
 | **next-intl** | Интернационализация |
 
@@ -132,8 +132,7 @@ favorit-pro/
 │   ├── hooks/
 │   │   ├── use-api.ts         # React Query API-хуки
 │   │   ├── use-toast.ts       # Уведомления
-│   │   ├── use-mobile.ts      # Определение мобильного устройства
-│   │   └── use-live-updates.ts # WebSocket обновления
+│   │   └── use-mobile.ts      # Определение мобильного устройства
 │   ├── stores/
 │   │   └── app-store.ts       # Zustand store (купон, избранное, тема)
 │   ├── types/
@@ -161,7 +160,6 @@ favorit-pro/
 - [x] Пользовательский кабинет
 - [x] Система подписок (Free/Pro/VIP)
 - [x] Анимация коэффициентов в реальном времени
-- [x] WebSocket LIVE-обновления
 - [x] Система достижений
 - [x] Поиск по API
 - [x] Сравнение команд

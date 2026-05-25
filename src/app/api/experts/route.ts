@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import type { Prisma } from '@prisma/client';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sportId = searchParams.get('sportId');
-    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20') || 20), 100);
+    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 100) : 20;
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.ExpertWhereInput = {};
     if (sportId) where.specialtyId = sportId;
 
     const experts = await db.expert.findMany({

@@ -81,6 +81,7 @@ model User {
   id            String         @id @default(cuid())
   email         String         @unique
   name          String?
+  passwordHash  String?
   role          String         @default("user") // user, expert, admin
   balance       Float          @default(0)
   createdAt     DateTime       @default(now())

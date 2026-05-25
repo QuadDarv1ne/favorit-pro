@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 const predictionSchema = z.object({
-  expertId: z.string().min(1, 'expertId required'),
   matchId: z.string().min(1, 'matchId required'),
   prediction: z.string().min(1, 'prediction required').max(500),
   odds: z.coerce.number().min(1.01, 'odds must be >= 1.01').max(1000),
@@ -17,7 +18,8 @@ export async function GET(request: Request) {
     const result = searchParams.get('result');
     const sportId = searchParams.get('sportId');
     const expertId = searchParams.get('expertId');
-    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20') || 20), 100);
+    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 100) : 20;
 
     const where: Record<string, unknown> = {};
     if (result) where.result = result;
@@ -45,6 +47,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const parsed = predictionSchema.safeParse(body);
 
@@ -55,7 +62,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { expertId, matchId, prediction, odds, confidence, analysis } = parsed.data;
+    const { matchId, prediction, odds, confidence, analysis } = parsed.data;
+    const expertId = (session.user as { id: string }).id;
 
     const newPrediction = await db.prediction.create({
       data: {
