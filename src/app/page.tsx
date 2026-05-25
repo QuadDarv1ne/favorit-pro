@@ -28,6 +28,7 @@ import { HotStreaks } from '@/components/HotStreaks';
 import { MatchComparison } from '@/components/MatchComparison';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DailyTips } from '@/components/DailyTips';
+import { createDemoUser } from '@/lib/demo';
 import { ValueBetScanner } from '@/components/ValueBetScanner';
 import { RecentWinsFeed } from '@/components/RecentWinsFeed';
 import { OnboardingModal } from '@/components/OnboardingModal';
@@ -102,20 +103,7 @@ export default function Home() {
   };
 
   const handleLogin = () => {
-    const demoUser: UserProfile = {
-      id: 'demo-user',
-      name: 'Демо Пользователь',
-      email: 'demo@favoritpro.ru',
-      avatar: 'ДП',
-      role: 'user',
-      tier: 'free',
-      balance: 3500,
-      totalBets: 47,
-      wonBets: 31,
-      totalProfit: 12400,
-      joinedAt: '01.03.2026',
-    };
-    login(demoUser);
+    login(createDemoUser());
     setAuthModalOpen(false);
     toast.success('Добро пожаловать!', {
       description: 'Вы вошли как Демо Пользователь',

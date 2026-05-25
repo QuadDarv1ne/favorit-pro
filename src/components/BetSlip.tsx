@@ -14,8 +14,9 @@ import {
   TrendingUp, Calculator
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
-export function BetSlip() {
+export function BetSlip({ onPlaceBet }: { onPlaceBet?: (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => void }) {
   const { betSlip, removeBet, clearBetSlip, betSlipOpen, setBetSlipOpen } = useAppStore();
   const [stake, setStake] = useState('1000');
   const [activeTab, setActiveTab] = useState('single');
@@ -151,20 +152,36 @@ export function BetSlip() {
 
               {/* Stats */}
               <div className="grid grid-cols-3 gap-2">
-                <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                  <p className="text-[10px] text-gray-500">Коэфф.</p>
-                  <p className="text-sm font-bold text-emerald-400">
-                    {activeTab === 'single' ? betSlip[0]?.odds.toFixed(2) : totalOdds.toFixed(2)}
-                  </p>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                  <p className="text-[10px] text-gray-500">Выплата</p>
-                  <p className="text-sm font-bold text-white">{potentialWin.toFixed(0)} ₽</p>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                  <p className="text-[10px] text-gray-500">Прибыль</p>
-                  <p className="text-sm font-bold text-emerald-400">+{potentialProfit.toFixed(0)} ₽</p>
-                </div>
+                {activeTab === 'single' && betSlip.length > 1
+                  ? betSlip.map((item) => {
+                      const singleWin = stakeNum * item.odds;
+                      const singleProfit = singleWin - stakeNum;
+                      return (
+                        <div key={item.id} className="bg-gray-800/50 rounded-lg p-2 text-center">
+                          <p className="text-[10px] text-gray-500 truncate">{item.prediction}</p>
+                          <p className="text-sm font-bold text-emerald-400">{item.odds.toFixed(2)}</p>
+                          <p className="text-[10px] text-white">+{singleProfit.toFixed(0)} ₽</p>
+                        </div>
+                      );
+                    })
+                  : (
+                    <>
+                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-gray-500">Коэфф.</p>
+                        <p className="text-sm font-bold text-emerald-400">
+                          {activeTab === 'single' ? betSlip[0]?.odds.toFixed(2) : totalOdds.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-gray-500">Выплата</p>
+                        <p className="text-sm font-bold text-white">{potentialWin.toFixed(0)} ₽</p>
+                      </div>
+                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-gray-500">Прибыль</p>
+                        <p className="text-sm font-bold text-emerald-400">+{potentialProfit.toFixed(0)} ₽</p>
+                      </div>
+                    </>
+                  )}
               </div>
 
               {activeTab === 'express' && betSlip.length > 1 && (
@@ -174,7 +191,18 @@ export function BetSlip() {
                 </div>
               )}
 
-              <Button className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/20 h-11">
+              <Button
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/20 h-11"
+                onClick={() => {
+                  if (stakeNum <= 0) {
+                    toast.error('Введите сумму ставки');
+                    return;
+                  }
+                  onPlaceBet?.(betSlip, stakeNum, activeTab as 'single' | 'express' | 'system');
+                  toast.success('Ставка принята', { description: `${betSlip.length} ${betSlip.length === 1 ? 'событие' : 'событий'}, ${stakeNum} ₽` });
+                  clearBetSlip();
+                }}
+              >
                 <Check className="w-4 h-4 mr-2" />
                 Сделать ставку ({betSlip.length})
               </Button>

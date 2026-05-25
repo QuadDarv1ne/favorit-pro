@@ -1,5 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { z } from 'zod';
+
+const predictionSchema = z.object({
+  expertId: z.string().min(1, 'expertId required'),
+  matchId: z.string().min(1, 'matchId required'),
+  prediction: z.string().min(1, 'prediction required').max(500),
+  odds: z.coerce.number().min(1.01, 'odds must be >= 1.01').max(1000),
+  confidence: z.coerce.number().min(0).max(100),
+  analysis: z.string().max(5000).optional(),
+});
 
 export async function GET(request: Request) {
   try {
@@ -7,7 +17,7 @@ export async function GET(request: Request) {
     const result = searchParams.get('result');
     const sportId = searchParams.get('sportId');
     const expertId = searchParams.get('expertId');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20') || 20), 100);
 
     const where: Record<string, unknown> = {};
     if (result) where.result = result;
@@ -36,19 +46,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { expertId, matchId, prediction, odds, confidence, analysis } = body;
+    const parsed = predictionSchema.safeParse(body);
 
-    if (!expertId || !matchId || !prediction || !odds || !confidence) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: parsed.error.flatten() },
+        { status: 400 }
+      );
     }
+
+    const { expertId, matchId, prediction, odds, confidence, analysis } = parsed.data;
 
     const newPrediction = await db.prediction.create({
       data: {
         expertId,
         matchId,
         prediction,
-        odds: parseFloat(odds),
-        confidence: parseInt(confidence),
+        odds,
+        confidence,
         analysis: analysis || '',
         result: 'pending',
       },

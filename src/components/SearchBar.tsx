@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearch } from '@/hooks/use-api';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -53,8 +53,8 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
   // React Query search hook (only fires when debouncedQuery >= 2 chars)
   const { data, isFetching } = useSearch(debouncedQuery);
 
-  // Map API data to SearchResult format
-  const results: SearchResult | null = data ? {
+  // Map API data to SearchResult format (memoized)
+  const results: SearchResult | null = useMemo(() => data ? {
     matches: data.matches.map(m => ({
       id: m.id,
       homeTeam: m.homeTeam,
@@ -78,7 +78,7 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
       expert: p.expert ? { name: p.expert.name } : { name: '' },
       match: p.match ? { homeTeam: p.match.homeTeam, awayTeam: p.match.awayTeam } : { homeTeam: '', awayTeam: '' },
     })),
-  } : null;
+  } : null, [data]);
 
   const hasResults = results !== null && (
     results.matches.length > 0 || results.experts.length > 0 || results.predictions.length > 0

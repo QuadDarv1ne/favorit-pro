@@ -4,7 +4,8 @@ import { db } from '@/lib/db';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get('q')?.toLowerCase();
+    const rawQ = searchParams.get('q') || '';
+    const q = rawQ.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s-]/g, '').trim().slice(0, 100).toLowerCase();
 
     if (!q || q.length < 2) {
       return NextResponse.json({ matches: [], experts: [], predictions: [] });

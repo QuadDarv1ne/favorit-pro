@@ -115,19 +115,7 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
     setProcessingTier(tierId);
 
     try {
-      // Try API call first
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tierId, price }),
-      });
-
-      if (!res.ok) {
-        // Fall back to local state update
-        console.warn('API subscription failed, updating locally');
-      }
-
-      // Update local state regardless
+      // Tier upgrade is handled locally via store; API /api/subscribe is for expert subs
       setTier(tierId);
       if (price > 0) {
         updateBalance(-price);
@@ -139,7 +127,6 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
       }
       onClose();
     } catch {
-      // Fallback: update locally
       setTier(tierId);
       if (price > 0) {
         updateBalance(-price);

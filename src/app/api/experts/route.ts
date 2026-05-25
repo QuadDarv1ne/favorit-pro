@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sportId = searchParams.get('sportId');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20') || 20), 100);
 
     const where: Record<string, unknown> = {};
     if (sportId) where.specialtyId = sportId;

@@ -107,7 +107,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   // Simulate live odds changes
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentMatches = matchesRef.current;
+      const currentMatches = matchesRef.current.filter(m => m.status === 'live');
+      if (currentMatches.length === 0) return;
       setMatchOddsMap(prev => {
         const updated = { ...prev };
         const matchIndex = Math.floor(Math.random() * currentMatches.length);
@@ -154,7 +155,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() > 0.7) {
-        const currentMatches = matchesRef.current;
+        const currentMatches = matchesRef.current.filter(m => m.status === 'live');
+        if (currentMatches.length === 0) return;
         setMatchScores(prev => {
           const updated = { ...prev };
           const matchIndex = Math.floor(Math.random() * currentMatches.length);
