@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 

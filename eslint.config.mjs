@@ -1,54 +1,127 @@
-import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-import nextTypescript from "eslint-config-next/typescript";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactCompilerPlugin from "eslint-plugin-react-compiler";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
-  languageOptions: {
-    globals: {
-      React: 'readonly',
+const eslintConfig = [
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        project: "./tsconfig.json",
+      },
+      globals: {
+        React: "readonly",
+        JSX: "readonly",
+        NodeJS: "readonly",
+        console: "readonly",
+        process: "readonly",
+        window: "readonly",
+        document: "readonly",
+        URL: "readonly",
+        URLSearchParams: "readonly",
+        fetch: "readonly",
+        Headers: "readonly",
+        Request: "readonly",
+        Response: "readonly",
+        setTimeout: "readonly",
+        setInterval: "readonly",
+        clearTimeout: "readonly",
+        clearInterval: "readonly",
+        requestAnimationFrame: "readonly",
+        cancelAnimationFrame: "readonly",
+        localStorage: "readonly",
+        sessionStorage: "readonly",
+        navigator: "readonly",
+        Location: "readonly",
+        History: "readonly",
+        Crypto: "readonly",
+        Performance: "readonly",
+        DOMException: "readonly",
+        HTMLElement: "readonly",
+        HTMLButtonElement: "readonly",
+        HTMLInputElement: "readonly",
+        Event: "readonly",
+        CustomEvent: "readonly",
+        MouseEvent: "readonly",
+        KeyboardEvent: "readonly",
+        FormData: "readonly",
+        File: "readonly",
+        Blob: "readonly",
+        Atomics: "readonly",
+        SharedArrayBuffer: "readonly",
+        Intl: "readonly",
+        TextEncoder: "readonly",
+        TextDecoder: "readonly",
+        AbortController: "readonly",
+        ReadableStream: "readonly",
+        WritableStream: "readonly",
+        TransformStream: "readonly",
+        CompressionStream: "readonly",
+        DecompressionStream: "readonly",
+        crypto: "readonly",
+        Image: "readonly",
+        Audio: "readonly",
+        Option: "readonly",
+        Path2D: "readonly",
+        CanvasRenderingContext2D: "readonly",
+        OffscreenCanvas: "readonly",
+        MessageChannel: "readonly",
+        DOMMatrix: "readonly",
+        DOMMatrixReadOnly: "readonly",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+      "react-hooks": reactHooksPlugin,
+      "@next/next": nextPlugin,
+      "react-compiler": reactCompilerPlugin,
+    },
+    rules: {
+      ...tsPlugin.configs["recommended"].rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...reactCompilerPlugin.configs.recommended.rules,
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/prefer-as-const": "error",
+      "react/no-unescaped-entities": "off",
+      "react/display-name": "off",
+      "react-compiler/react-compiler": "off",
+      "@next/next/no-img-element": "warn",
+      "@next/next/no-html-link-for-pages": "error",
+      "prefer-const": "error",
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-debugger": "error",
+      "no-empty": "warn",
+      "no-irregular-whitespace": "error",
+      "no-case-declarations": "off",
+      "no-fallthrough": "warn",
+      "no-mixed-spaces-and-tabs": "error",
+      "no-redeclare": "error",
+      "no-undef": "error",
+      "no-unreachable": "error",
+      "no-useless-escape": "warn",
     },
   },
-  rules: {
-    // TypeScript rules
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-    "@typescript-eslint/no-non-null-assertion": "warn",
-    "@typescript-eslint/ban-ts-comment": "warn",
-    "@typescript-eslint/prefer-as-const": "error",
-
-    // React rules
-    "react-hooks/exhaustive-deps": "warn",
-    "react-hooks/purity": "warn",
-    "react/no-unescaped-entities": "off",
-    "react/display-name": "off",
-    "react/prop-types": "off",
-    "react-compiler/react-compiler": "off",
-
-    // Next.js rules
-    "@next/next/no-img-element": "warn",
-    "@next/next/no-html-link-for-pages": "error",
-
-    // General JavaScript rules
-    "prefer-const": "error",
-    "no-unused-vars": "off",
-    "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "no-debugger": "error",
-    "no-empty": "warn",
-    "no-irregular-whitespace": "error",
-    "no-case-declarations": "off",
-    "no-fallthrough": "warn",
-    "no-mixed-spaces-and-tabs": "error",
-    "no-redeclare": "error",
-    "no-undef": "error",
-    "no-unreachable": "error",
-    "no-useless-escape": "warn",
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      "src/components/ui/**",
+    ],
   },
-}, {
-  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills"]
-}];
+];
 
 export default eslintConfig;

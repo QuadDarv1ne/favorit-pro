@@ -1,6 +1,6 @@
 'use client';
 
-import { experts, Expert } from '@/lib/data';
+import { Expert } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ interface ExpertProfileModalProps {
 function generatePerformanceData(expert: Expert) {
   const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'];
   const baseRate = expert.winRate;
-  return months.map((month, i) => {
+  return months.map((month, _i) => {
     const variance = (Math.random() - 0.5) * 20;
     const rate = Math.max(40, Math.min(95, baseRate + variance));
     const predictions = Math.floor(30 + Math.random() * 40);

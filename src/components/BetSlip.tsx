@@ -1,17 +1,15 @@
 'use client';
 
 import { useAppStore, BetSlipItem } from '@/stores/app-store';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  ShoppingCart, X, Trash2, Plus, Minus, Check, Zap,
-  TrendingUp, Calculator
+  ShoppingCart, X, Trash2, Check, Zap,
+  TrendingUp
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';

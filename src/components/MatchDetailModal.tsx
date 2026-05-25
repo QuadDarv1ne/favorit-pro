@@ -1,12 +1,13 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Match } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Radio, TrendingUp, BarChart3, History, Users, Flame, Heart, ShoppingCart, Bell, Activity, UserCircle } from 'lucide-react';
+import { Radio, TrendingUp, BarChart3, History, Flame, Heart, Bell, Activity, UserCircle } from 'lucide-react';
 import { MatchTimeline } from '@/components/MatchTimeline';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore, FavoriteMatch } from '@/stores/app-store';
@@ -280,12 +281,21 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
 function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam: string; sport: string }) {
   const isRacketSport = sport === 'tennis';
 
-  const generateLineup = (teamName: string, isHome: boolean) => {
+  // Deterministic pseudo-random rating based on input string hash
+  const getSeededRating = (seed: string): number => {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return 6 + (Math.abs(hash) % 30) / 10;
+  };
+
+  const generateLineup = (teamName: string, _isHome: boolean) => {
     if (isRacketSport) {
       return {
         formation: null,
         players: [
-          { number: 0, name: teamName, position: 'Игрок', rating: (7 + Math.random() * 2).toFixed(1) },
+          { number: 0, name: teamName, position: 'Игрок', rating: getSeededRating(teamName).toFixed(1) },
         ],
       };
     }
@@ -305,13 +315,13 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
         number: i + 1,
         name: surnames[i % surnames.length],
         position: pos,
-        rating: (6 + Math.random() * 3).toFixed(1),
+        rating: getSeededRating(surnames[i % surnames.length] + pos).toFixed(1),
       })),
     };
   };
 
-  const homeLineup = generateLineup(homeTeam, true);
-  const awayLineup = generateLineup(awayTeam, false);
+  const homeLineup = useMemo(() => generateLineup(homeTeam, true), [homeTeam]);
+  const awayLineup = useMemo(() => generateLineup(awayTeam, false), [awayTeam]);
 
   if (isRacketSport) {
     return (

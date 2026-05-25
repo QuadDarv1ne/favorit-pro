@@ -68,7 +68,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
     defaultValues: { name: '', email: '', password: '', terms: false },
   });
 
-  const handleLoginSubmit = loginForm.handleSubmit(async (data) => {
+  const handleLoginSubmit = loginForm.handleSubmit(async (_data) => {
     setServerError(null);
     setIsLoading(true);
     try {
@@ -82,7 +82,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
     }
   });
 
-  const handleRegisterSubmit = registerForm.handleSubmit(async (data) => {
+  const handleRegisterSubmit = registerForm.handleSubmit(async (_data) => {
     setServerError(null);
     setIsLoading(true);
     try {
