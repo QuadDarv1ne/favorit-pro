@@ -7,8 +7,6 @@ interface AnimatedOddsProps {
   odds: number;
   direction?: 'up' | 'down' | null;
   size?: 'sm' | 'md' | 'lg';
-  matchId?: string;
-  type?: string;
 }
 
 export function AnimatedOdds({ odds, direction = null, size = 'md' }: AnimatedOddsProps) {

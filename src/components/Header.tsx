@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { ActiveSection } from '@/types/navigation';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/SearchBar';
@@ -31,7 +32,7 @@ interface HeaderProps {
   onAuthClick: (tab: 'login' | 'register') => void;
 }
 
-export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderProps) {
+export const Header = React.memo(function Header({ activeSection, onSectionChange, onAuthClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { isLoggedIn, user } = useAppStore();
@@ -224,4 +225,4 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
       </div>
     </header>
   );
-}
+});

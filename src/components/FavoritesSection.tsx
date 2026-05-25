@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
 import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions, Match, Expert, Prediction } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,7 +20,7 @@ interface FavoritesSectionProps {
 const sportEmoji = (sport: string) =>
   sport === 'football' ? '⚽' : sport === 'hockey' ? '🏒' : sport === 'basketball' ? '🏀' : sport === 'tennis' ? '🎾' : '🎮';
 
-export function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClick }: FavoritesSectionProps) {
+export const FavoritesSection = React.memo(function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClick }: FavoritesSectionProps) {
   const {
     favoriteMatches, toggleFavoriteMatch,
     favoriteExperts, toggleFavoriteExpert,
@@ -29,25 +29,31 @@ export function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClic
 
   // Resolve full match data from IDs
   const allMatches = [...liveMatches, ...upcomingMatches, ...finishedMatches];
-  const resolvedMatches = favoriteMatches
-    .map((fav) => {
-      const full = allMatches.find((m) => m.id === fav.id);
-      return full ? { ...full, ...fav } : fav;
-    })
-    .filter(Boolean);
+  const resolvedMatches = useMemo(() =>
+    favoriteMatches
+      .map((fav) => {
+        const full = allMatches.find((m) => m.id === fav.id);
+        return full ? { ...full, ...fav } : fav;
+      })
+      .filter(Boolean),
+  [favoriteMatches, allMatches]);
 
   // Resolve full expert data from IDs
-  const resolvedExperts = favoriteExperts
-    .map((id) => experts.find((e) => e.id === id))
-    .filter(Boolean) as typeof experts;
+  const resolvedExperts = useMemo(() =>
+    favoriteExperts
+      .map((id) => experts.find((e) => e.id === id))
+      .filter(Boolean) as typeof experts,
+  [favoriteExperts]);
 
   // Resolve full prediction data from IDs
-  const resolvedPredictions = favoritePredictions
-    .map((fav) => {
-      const full = topPredictions.find((p) => p.id === fav.id);
-      return full ? { ...full, ...fav } : fav;
-    })
-    .filter(Boolean);
+  const resolvedPredictions = useMemo(() =>
+    favoritePredictions
+      .map((fav) => {
+        const full = topPredictions.find((p) => p.id === fav.id);
+        return full ? { ...full, ...fav } : fav;
+      })
+      .filter(Boolean),
+  [favoritePredictions, topPredictions]);
 
   const totalFavorites = resolvedMatches.length + resolvedExperts.length + resolvedPredictions.length;
 
@@ -307,7 +313,7 @@ export function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClic
       </Tabs>
     </section>
   );
-}
+});
 
 function EmptyTab({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (

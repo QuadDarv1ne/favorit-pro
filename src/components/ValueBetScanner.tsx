@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -66,12 +66,12 @@ function SportIcon({ sport }: { sport: string }) {
   return <span>{icons[sport] || '🏅'}</span>;
 }
 
-export function ValueBetScanner() {
+export const ValueBetScanner = React.memo(function ValueBetScanner() {
   const [sortBy, setSortBy] = useState<'value' | 'confidence'>('value');
 
-  const sorted = [...valueBets].sort((a, b) =>
+  const sorted = useMemo(() => [...valueBets].sort((a, b) =>
     sortBy === 'value' ? b.value - a.value : b.confidence - a.confidence
-  );
+  ), [sortBy]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -186,4 +186,4 @@ export function ValueBetScanner() {
       </div>
     </section>
   );
-}
+});

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Expert } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +39,7 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
   if (!expert) return null;
 
-  const performanceData = generatePerformanceData(expert);
+  const performanceData = useMemo(() => generatePerformanceData(expert), [expert.id]);
   const lastResults = expert.lastResults;
   const isFavorite = favoriteExperts.includes(expert.id);
   const isSubscribed = subscribedExperts.includes(expert.id);

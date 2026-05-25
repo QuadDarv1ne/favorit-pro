@@ -11,15 +11,15 @@ import {
   ShoppingCart, X, Trash2, Check, Zap,
   TrendingUp
 } from 'lucide-react';
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-export function BetSlip({ onPlaceBet }: { onPlaceBet?: (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => void }) {
+export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?: (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => void }) {
   const { betSlip, removeBet, clearBetSlip, betSlipOpen, setBetSlipOpen } = useAppStore();
   const [stake, setStake] = useState('1000');
   const [activeTab, setActiveTab] = useState('single');
 
-  const totalOdds = betSlip.reduce((acc, item) => acc * item.odds, 1);
+  const totalOdds = useMemo(() => betSlip.reduce((acc, item) => acc * item.odds, 1), [betSlip]);
   const stakeNum = parseFloat(stake) || 0;
   const potentialWin = stakeNum * totalOdds;
   const potentialProfit = potentialWin - stakeNum;
@@ -210,4 +210,4 @@ export function BetSlip({ onPlaceBet }: { onPlaceBet?: (bets: BetSlipItem[], sta
       </SheetContent>
     </Sheet>
   );
-}
+});

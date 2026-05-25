@@ -71,38 +71,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   const matchesRef = useRef(matches);
   useEffect(() => { matchesRef.current = matches; }, [matches]);
 
-  // Use refs instead of useState so we can sync when matches change.
-  // useState(initialOdds) only uses the initial value on first render,
-  // so new matches would never get odds/scores entries.
-  const matchOddsMapRef = useRef<Record<string, OddsState>>(initialOdds);
-  const matchScoresRef = useRef<Record<string, { home: number; away: number }>>(initialScores);
-  const [, forceUpdate] = useState(0);
-
-  // Sync refs when matches change (new matches arrive, old ones leave)
-  useEffect(() => {
-    const newOdds: Record<string, OddsState> = {};
-    const newScores: Record<string, { home: number; away: number }> = {};
-    matches.forEach(m => {
-      // Preserve existing odds/scores for still-present matches
-      newOdds[m.id] = matchOddsMapRef.current[m.id] ?? {
-        home: m.homeOdds,
-        draw: m.drawOdds,
-        away: m.awayOdds,
-        homeDirection: null,
-        awayDirection: null,
-        drawDirection: null,
-      };
-      newScores[m.id] = matchScoresRef.current[m.id] ?? { home: m.homeScore ?? 0, away: m.awayScore ?? 0 };
-    });
-    matchOddsMapRef.current = newOdds;
-    matchScoresRef.current = newScores;
-    forceUpdate(n => n + 1);
-  }, [matches]);
-
-  // Track pending timeouts for cleanup
-  const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
-
-  // Compute initial odds for the first render (before matches sync kicks in)
+  // Compute initial odds and scores for the first render
   const initialOdds: Record<string, OddsState> = useMemo(() => {
     const initial: Record<string, OddsState> = {};
     matches.forEach(m => {
@@ -125,6 +94,37 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
     });
     return initial;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only for first render
+
+  // Use refs instead of useState so we can sync when matches change.
+  // useState(initialOdds) only uses the initial value on first render,
+  // so new matches would never get odds/scores entries.
+  const matchOddsMapRef = useRef<Record<string, OddsState>>(initialOdds);
+  const matchScoresRef = useRef<Record<string, { home: number; away: number }>>(initialScores);
+  const [, forceUpdate] = useState(0);
+
+  // Track pending timeouts for cleanup
+  const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+
+  // Sync refs when matches change (new matches arrive, old ones leave)
+  useEffect(() => {
+    const newOdds: Record<string, OddsState> = {};
+    const newScores: Record<string, { home: number; away: number }> = {};
+    matches.forEach(m => {
+      // Preserve existing odds/scores for still-present matches
+      newOdds[m.id] = matchOddsMapRef.current[m.id] ?? {
+        home: m.homeOdds,
+        draw: m.drawOdds,
+        away: m.awayOdds,
+        homeDirection: null,
+        awayDirection: null,
+        drawDirection: null,
+      };
+      newScores[m.id] = matchScoresRef.current[m.id] ?? { home: m.homeScore ?? 0, away: m.awayScore ?? 0 };
+    });
+    matchOddsMapRef.current = newOdds;
+    matchScoresRef.current = newScores;
+    forceUpdate(n => n + 1);
+  }, [matches]);
 
   // Simulate live odds changes
   useEffect(() => {
@@ -213,6 +213,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
     e.stopPropagation();
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
     const betId = `${match.id}-${type}`;
+    const wasInSlip = storeRef.current().betSlip.some((b) => b.id === betId);
     addBet({
       id: betId,
       matchTitle: `${match.homeTeam} — ${match.awayTeam}`,
@@ -221,8 +222,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       sport: match.sport,
       league: match.league,
     });
-    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
-    if (!isInSlip) {
+    if (wasInSlip) {
       toast.info('Удалено из купона', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
       });
@@ -352,7 +352,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                       onClick={(e) => handleOddsClick(e, match, '1', currentOdds.home)}
                       className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
                     >
-                      <AnimatedOdds odds={currentOdds.home} direction={currentOdds.homeDirection} matchId={match.id} type="1" />
+                      <AnimatedOdds odds={currentOdds.home} direction={currentOdds.homeDirection} />
                     </button>
                     {currentOdds.draw != null && (
                       <button
@@ -361,7 +361,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                         onClick={(e) => { const draw = currentOdds.draw; if (draw != null) handleOddsClick(e, match, 'X', draw); }}
                         className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
                       >
-                        <AnimatedOdds odds={currentOdds.draw} direction={currentOdds.drawDirection} matchId={match.id} type="X" />
+                        <AnimatedOdds odds={currentOdds.draw} direction={currentOdds.drawDirection} />
                       </button>
                     )}
                     <button
@@ -370,7 +370,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                       onClick={(e) => handleOddsClick(e, match, '2', currentOdds.away)}
                       className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
                     >
-                      <AnimatedOdds odds={currentOdds.away} direction={currentOdds.awayDirection} matchId={match.id} type="2" />
+                      <AnimatedOdds odds={currentOdds.away} direction={currentOdds.awayDirection} />
                     </button>
                   </div>
 

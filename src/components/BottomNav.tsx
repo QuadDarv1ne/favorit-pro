@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { ActiveSection } from '@/types/navigation';
 import { Trophy, TrendingUp, CheckCircle, Calculator, ShoppingCart, User, FileText } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
@@ -17,7 +18,7 @@ interface BottomNavProps {
   onSectionChange: (section: ActiveSection) => void;
 }
 
-export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
+export const BottomNav = React.memo(function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
   const betSlipCount = useAppStore((s) => s.betSlip.length);
   const toggleBetSlip = useAppStore((s) => s.toggleBetSlip);
   const isLoggedIn = useAppStore((s) => s.isLoggedIn);
@@ -68,4 +69,4 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
       </div>
     </nav>
   );
-}
+});
