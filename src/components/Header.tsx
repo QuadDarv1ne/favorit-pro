@@ -76,6 +76,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
               <SearchBar />
             </div>
             <button
+              aria-label={searchOpen ? 'Закрыть поиск' : 'Открыть поиск'}
               className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors"
               onClick={() => setSearchOpen(!searchOpen)}
             >
@@ -88,6 +89,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
 
             {/* Favorites button */}
             <button
+              aria-label="Избранное"
               onClick={() => onSectionChange('favorites')}
               className={`p-2 rounded-lg transition-colors ${
                 activeSection === 'favorites'
@@ -101,6 +103,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
 
             {isLoggedIn ? (
               <button
+                aria-label={isLoggedIn ? 'Мой профиль' : 'Войти'}
                 onClick={() => onSectionChange('profile')}
                 className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeSection === 'profile'
@@ -118,6 +121,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
                 <Button
                   variant="outline"
                   size="sm"
+                  aria-label="Войти в аккаунт"
                   onClick={() => onAuthClick('login')}
                   className="hidden sm:flex border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 h-8 text-xs"
                 >
@@ -125,6 +129,7 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
                 </Button>
                 <Button
                   size="sm"
+                  aria-label="Зарегистрироваться"
                   onClick={() => onAuthClick('register')}
                   className="hidden sm:flex bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium h-8 text-xs"
                 >
@@ -135,6 +140,8 @@ export function Header({ activeSection, onSectionChange, onAuthClick }: HeaderPr
 
             {/* Mobile menu button */}
             <button
+              aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-expanded={mobileMenuOpen}
               className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >

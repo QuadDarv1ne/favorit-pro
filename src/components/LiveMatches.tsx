@@ -107,9 +107,10 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   // Simulate live odds changes
   useEffect(() => {
     const timeoutIds = timeoutIdsRef.current;
+    const currentMatches = matchesRef.current.filter(m => m.status === 'live');
+    if (currentMatches.length === 0) return;
+
     const interval = setInterval(() => {
-      const currentMatches = matchesRef.current.filter(m => m.status === 'live');
-      if (currentMatches.length === 0) return;
       setMatchOddsMap(prev => {
         const updated = { ...prev };
         const matchIndex = Math.floor(Math.random() * currentMatches.length);
@@ -319,18 +320,33 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                   </div>
 
                   {/* Odds - clickable with animated changes */}
-                  <div className="flex gap-2 mb-3">
-                    <div onClick={(e) => handleOddsClick(e, match, '1', currentOdds.home)}>
+                  <div className="flex gap-2 mb-3" role="group" aria-label="Коэффициенты ставок">
+                    <button
+                      type="button"
+                      aria-label={`Ставка на победу ${match.homeTeam}, коэффициент ${currentOdds.home.toFixed(2)}`}
+                      onClick={(e) => handleOddsClick(e, match, '1', currentOdds.home)}
+                      className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
+                    >
                       <AnimatedOdds odds={currentOdds.home} direction={currentOdds.homeDirection} matchId={match.id} type="1" />
-                    </div>
+                    </button>
                     {currentOdds.draw != null && (
-                      <div onClick={(e) => { const draw = currentOdds.draw; if (draw != null) handleOddsClick(e, match, 'X', draw); }}>
+                      <button
+                        type="button"
+                        aria-label={`Ставка на ничью, коэффициент ${currentOdds.draw.toFixed(2)}`}
+                        onClick={(e) => { const draw = currentOdds.draw; if (draw != null) handleOddsClick(e, match, 'X', draw); }}
+                        className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
+                      >
                         <AnimatedOdds odds={currentOdds.draw} direction={currentOdds.drawDirection} matchId={match.id} type="X" />
-                      </div>
+                      </button>
                     )}
-                    <div onClick={(e) => handleOddsClick(e, match, '2', currentOdds.away)}>
+                    <button
+                      type="button"
+                      aria-label={`Ставка на победу ${match.awayTeam}, коэффициент ${currentOdds.away.toFixed(2)}`}
+                      onClick={(e) => handleOddsClick(e, match, '2', currentOdds.away)}
+                      className="rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0d1117]"
+                    >
                       <AnimatedOdds odds={currentOdds.away} direction={currentOdds.awayDirection} matchId={match.id} type="2" />
-                    </div>
+                    </button>
                   </div>
 
                   {/* Prediction */}

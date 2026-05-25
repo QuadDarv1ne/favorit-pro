@@ -73,6 +73,9 @@ export function NotificationBell() {
   return (
     <div ref={containerRef} className="relative">
       <button
+        aria-label={`Уведомления${unreadCount > 0 ? `, ${unreadCount} непрочитанн${unreadCount === 1 ? 'ое' : unreadCount < 5 ? 'ых' : 'ых'}` : ''}`}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors"
       >

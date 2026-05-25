@@ -19,6 +19,7 @@ import { experts } from '@/lib/data';
 import { toast } from 'sonner';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { BankrollTracker } from '@/components/BankrollTracker';
+import { DEMO_USER } from '@/lib/demo';
 import {
   Dialog,
   DialogContent,
@@ -53,20 +54,6 @@ const defaultNotifications = [
   { id: 'odds_changes', label: 'Изменения коэффициентов', desc: 'Существенные изменения в линиях', enabled: false },
   { id: 'promotions', label: 'Акции и бонусы', desc: 'Специальные предложения и промокоды', enabled: true },
 ];
-
-const DEMO_USER = {
-  id: 'demo',
-  name: 'Демо Пользователь',
-  email: 'demo@favoritpro.ru',
-  avatar: 'ДП',
-  role: 'user' as const,
-  tier: 'free' as const,
-  balance: 3500,
-  totalBets: 47,
-  wonBets: 31,
-  totalProfit: 12400,
-  joinedAt: '01.03.2026',
-};
 
 export function UserCabinet() {
   const { user, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
