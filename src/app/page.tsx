@@ -40,6 +40,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
 import { ActiveSection } from '@/types/navigation';
 import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
+import { useAuth } from '@/hooks/use-auth';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
 
@@ -74,6 +75,7 @@ export default function Home() {
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [sportFilter, setSportFilter] = useState<string | null>(null);
   const { isLoggedIn, login, subscriptionModalOpen, setSubscriptionModalOpen } = useAppStore();
+  const { isAuthenticated } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -103,11 +105,7 @@ export default function Home() {
   };
 
   const handleLogin = () => {
-    login(createDemoUser());
     setAuthModalOpen(false);
-    toast.success('Добро пожаловать!', {
-      description: 'Вы вошли как Демо Пользователь',
-    });
   };
 
   const handleSectionChange = (section: ActiveSection) => {
