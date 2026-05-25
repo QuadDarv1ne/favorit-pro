@@ -11,6 +11,7 @@ type RateLimitEntry = { count: number; resetAt: number };
 // In-memory store — note: Edge Runtime may spawn multiple instances,
 // so this provides per-instance rate limiting, not distributed.
 const rateLimitStore = new Map<string, RateLimitEntry>();
+const MAX_STORE_SIZE = 10_000;
 
 // Track last cleanup time to avoid running it too frequently.
 let lastCleanup = Date.now();
@@ -45,6 +46,13 @@ function checkRateLimit(
   max: number
 ): { allowed: boolean; remaining: number; resetAt: number } {
   const now = Date.now();
+
+  // Evict oldest entries if store is at capacity
+  if (rateLimitStore.size >= MAX_STORE_SIZE && !rateLimitStore.has(key)) {
+    const firstKey = rateLimitStore.keys().next().value;
+    if (firstKey) rateLimitStore.delete(firstKey);
+  }
+
   const entry = rateLimitStore.get(key);
 
   if (entry && now < entry.resetAt) {

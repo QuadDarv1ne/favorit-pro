@@ -119,6 +119,7 @@ export function useMatches(status?: string, sportId?: string) {
       if (!res.ok) throw new Error('Failed to fetch matches');
       return res.json() as Promise<MatchesResponse>;
     },
+    staleTime: 30_000,
   });
 }
 
@@ -133,6 +134,7 @@ export function useExperts(sportId?: string) {
       if (!res.ok) throw new Error('Failed to fetch experts');
       return res.json() as Promise<ExpertsResponse>;
     },
+    staleTime: 60_000,
   });
 }
 
@@ -145,6 +147,7 @@ export function usePredictions() {
       if (!res.ok) throw new Error('Failed to fetch predictions');
       return res.json() as Promise<PredictionsResponse>;
     },
+    staleTime: 30_000,
   });
 }
 
@@ -157,6 +160,7 @@ export function useNews() {
       if (!res.ok) throw new Error('Failed to fetch news');
       return res.json() as Promise<NewsResponse>;
     },
+    staleTime: 120_000,
   });
 }
 
@@ -170,6 +174,7 @@ export function useSearch(query: string) {
       return res.json() as Promise<SearchResponse>;
     },
     enabled: query.length >= 2,
+    staleTime: 10_000,
   });
 }
 

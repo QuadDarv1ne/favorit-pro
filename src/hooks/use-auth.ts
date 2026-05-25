@@ -38,36 +38,41 @@ export function useAuth() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       const profile = sessionToProfile(session);
-      if (profile) {
-        const abortController = new AbortController();
+      if (!profile) return;
 
-        fetch('/api/subscription/status', { signal: abortController.signal })
-          .then((res) => {
-            if (!res.ok) return null;
-            return res.json() as Promise<{ user: { tier: string; balance: number }; subscribedExperts: string[] }>;
-          })
-          .then((serverData) => {
-            if (abortController.signal.aborted) return;
-            const merged = serverData
-              ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
-              : profile;
+      const abortController = new AbortController();
 
-            // Read current user from store at resolution time to avoid stale closure
-            const currentUser = useAppStore.getState().user;
-            const final = currentUser
-              ? { ...merged, totalBets: currentUser.totalBets, wonBets: currentUser.wonBets, totalProfit: currentUser.totalProfit }
-              : merged;
-            login(final);
-          })
-          .catch((error) => {
-            if (error.name === 'AbortError') return;
-            login(profile);
-          });
+      (async () => {
+        try {
+          const res = await fetch('/api/subscription/status', { signal: abortController.signal });
+          if (abortController.signal.aborted) return;
 
-        return () => {
-          abortController.abort();
-        };
-      }
+          let serverData: { user: { tier: string; balance: number }; subscribedExperts: string[] } | null = null;
+          if (res.ok) {
+            serverData = await res.json() as typeof serverData;
+          }
+
+          if (abortController.signal.aborted) return;
+
+          const merged = serverData
+            ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
+            : profile;
+
+          const currentUser = useAppStore.getState().user;
+          const final = currentUser
+            ? { ...merged, totalBets: currentUser.totalBets, wonBets: currentUser.wonBets, totalProfit: currentUser.totalProfit }
+            : merged;
+          login(final);
+        } catch (error) {
+          if ((error as Error).name === 'AbortError') return;
+          if (abortController.signal.aborted) return;
+          login(profile);
+        }
+      })();
+
+      return () => {
+        abortController.abort();
+      };
     } else if (status === 'unauthenticated') {
       if (useAppStore.getState().isLoggedIn) {
         logout();

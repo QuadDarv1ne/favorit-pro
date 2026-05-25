@@ -86,7 +86,7 @@ const tiers = [
 ];
 
 export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
-  const { setTier, user, updateBalance, isLoggedIn, login } = useAppStore();
+  const { setTier, user, updateBalance: _updateBalance, isLoggedIn, login } = useAppStore();
   const [processingTier, setProcessingTier] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -130,8 +130,8 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
       // Sync Zustand store with server response
       setTier(tierId);
       if (data.user?.balance !== undefined) {
-        // Set exact balance from server instead of computing client-side
-        login({ ...user!, balance: data.user.balance, tier: tierId });
+        const currentUser = useAppStore.getState().user;
+        login({ ...currentUser, balance: data.user.balance, tier: tierId });
       }
 
       if (price > 0) {

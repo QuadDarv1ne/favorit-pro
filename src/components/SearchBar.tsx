@@ -51,7 +51,7 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
   }, [query]);
 
   // React Query search hook (only fires when debouncedQuery >= 2 chars)
-  const { data, isFetching } = useSearch(debouncedQuery);
+  const { data, isFetching, error } = useSearch(debouncedQuery);
 
   // Map API data to SearchResult format (memoized)
   const results: SearchResult | null = useMemo(() => data ? {
@@ -223,6 +223,12 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             {!hasResults && query.length >= 2 && (
               <div className="p-6 text-center text-sm text-gray-500">
                 Ничего не найдено по запросу «{query}»
+              </div>
+            )}
+
+            {error && query.length >= 2 && (
+              <div className="p-6 text-center text-sm text-red-400">
+                Ошибка поиска. Попробуйте позже.
               </div>
             )}
           </motion.div>

@@ -31,6 +31,7 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
   const handleOddsClick = (type: '1' | 'X' | '2', odds: number) => {
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
     const betId = `${match.id}-${type}`;
+    const wasInSlip = !!storeRef.current().betSlip.find((b) => b.id === betId);
     store.addBet({
       id: betId,
       matchTitle: `${match.homeTeam} — ${match.awayTeam}`,
@@ -39,8 +40,7 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
       sport: match.sport,
       league: match.league,
     });
-    const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
-    if (!isInSlip) {
+    if (wasInSlip) {
       toast.info('Удалено из купона', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
       });

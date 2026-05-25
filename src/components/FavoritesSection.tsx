@@ -27,16 +27,15 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
     favoritePredictions, toggleFavoritePrediction,
   } = useAppStore();
 
-  // Resolve full match data from IDs
-  const allMatches = [...liveMatches, ...upcomingMatches, ...finishedMatches];
-  const resolvedMatches = useMemo(() =>
-    favoriteMatches
+  const resolvedMatches = useMemo(() => {
+    const allMatches = [...liveMatches, ...upcomingMatches, ...finishedMatches];
+    return favoriteMatches
       .map((fav) => {
         const full = allMatches.find((m) => m.id === fav.id);
         return full ? { ...full, ...fav } : fav;
       })
-      .filter(Boolean),
-  [favoriteMatches, allMatches]);
+      .filter(Boolean);
+  }, [favoriteMatches]);
 
   // Resolve full expert data from IDs
   const resolvedExperts = useMemo(() =>
@@ -53,7 +52,7 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
         return full ? { ...full, ...fav } : fav;
       })
       .filter(Boolean),
-  [favoritePredictions, topPredictions]);
+  [favoritePredictions]);
 
   const totalFavorites = resolvedMatches.length + resolvedExperts.length + resolvedPredictions.length;
 
