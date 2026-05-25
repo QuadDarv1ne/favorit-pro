@@ -20,14 +20,20 @@ export function LiveTicker() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let innerTimeout: ReturnType<typeof setTimeout>;
+
     const interval = setInterval(() => {
       setIsVisible(false);
-      setTimeout(() => {
+      innerTimeout = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % tickerItems.length);
         setIsVisible(true);
       }, 300);
     }, 4000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(innerTimeout);
+    };
   }, []);
 
   const item = tickerItems[currentIndex];

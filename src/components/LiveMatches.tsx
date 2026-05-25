@@ -71,8 +71,39 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   const matchesRef = useRef(matches);
   useEffect(() => { matchesRef.current = matches; }, [matches]);
 
-  // Memoized initial odds computation
-  const initialOdds = useMemo(() => {
+  // Use refs instead of useState so we can sync when matches change.
+  // useState(initialOdds) only uses the initial value on first render,
+  // so new matches would never get odds/scores entries.
+  const matchOddsMapRef = useRef<Record<string, OddsState>>(initialOdds);
+  const matchScoresRef = useRef<Record<string, { home: number; away: number }>>(initialScores);
+  const [, forceUpdate] = useState(0);
+
+  // Sync refs when matches change (new matches arrive, old ones leave)
+  useEffect(() => {
+    const newOdds: Record<string, OddsState> = {};
+    const newScores: Record<string, { home: number; away: number }> = {};
+    matches.forEach(m => {
+      // Preserve existing odds/scores for still-present matches
+      newOdds[m.id] = matchOddsMapRef.current[m.id] ?? {
+        home: m.homeOdds,
+        draw: m.drawOdds,
+        away: m.awayOdds,
+        homeDirection: null,
+        awayDirection: null,
+        drawDirection: null,
+      };
+      newScores[m.id] = matchScoresRef.current[m.id] ?? { home: m.homeScore ?? 0, away: m.awayScore ?? 0 };
+    });
+    matchOddsMapRef.current = newOdds;
+    matchScoresRef.current = newScores;
+    forceUpdate(n => n + 1);
+  }, [matches]);
+
+  // Track pending timeouts for cleanup
+  const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+
+  // Compute initial odds for the first render (before matches sync kicks in)
+  const initialOdds: Record<string, OddsState> = useMemo(() => {
     const initial: Record<string, OddsState> = {};
     matches.forEach(m => {
       initial[m.id] = {
@@ -85,24 +116,15 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       };
     });
     return initial;
-  }, [matches]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only for first render
 
-  const initialScores = useMemo(() => {
+  const initialScores: Record<string, { home: number; away: number }> = useMemo(() => {
     const initial: Record<string, { home: number; away: number }> = {};
     matches.forEach(m => {
       initial[m.id] = { home: m.homeScore ?? 0, away: m.awayScore ?? 0 };
     });
     return initial;
-  }, [matches]);
-
-  // Simulated live odds with real-time updates
-  const [matchOddsMap, setMatchOddsMap] = useState<Record<string, OddsState>>(initialOdds);
-
-  // Live score updates
-  const [matchScores, setMatchScores] = useState<Record<string, { home: number; away: number }>>(initialScores);
-
-  // Track pending timeouts for cleanup
-  const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only for first render
 
   // Simulate live odds changes
   useEffect(() => {
@@ -111,45 +133,44 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
     if (currentMatches.length === 0) return;
 
     const interval = setInterval(() => {
-      setMatchOddsMap(prev => {
-        const updated = { ...prev };
-        const matchIndex = Math.floor(Math.random() * currentMatches.length);
-        const match = currentMatches[matchIndex];
-        if (!match) return prev;
-        const field = Math.random() > 0.5 ? 'home' : 'away';
-        const currentOdds = prev[match.id]?.[field] || match[field === 'home' ? 'homeOdds' : 'awayOdds'];
-        const change = (Math.random() - 0.5) * 0.2;
-        const newOdds = Math.max(1.01, parseFloat((currentOdds + change).toFixed(2)));
-        const direction: 'up' | 'down' = newOdds > currentOdds ? 'up' : 'down';
+      const prev = matchOddsMapRef.current;
+      const updated = { ...prev };
+      const matchIndex = Math.floor(Math.random() * currentMatches.length);
+      const match = currentMatches[matchIndex];
+      if (!match) return;
+      const field = Math.random() > 0.5 ? 'home' : 'away';
+      const currentOdds = prev[match.id]?.[field] || match[field === 'home' ? 'homeOdds' : 'awayOdds'];
+      const change = (Math.random() - 0.5) * 0.2;
+      const newOdds = Math.max(1.01, parseFloat((currentOdds + change).toFixed(2)));
+      const direction: 'up' | 'down' = newOdds > currentOdds ? 'up' : 'down';
 
-        if (updated[match.id]) {
-          updated[match.id] = {
-            ...updated[match.id],
-            [field]: newOdds,
-            [`${field}Direction`]: direction,
+      if (updated[match.id]) {
+        updated[match.id] = {
+          ...updated[match.id],
+          [field]: newOdds,
+          [`${field}Direction`]: direction,
+        };
+      }
+
+      matchOddsMapRef.current = updated;
+      forceUpdate(n => n + 1);
+
+      // Clear direction after 3 seconds
+      const timeoutId = setTimeout(() => {
+        timeoutIds.delete(timeoutId);
+        const current = matchOddsMapRef.current;
+        if (current[match.id]) {
+          matchOddsMapRef.current = {
+            ...current,
+            [match.id]: {
+              ...current[match.id],
+              [`${field}Direction`]: null,
+            },
           };
+          forceUpdate(n => n + 1);
         }
-
-        // Clear direction after 3 seconds
-        const timeoutId = setTimeout(() => {
-          timeoutIds.delete(timeoutId);
-          setMatchOddsMap(current => {
-            if (current[match.id]) {
-              return {
-                ...current,
-                [match.id]: {
-                  ...current[match.id],
-                  [`${field}Direction`]: null,
-                },
-              };
-            }
-            return current;
-          });
-        }, 3000);
-        timeoutIds.add(timeoutId);
-
-        return updated;
-      });
+      }, 3000);
+      timeoutIds.add(timeoutId);
     }, 5000);
 
     return () => {
@@ -166,21 +187,21 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       if (Math.random() > 0.7) {
         const currentMatches = matchesRef.current.filter(m => m.status === 'live');
         if (currentMatches.length === 0) return;
-        setMatchScores(prev => {
-          const updated = { ...prev };
-          const matchIndex = Math.floor(Math.random() * currentMatches.length);
-          const match = currentMatches[matchIndex];
-          if (!match) return prev;
-          const team = Math.random() > 0.5 ? 'home' : 'away';
-          updated[match.id] = {
-            ...updated[match.id],
-            [team]: (updated[match.id]?.[team] ?? match[team === 'home' ? 'homeScore' : 'awayScore'] ?? 0) + 1,
-          };
-          const teamName = team === 'home' ? match.homeTeam : match.awayTeam;
-          toast.success(`Гол! ${teamName} забивает!`, {
-            description: `${match.homeTeam} ${updated[match.id].home} : ${updated[match.id].away} ${match.awayTeam}`,
-          });
-          return updated;
+        const prev = matchScoresRef.current;
+        const updated = { ...prev };
+        const matchIndex = Math.floor(Math.random() * currentMatches.length);
+        const match = currentMatches[matchIndex];
+        if (!match) return;
+        const team = Math.random() > 0.5 ? 'home' : 'away';
+        updated[match.id] = {
+          ...updated[match.id],
+          [team]: (updated[match.id]?.[team] ?? match[team === 'home' ? 'homeScore' : 'awayScore'] ?? 0) + 1,
+        };
+        matchScoresRef.current = updated;
+        forceUpdate(n => n + 1);
+        const teamName = team === 'home' ? match.homeTeam : match.awayTeam;
+        toast.success(`Гол! ${teamName} забивает!`, {
+          description: `${match.homeTeam} ${updated[match.id].home} : ${updated[match.id].away} ${match.awayTeam}`,
         });
       }
     }, 15000);
@@ -247,11 +268,11 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
       <div className="flex lg:grid lg:grid-cols-3 gap-4 overflow-x-auto lg:overflow-visible snap-x snap-mandatory pb-4 lg:pb-0 snap-carousel">
         {matches.map((match, index) => {
-          const currentOdds = matchOddsMap[match.id] || {
+          const currentOdds = matchOddsMapRef.current[match.id] || {
             home: match.homeOdds, draw: match.drawOdds, away: match.awayOdds,
             homeDirection: null, awayDirection: null, drawDirection: null,
           };
-          const currentScore = matchScores[match.id] || { home: match.homeScore ?? 0, away: match.awayScore ?? 0 };
+          const currentScore = matchScoresRef.current[match.id] || { home: match.homeScore ?? 0, away: match.awayScore ?? 0 };
           const isFavorite = favoriteMatches.find((f) => f.id === match.id);
 
           return (

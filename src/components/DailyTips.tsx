@@ -67,6 +67,7 @@ export const DailyTips = React.memo(function DailyTips() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isManualScrollRef = useRef(false);
 
   const startAutoRotate = useCallback(() => {
@@ -92,6 +93,7 @@ export const DailyTips = React.memo(function DailyTips() {
     startAutoRotate();
     return () => {
       if (autoRotateRef.current) clearInterval(autoRotateRef.current);
+      if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
     };
   }, [startAutoRotate]);
 
@@ -108,7 +110,7 @@ export const DailyTips = React.memo(function DailyTips() {
     }
 
     // Resume auto-rotation after 10 seconds of inactivity
-    setTimeout(() => {
+    resumeTimeoutRef.current = setTimeout(() => {
       isManualScrollRef.current = false;
       startAutoRotate();
     }, 10000);
