@@ -11,45 +11,43 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Search query must be at least 2 characters', matches: [], experts: [], predictions: [] }, { status: 400 });
     }
 
-    // Search matches
-    const matches = await db.match.findMany({
-      where: {
-        OR: [
-          { homeTeam: { contains: q } },
-          { awayTeam: { contains: q } },
-          { league: { contains: q } },
-        ],
-      },
-      include: { sport: true },
-      take: 10,
-    });
-
-    // Search experts
-    const experts = await db.expert.findMany({
-      where: {
-        OR: [
-          { name: { contains: q } },
-          { bio: { contains: q } },
-        ],
-      },
-      include: { specialty: true },
-      take: 10,
-    });
-
-    // Search predictions
-    const predictions = await db.prediction.findMany({
-      where: {
-        OR: [
-          { prediction: { contains: q } },
-          { analysis: { contains: q } },
-        ],
-      },
-      include: {
-        expert: true,
-        match: { include: { sport: true } },
-      },
-      take: 10,
-    });
+    // Run all three searches in parallel for faster response
+    const [matches, experts, predictions] = await Promise.all([
+      db.match.findMany({
+        where: {
+          OR: [
+            { homeTeam: { contains: q } },
+            { awayTeam: { contains: q } },
+            { league: { contains: q } },
+          ],
+        },
+        include: { sport: true },
+        take: 10,
+      }),
+      db.expert.findMany({
+        where: {
+          OR: [
+            { name: { contains: q } },
+            { bio: { contains: q } },
+          ],
+        },
+        include: { specialty: true },
+        take: 10,
+      }),
+      db.prediction.findMany({
+        where: {
+          OR: [
+            { prediction: { contains: q } },
+            { analysis: { contains: q } },
+          ],
+        },
+        include: {
+          expert: true,
+          match: { include: { sport: true } },
+        },
+        take: 10,
+      }),
+    ]);
 
     return NextResponse.json({ matches, experts, predictions });
   } catch (error) {

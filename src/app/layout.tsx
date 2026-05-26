@@ -87,7 +87,9 @@ export default function RootLayout({
                     if (parsed.state && parsed.state.theme) theme = parsed.state.theme;
                   }
                   document.documentElement.classList.toggle('dark', theme === 'dark');
-                } catch(e) {}
+                } catch(e) {
+                  document.documentElement.classList.toggle('dark', true);
+                }
               })();
             `,
           }}

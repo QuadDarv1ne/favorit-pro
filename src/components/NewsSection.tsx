@@ -6,8 +6,9 @@ import { useNews, ApiNewsArticle } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Newspaper, Clock, ChevronRight, ArrowRight } from 'lucide-react';
+import { Newspaper, Clock, ChevronRight, ArrowRight, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { GenericSkeleton } from '@/components/SectionWrapper';
 
 interface NewsSectionProps {
   detailed?: boolean;
@@ -38,13 +39,57 @@ function mapApiNews(n: ApiNewsArticle): NewsItem {
 }
 
 export const NewsSection = React.memo(function NewsSection({ detailed = false }: NewsSectionProps) {
-  // React Query hook with fallback to mock data
-  const { data } = useNews();
+  const { data, isLoading, isError, refetch } = useNews();
   const newsList = data?.news?.length
     ? data.news.map(mapApiNews)
     : newsItems;
 
   const displayedNews = detailed ? newsList : newsList.slice(0, 3);
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Newspaper className="w-5 h-5 text-teal-400" />
+          <h2 className="text-xl font-bold text-white">Медиа</h2>
+        </div>
+        <div className={`grid gap-4 ${detailed ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-3'}`}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <GenericSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Newspaper className="w-5 h-5 text-teal-400" />
+          <h2 className="text-xl font-bold text-white">Медиа</h2>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+            <Newspaper className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+            Не удалось загрузить новости. Проверьте подключение к интернету.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+            Повторить
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

@@ -5,10 +5,12 @@ import { upcomingMatches, Match } from '@/lib/data';
 import { useMatches, ApiMatch } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Flame, TrendingUp, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Flame, TrendingUp, Heart, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore, FavoriteMatch } from '@/stores/app-store';
 import { toast } from 'sonner';
+import { MatchCardSkeleton } from '@/components/Skeletons';
 
 interface UpcomingMatchesProps {
   onMatchClick?: (match: Match) => void;
@@ -53,11 +55,55 @@ function mapApiMatch(m: ApiMatch): Match {
 }
 
 export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
-  // React Query hook with fallback to mock data
-  const { data } = useMatches('upcoming');
+  const { data, isLoading, isError, refetch } = useMatches('upcoming');
   const matches = data?.matches?.length
     ? data.matches.map(mapApiMatch)
     : upcomingMatches;
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Calendar className="w-5 h-5 text-teal-400" />
+          <h2 className="text-xl font-bold text-white">Ближайшие матчи</h2>
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <MatchCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Calendar className="w-5 h-5 text-teal-400" />
+          <h2 className="text-xl font-bold text-white">Ближайшие матчи</h2>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+            <Calendar className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+            Не удалось загрузить расписание матчей. Проверьте подключение к интернету.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+            Повторить
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   const addBet = useAppStore((s) => s.addBet);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);

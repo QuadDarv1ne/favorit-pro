@@ -6,9 +6,10 @@ import { usePredictions, ApiPrediction } from '@/hooks/use-api';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Clock, ChevronRight, ThumbsUp } from 'lucide-react';
+import { TrendingUp, Clock, ChevronRight, ThumbsUp, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ConfidenceGauge } from '@/components/ConfidenceGauge';
+import { PredictionCardSkeleton } from '@/components/Skeletons';
 
 interface TopPredictionsProps {
   onPredictionClick?: (prediction: Prediction) => void;
@@ -49,11 +50,55 @@ function mapApiPrediction(p: ApiPrediction): Prediction {
 }
 
 export const TopPredictions = React.memo(function TopPredictions({ onPredictionClick }: TopPredictionsProps) {
-  // React Query hook with fallback to mock data
-  const { data } = usePredictions();
+  const { data, isLoading, isError, refetch } = usePredictions();
   const predictionsList = data?.predictions?.length
     ? data.predictions.map(mapApiPrediction)
     : topPredictions;
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-xl font-bold text-white">Топ прогнозы</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <PredictionCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-xl font-bold text-white">Топ прогнозы</h2>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+            <TrendingUp className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+            Не удалось загрузить прогнозы. Проверьте подключение к интернету.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+            Повторить
+          </Button>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">

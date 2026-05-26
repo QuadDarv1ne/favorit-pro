@@ -666,7 +666,7 @@ export function UserCabinet() {
       </Dialog>
 
       {/* Edit profile dialog */}
-      <Dialog open={editingField !== null} onOpenChange={(open) => !open && setEditingField(null)}>
+      <Dialog open={editingField !== null} onOpenChange={(open) => { if (!open) { setEditingField(null); setEditValue(''); } }}>
         <DialogContent className="bg-[#151b23] border-gray-700/50">
           <DialogHeader>
             <DialogTitle className="text-white">

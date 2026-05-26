@@ -5,11 +5,13 @@ import { liveMatches, Match } from '@/lib/data';
 import { useMatches, ApiMatch } from '@/hooks/use-api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Flame, Radio, TrendingUp, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Flame, Radio, TrendingUp, Heart, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore, FavoriteMatch } from '@/stores/app-store';
 import { toast } from 'sonner';
 import { AnimatedOdds } from '@/components/AnimatedOdds';
+import { MatchCardSkeleton } from '@/components/Skeletons';
 
 interface LiveMatchesProps {
   onMatchClick?: (match: Match) => void;
@@ -61,11 +63,65 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   const favoriteMatches = useAppStore((s) => s.favoriteMatches);
   const storeRef = useRef(useAppStore.getState);
 
-  // React Query hook with fallback to mock data
-  const { data } = useMatches('live');
+  const { data, isLoading, isError, refetch } = useMatches('live');
   const matches = data?.matches?.length
     ? data.matches.map(mapApiMatch)
     : liveMatches;
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-2">
+            <Radio className="w-5 h-5 text-red-400 animate-pulse" />
+            <h2 className="text-xl font-bold text-white">Живые матчи</h2>
+          </div>
+          <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
+            LIVE
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <MatchCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-2">
+            <Radio className="w-5 h-5 text-red-400 animate-pulse" />
+            <h2 className="text-xl font-bold text-white">Живые матчи</h2>
+          </div>
+          <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
+            LIVE
+          </Badge>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+            <Radio className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+            Не удалось загрузить живые матчи. Проверьте подключение к интернету.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+            Повторить
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   // Ref for simulation effects to always see current matches
   const matchesRef = useRef(matches);

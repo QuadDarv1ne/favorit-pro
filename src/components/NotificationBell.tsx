@@ -51,14 +51,18 @@ function loadNotifications(): Notification[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
+  } catch {
+    // localStorage unavailable or corrupted — use defaults
+  }
   return initialNotifications;
 }
 
 function saveNotifications(notifs: Notification[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notifs));
-  } catch { /* ignore */ }
+  } catch {
+    // localStorage full or disabled — notifications won't persist
+  }
 }
 
 export function NotificationBell() {

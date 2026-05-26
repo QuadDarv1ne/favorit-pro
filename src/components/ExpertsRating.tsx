@@ -6,8 +6,9 @@ import { useExperts, ApiExpert } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trophy, TrendingUp, Users, ChevronRight } from 'lucide-react';
+import { Trophy, TrendingUp, Users, ChevronRight, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ExpertCardSkeleton } from '@/components/Skeletons';
 
 interface ExpertsRatingProps {
   detailed?: boolean;
@@ -32,13 +33,57 @@ function mapApiExpert(e: ApiExpert): Expert {
 }
 
 export const ExpertsRating = React.memo(function ExpertsRating({ detailed = false, onExpertClick }: ExpertsRatingProps) {
-  // React Query hook with fallback to mock data
-  const { data } = useExperts();
+  const { data, isLoading, isError, refetch } = useExperts();
   const expertsList = data?.experts?.length
     ? data.experts.map(mapApiExpert)
     : experts;
 
   const displayedExperts = detailed ? expertsList : expertsList.slice(0, 4);
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Trophy className="w-5 h-5 text-yellow-400" />
+          <h2 className="text-xl font-bold text-white">Рейтинг экспертов</h2>
+        </div>
+        <div className={`grid gap-4 ${detailed ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <ExpertCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Trophy className="w-5 h-5 text-yellow-400" />
+          <h2 className="text-xl font-bold text-white">Рейтинг экспертов</h2>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+            <Trophy className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+            Не удалось загрузить рейтинг экспертов. Проверьте подключение к интернету.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+            Повторить
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
