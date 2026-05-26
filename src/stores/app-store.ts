@@ -178,9 +178,18 @@ export const useAppStore = create<AppStore>()(
       },
 
       logout: () => {
-        set({ user: null, isLoggedIn: false, subscribedExperts: [], betSlip: [] });
-        // Clear persisted localStorage to prevent stale auth state on reload
-        localStorage.removeItem('favoritpro-store');
+        set({
+          user: null,
+          isLoggedIn: false,
+          subscribedExperts: [],
+          betSlip: [],
+          favoriteExperts: [],
+          favoriteMatches: [],
+          favoritePredictions: [],
+          oddsChanges: {},
+        });
+        // Clear persisted store using Zustand's API to avoid race with persist middleware
+        useAppStore.persist.clearStorage();
       },
 
       updateUser: (updates) => {

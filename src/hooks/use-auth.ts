@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useSession, signOut as nextAuthSignOut, signIn as nextAuthSignIn } from 'next-auth/react';
 import { useAppStore, UserProfile } from '@/stores/app-store';
 import { createDemoUser } from '@/lib/demo';
@@ -34,9 +34,13 @@ function sessionToProfile(session: { user?: { id?: string; name?: string | null;
 export function useAuth() {
   const { data: session, status } = useSession();
   const { login, logout } = useAppStore();
+  const demoModeRef = useRef(false);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
+      // Real auth login takes over, clear demo mode
+      demoModeRef.current = false;
+
       const profile = sessionToProfile(session);
       if (!profile) return;
 
@@ -74,7 +78,8 @@ export function useAuth() {
         abortController.abort();
       };
     } else if (status === 'unauthenticated') {
-      if (useAppStore.getState().isLoggedIn) {
+      // Don't logout if we're in demo mode
+      if (useAppStore.getState().isLoggedIn && !demoModeRef.current) {
         logout();
       }
     }
@@ -100,10 +105,12 @@ export function useAuth() {
   }, []);
 
   const signInDemo = useCallback(() => {
+    demoModeRef.current = true;
     login(createDemoUser());
   }, [login]);
 
   const signOut = useCallback(async () => {
+    demoModeRef.current = false;
     await nextAuthSignOut({ redirect: false });
     logout();
   }, [logout]);

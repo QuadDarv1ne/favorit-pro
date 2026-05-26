@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +41,10 @@ const steps = [
 
 export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => {
+    if (open) setCurrentStep(0);
+  }, [open]);
 
   const handleClose = () => {
     localStorage.setItem('favoritpro-onboarding-seen', 'true');

@@ -45,8 +45,24 @@ const typeConfig = {
   prediction: { icon: <Trophy className="w-4 h-4" />, color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
 };
 
+const STORAGE_KEY = 'favoritpro-notifications';
+
+function loadNotifications(): Notification[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return initialNotifications;
+}
+
+function saveNotifications(notifs: Notification[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notifs));
+  } catch { /* ignore */ }
+}
+
 export function NotificationBell() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>(loadNotifications);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -62,12 +78,16 @@ export function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    saveNotifications(notifications);
+  }, [notifications]);
+
   const markAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
   const dismiss = (id: string) => {
-    setNotifications(notifications.filter(n => n.id !== id));
+    setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   return (

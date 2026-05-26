@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Gift, Star, ArrowRight, Zap, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const promotions = [
   {
@@ -14,6 +15,7 @@ const promotions = [
     gradient: 'from-emerald-600/20 to-teal-600/20',
     border: 'border-emerald-500/30',
     cta: 'Получить бонус',
+    action: 'Зарегистрируйтесь для получения фрибетов',
   },
   {
     id: 2,
@@ -23,6 +25,7 @@ const promotions = [
     gradient: 'from-yellow-600/20 to-amber-600/20',
     border: 'border-yellow-500/30',
     cta: 'Участвовать',
+    action: 'Раздел программы лояльности скоро откроется',
   },
   {
     id: 3,
@@ -32,6 +35,7 @@ const promotions = [
     gradient: 'from-purple-600/20 to-violet-600/20',
     border: 'border-purple-500/30',
     cta: 'Смотреть',
+    action: 'Экспресс дня обновляется каждое утро в 10:00 МСК',
   },
 ];
 
@@ -51,7 +55,7 @@ export function PromotionsBanner() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <Card className={`bg-gradient-to-br ${promo.gradient} ${promo.border} hover:scale-[1.02] transition-all duration-300 cursor-pointer`}>
+            <Card className={`bg-gradient-to-br ${promo.gradient} ${promo.border} hover:scale-[1.02] transition-all duration-300`}>
               <CardContent className="p-5">
                 <div className="flex items-start gap-3 mb-3">
                   {promo.icon}
@@ -60,7 +64,8 @@ export function PromotionsBanner() {
                 <p className="text-xs text-gray-400 mb-4 leading-relaxed">{promo.description}</p>
                 <Button
                   size="sm"
-                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm"
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm w-full"
+                  onClick={() => toast.info(promo.title, { description: promo.action })}
                 >
                   {promo.cta}
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
