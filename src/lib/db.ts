@@ -1,5 +1,5 @@
-// Universal database export — uses db-factory to resolve to Prisma or MongoDB at runtime.
-// For direct Prisma access (migrations, seed), import from './db-prisma' instead.
+// For static analysis, seed scripts, and direct Prisma access.
+// At runtime (API routes), use getDb() from db-factory for the correct database client.
 export { db } from './db-prisma';
 export { initDb, getDb, getDbType, disconnectDb, isPrismaDb, isMongoDb } from './db-factory';
 export type { DatabaseClient } from './db-factory';

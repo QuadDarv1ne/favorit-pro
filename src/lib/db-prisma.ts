@@ -11,3 +11,8 @@ export const db =
   })
 
 globalForPrisma.prisma = db
+
+// Explicitly connect to catch connection errors early
+if (process.env.NODE_ENV !== 'production') {
+  db.$connect().catch(() => {})
+}

@@ -173,15 +173,27 @@ export class MongoAdapter {
   }
 
   async userUpdate(args: { where: { id: string }; data: Record<string, unknown> }) {
-    const { decrement, ...setData } = args.data as { decrement?: Record<string, number> };
-    const update: Record<string, unknown> = { $set: setData };
-    if (decrement) {
-      const incDec = {} as Record<string, number>;
-      for (const [key, value] of Object.entries(decrement)) {
-        incDec[key] = -value;
+    const setData: Record<string, unknown> = {};
+    const incData: Record<string, number> = {};
+
+    for (const [key, value] of Object.entries(args.data)) {
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        if ('decrement' in value && typeof (value as any).decrement === 'number') {
+          incData[key] = -(value as any).decrement;
+          continue;
+        }
+        if ('increment' in value && typeof (value as any).increment === 'number') {
+          incData[key] = (value as any).increment;
+          continue;
+        }
       }
-      update.$inc = incDec;
+      setData[key] = value;
     }
+
+    const update: Record<string, unknown> = {};
+    if (Object.keys(setData).length > 0) update.$set = setData;
+    if (Object.keys(incData).length > 0) update.$inc = incData;
+
     await this.col.user.updateOne({ id: args.where.id } as Record<string, unknown>, update);
     const updated = await this.col.user.findOne({ id: args.where.id } as Record<string, unknown>);
     return updated ? this.serialize(updated) as User : null;
