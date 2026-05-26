@@ -18,7 +18,14 @@ export async function GET(request: Request) {
       limit: searchParams.get('limit') || undefined,
     });
 
-    const { status, sportId, limit = 20 } = validation.success ? validation.data : { limit: 20 };
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: validation.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { status, sportId, limit = 20 } = validation.data;
 
     const where: Prisma.MatchWhereInput = {};
     if (status) where.status = status;

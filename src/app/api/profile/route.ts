@@ -24,10 +24,29 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    // Skip if no fields provided
+    if (!updates.name && !updates.email) {
+      return NextResponse.json({
+        user: {
+          id: existingUser.id,
+          email: existingUser.email,
+          name: existingUser.name,
+          avatar: existingUser.avatar,
+          tier: existingUser.tier,
+          balance: existingUser.balance,
+          role: existingUser.role,
+        },
+        message: 'No changes',
+      });
+    }
+
+    // Normalize email: trim and lowercase
+    const normalizedEmail = updates.email ? updates.email.trim().toLowerCase() : undefined;
+
     // If email is being changed, check uniqueness
-    if (updates.email && updates.email !== existingUser.email) {
+    if (normalizedEmail && normalizedEmail !== existingUser.email) {
       const emailExists = await db.user.findUnique({
-        where: { email: updates.email },
+        where: { email: normalizedEmail },
       });
       if (emailExists) {
         return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
@@ -43,7 +62,7 @@ export async function PATCH(request: Request) {
       where: { id: userId },
       data: {
         ...(sanitizedName && { name: sanitizedName }),
-        ...(updates.email && { email: updates.email }),
+        ...(normalizedEmail && { email: normalizedEmail }),
         ...(avatar && { avatar }),
       },
       select: {

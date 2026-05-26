@@ -49,7 +49,7 @@ export function useAuth() {
 
           let serverData: { user: { tier: string; balance: number }; subscribedExperts: string[] } | null = null;
           if (res.ok) {
-            serverData = await res.json() as typeof serverData;
+            serverData = await res.json();
           }
 
           if (abortController.signal.aborted) return;

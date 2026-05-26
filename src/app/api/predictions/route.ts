@@ -58,9 +58,19 @@ export async function POST(request: Request) {
   const { matchId, prediction, odds, confidence, analysis } = validation.data;
   const { userId: expertId } = auth;
 
+  // Verify user is an expert
+  const user = await db.user.findUnique({ where: { id: expertId } });
+  if (!user || user.role !== 'expert') {
+    return NextResponse.json({ error: 'Only experts can create predictions' }, { status: 403 });
+  }
+
   const match = await db.match.findUnique({ where: { id: matchId } });
   if (!match) {
     return NextResponse.json({ error: 'Match not found' }, { status: 404 });
+  }
+
+  if (match.status === 'finished') {
+    return NextResponse.json({ error: 'Cannot create predictions for finished matches' }, { status: 400 });
   }
 
   const newPrediction = await db.prediction.create({

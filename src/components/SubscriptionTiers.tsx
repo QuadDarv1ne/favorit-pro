@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Zap, Crown, Gem, Check, X, Star, TrendingUp, BarChart3, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAppStore } from '@/stores/app-store';
+import { useAppStore, type UserProfile } from '@/stores/app-store';
 import { toast } from 'sonner';
 
 interface SubscriptionTiersProps {
@@ -86,7 +86,7 @@ const tiers = [
 ];
 
 export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
-  const { setTier, user, updateBalance: _updateBalance, isLoggedIn, login } = useAppStore();
+  const { setTier, user, updateBalance: _updateBalance, isLoggedIn } = useAppStore();
   const [processingTier, setProcessingTier] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -130,15 +130,10 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
       // Sync Zustand store with server response
       setTier(tierId);
       if (data.user?.balance !== undefined) {
-        const currentUser = useAppStore.getState().user;
-        if (currentUser) {
-      login({
-        ...currentUser,
-        id: currentUser.id, // Явное указание, что id не может быть undefined
-        balance: data.user.balance,
-        tier: tierId as UserProfile['tier'],
-      });
-    }
+        useAppStore.getState().updateUser({
+          balance: data.user.balance,
+          tier: tierId as UserProfile['tier'],
+        });
       }
 
       if (price > 0) {
