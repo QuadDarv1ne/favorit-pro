@@ -85,7 +85,7 @@ export function MatchTimeline({ matchId }: MatchTimelineProps) {
 
           return (
             <motion.div
-              key={`${event.minute}-${event.player}`}
+              key={`${index}-${event.minute}-${event.type}-${event.player}`}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}

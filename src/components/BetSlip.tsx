@@ -23,6 +23,14 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
   const stakeNum = parseFloat(stake) || 0;
   const potentialWin = stakeNum * totalOdds;
   const potentialProfit = potentialWin - stakeNum;
+  const canMakeMulti = betSlip.length >= 2;
+
+  // Reset to single bet mode when selections drop below 2
+  React.useEffect(() => {
+    if (!canMakeMulti && (activeTab === 'express' || activeTab === 'system')) {
+      setActiveTab('single');
+    }
+  }, [canMakeMulti, activeTab]);
 
   return (
     <Sheet open={betSlipOpen} onOpenChange={setBetSlipOpen}>
@@ -78,12 +86,16 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                   <TabsTrigger value="single" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
                     Одиночная
                   </TabsTrigger>
-                  <TabsTrigger value="express" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
-                    Экспресс
-                  </TabsTrigger>
-                  <TabsTrigger value="system" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
-                    Система
-                  </TabsTrigger>
+                  {canMakeMulti && (
+                    <>
+                      <TabsTrigger value="express" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+                        Экспресс
+                      </TabsTrigger>
+                      <TabsTrigger value="system" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+                        Система
+                      </TabsTrigger>
+                    </>
+                  )}
                 </TabsList>
               </Tabs>
             </div>

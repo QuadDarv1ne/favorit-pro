@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import net from 'net';
+import { fileURLToPath } from 'url';
+import { join, resolve } from 'path';
 
 /**
  * Find a free port starting from the given port number.
@@ -31,7 +33,7 @@ function isPortFree(port: number): Promise<boolean> {
  * Run as CLI: node find-free-port.js [port]
  * Outputs the free port number to stdout.
  */
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (typeof process !== 'undefined' && process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const startPort = parseInt(process.argv[2] || '3000', 10);
   findFreePort(startPort).then((port) => {
     console.log(port);

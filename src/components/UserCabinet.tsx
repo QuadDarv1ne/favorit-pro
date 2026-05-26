@@ -110,8 +110,8 @@ export function UserCabinet() {
         toast.error('Пароль должен быть не менее 8 символов');
         return;
       }
-      // Password change is client-only notification since no /api/password endpoint exists yet
-      toast.success('Пароль изменён');
+      // TODO: Implement password change API endpoint
+      toast.info('Смена пароля будет доступна в ближайшее время');
       setEditingField(null);
       setEditValue('');
       return;

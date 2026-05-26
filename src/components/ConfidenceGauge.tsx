@@ -11,18 +11,19 @@ interface ConfidenceGaugeProps {
 
 export function ConfidenceGauge({ value, size = 48, strokeWidth = 4 }: ConfidenceGaugeProps) {
   const [animatedValue, setAnimatedValue] = useState(0);
+  const clampedValue = Math.min(100, Math.max(0, value));
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (animatedValue / 100) * circumference;
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimatedValue(value), 100);
+    const timer = setTimeout(() => setAnimatedValue(clampedValue), 100);
     return () => clearTimeout(timer);
-  }, [value]);
+  }, [clampedValue]);
 
   const getColor = () => {
-    if (value > 70) return '#10b981'; // emerald
-    if (value >= 50) return '#eab308'; // yellow
+    if (clampedValue > 70) return '#10b981'; // emerald
+    if (clampedValue >= 50) return '#eab308'; // yellow
     return '#ef4444'; // red
   };
 
@@ -59,7 +60,7 @@ export function ConfidenceGauge({ value, size = 48, strokeWidth = 4 }: Confidenc
         className="absolute text-white font-bold tabular-nums"
         style={{ fontSize: size * 0.26 }}
       >
-        {value}
+        {Math.round(clampedValue)}
       </span>
     </div>
   );
