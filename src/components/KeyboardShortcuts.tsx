@@ -39,22 +39,22 @@ export function useKeyboardShortcuts({ onSectionChange, onAuthClick, onSearchOpe
       return;
     }
 
-    // Alt + S = search
-    if (e.altKey && (e.key === 's' || e.key === 'ы' || e.key === 'S' || e.key === 'Ы')) {
+    // Alt + S = search (use e.code for layout-independent detection)
+    if (e.altKey && e.code === 'KeyS') {
       e.preventDefault();
       onSearchOpen();
       return;
     }
 
-    // Alt + L = login
-    if (e.altKey && (e.key === 'l' || e.key === 'д' || e.key === 'L' || e.key === 'Д')) {
+    // Alt + L = login (use e.code for layout-independent detection)
+    if (e.altKey && e.code === 'KeyL') {
       e.preventDefault();
       onAuthClick('login');
       return;
     }
 
-    // Alt + K = show shortcuts
-    if (e.altKey && (e.key === 'k' || e.key === 'л' || e.key === 'K' || e.key === 'Л')) {
+    // Alt + K = show shortcuts (use e.code for layout-independent detection)
+    if (e.altKey && e.code === 'KeyK') {
       e.preventDefault();
       // Toggle is handled by the component
       return;
@@ -77,7 +77,7 @@ export function KeyboardShortcutsHelp() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey && (e.key === 'k' || e.key === 'л')) {
+      if (e.altKey && e.code === 'KeyK') {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }

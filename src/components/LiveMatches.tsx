@@ -305,10 +305,14 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                       >
                         <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
                       </button>
-                      <div className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        <span className="text-xs text-red-400 font-medium">LIVE</span>
-                      </div>
+                      {match.status === 'live' ? (
+                        <div className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          <span className="text-xs text-red-400 font-medium">LIVE</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400 tabular-nums">{match.startTime}</span>
+                      )}
                     </div>
                   </div>
 

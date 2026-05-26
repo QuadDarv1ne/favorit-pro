@@ -42,9 +42,7 @@ const mockTeamStats: Record<string, TeamStats> = {
   'Fnatic': { winRate: 52, lastResults: ['L', 'W', 'L', 'W', 'W'], avgGoals: 0, leaguePosition: 4, form: 'stable', totalTeams: 10 },
 };
 
-const allMatches = [...liveMatches, ...upcomingMatches];
-
-function getTeamNames(matchId: string): [string, string] {
+function getTeamNames(matchId: string, allMatches: typeof liveMatches): [string, string] {
   const match = allMatches.find((m) => m.id === matchId);
   return match ? [match.homeTeam, match.awayTeam] : ['', ''];
 }
@@ -73,8 +71,9 @@ function FormIcon({ form }: { form: 'up' | 'down' | 'stable' }) {
 }
 
 export const MatchComparison = React.memo(function MatchComparison() {
+  const allMatches = React.useMemo(() => [...liveMatches, ...upcomingMatches], []);
   const [selectedMatchId, setSelectedMatchId] = useState<string>(allMatches[0]?.id || '');
-  const [teamA, teamB] = getTeamNames(selectedMatchId);
+  const [teamA, teamB] = getTeamNames(selectedMatchId, allMatches);
   const statsA = mockTeamStats[teamA];
   const statsB = mockTeamStats[teamB];
 

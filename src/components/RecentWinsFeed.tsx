@@ -90,6 +90,12 @@ export function RecentWinsFeed() {
         .wins-ticker:hover {
           animation-play-state: paused;
         }
+        @media (prefers-reduced-motion: reduce) {
+          .wins-ticker {
+            animation: none;
+            transform: translateX(0);
+          }
+        }
         @keyframes ticker-scroll {
           0% {
             transform: translateX(0);
