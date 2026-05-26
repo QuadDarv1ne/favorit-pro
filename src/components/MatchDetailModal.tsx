@@ -179,7 +179,12 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
                 <p className="text-sm text-gray-400 leading-relaxed">
                   На основе анализа последних 10 матчей обеих команд, текущей формы, травм и дисквалификаций,
                   наш эксперт рекомендует ставку <span className="text-emerald-400 font-medium">{match.prediction}</span> с коэффициентом{' '}
-                  <span className="text-white font-medium">{match.homeOdds.toFixed(2)}</span>.
+                  <span className="text-white font-medium">
+                    {match.prediction === 'П1' ? match.homeOdds.toFixed(2) :
+                     match.prediction === 'X' && match.drawOdds ? match.drawOdds.toFixed(2) :
+                     match.prediction === 'П2' ? match.awayOdds.toFixed(2) :
+                     match.homeOdds.toFixed(2)}
+                  </span>.
                   Уровень уверенности составляет {match.confidence}%.
                 </p>
               </div>

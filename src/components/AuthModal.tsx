@@ -56,7 +56,8 @@ function getPasswordStrength(password: string): { level: number; label: string }
 }
 
 export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: AuthModalProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const { signIn, register: registerAuth, signInDemo } = useAuth();
@@ -175,7 +176,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showLoginPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     {...loginForm.register('password')}
                     className={`bg-gray-900 border-gray-700 text-white pl-10 pr-10 focus:border-emerald-500/50 ${
@@ -184,10 +185,10 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {loginForm.formState.errors.password && (
@@ -288,7 +289,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showRegisterPassword ? 'text' : 'password'}
                     placeholder="Минимум 8 символов"
                     {...registerForm.register('password')}
                     className={`bg-gray-900 border-gray-700 text-white pl-10 pr-10 focus:border-emerald-500/50 ${
@@ -297,10 +298,10 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowRegisterPassword(!showRegisterPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showRegisterPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {registerForm.formState.errors.password && (

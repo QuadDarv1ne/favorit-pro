@@ -48,8 +48,20 @@ const rankConfig: Record<number, { color: string; bg: string; icon: React.ReactN
 export function Leaderboard() {
   const [period, setPeriod] = useState<'week' | 'month' | 'all'>('month');
 
-  const top3 = leaderboardData.slice(0, 3);
-  const rest = leaderboardData.slice(3);
+  // Apply period-based sorting
+  const sortedData = React.useMemo(() => {
+    const data = [...leaderboardData];
+    if (period === 'week') {
+      data.sort((a, b) => b.weeklyChange - a.weeklyChange);
+    } else if (period === 'all') {
+      data.sort((a, b) => b.profit - a.profit);
+    }
+    // Reassign ranks based on sorted order
+    return data.map((user, idx) => ({ ...user, rank: idx + 1 }));
+  }, [period]);
+
+  const top3 = sortedData.slice(0, 3);
+  const rest = sortedData.slice(3);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

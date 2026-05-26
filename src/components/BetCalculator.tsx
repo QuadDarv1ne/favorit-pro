@@ -217,13 +217,13 @@ export function BetCalculator() {
                 </p>
                 <p className="text-xs text-gray-400">
                   Количество комбинаций: <span className="text-white font-medium">
-                    {systemSize ? combinations(expressLegs.length, parseInt(systemSize)) : '—'}
+                    {systemSize && Number.isInteger(parseInt(systemSize)) ? combinations(expressLegs.length, parseInt(systemSize)) : '—'}
                   </span>
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   Общая ставка:{' '}
                   <span className="text-emerald-400 font-medium">
-                    {systemSize ? `${(singleStake * combinations(expressLegs.length, parseInt(systemSize))).toFixed(2)} ₽` : '—'}
+                    {systemSize && Number.isInteger(parseInt(systemSize)) ? `${(singleStake * combinations(expressLegs.length, parseInt(systemSize))).toFixed(2)} ₽` : '—'}
                   </span>
                 </p>
               </div>
@@ -236,6 +236,7 @@ export function BetCalculator() {
 }
 
 function combinations(n: number, k: number): number {
+  if (!Number.isFinite(n) || !Number.isFinite(k)) return 0;
   if (k > n) return 0;
   if (k === 0 || k === n) return 1;
   let result = 1;
