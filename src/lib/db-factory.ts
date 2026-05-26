@@ -75,10 +75,10 @@ export async function disconnectDb(): Promise<void> {
 }
 
 // Re-export type guards
-export function isPrismaDb(_db: DatabaseClient): _db is PrismaClient {
-  return getDbType() !== 'mongodb';
+export function isPrismaDb(db: DatabaseClient): db is PrismaClient {
+  return '$disconnect' in db && typeof (db as PrismaClient).$connect === 'function';
 }
 
-export function isMongoDb(_db: DatabaseClient): _db is MongoAdapter {
-  return getDbType() === 'mongodb';
+export function isMongoDb(db: DatabaseClient): db is MongoAdapter {
+  return 'connected' in db && typeof (db as MongoAdapter).connect === 'function';
 }

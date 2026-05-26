@@ -26,6 +26,11 @@ export function CookieBanner() {
     setVisible(false);
   };
 
+  const dismiss = () => {
+    // Close without consent - banner will reappear on next visit
+    setVisible(false);
+  };
+
   return (
     <AnimatePresence>
       {visible && (
@@ -61,7 +66,7 @@ export function CookieBanner() {
                 </Button>
               </div>
             </div>
-            <button onClick={accept} aria-label="Закрыть баннер cookie" className="text-gray-500 hover:text-gray-300 shrink-0">
+            <button onClick={dismiss} aria-label="Закрыть баннер cookie" className="text-gray-500 hover:text-gray-300 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>

@@ -43,8 +43,9 @@ export async function shutdownDatabase(): Promise<void> {
   console.log('[DB] Database disconnected');
 }
 
-// Register graceful shutdown
-if (typeof process !== 'undefined') {
+// Register graceful shutdown — only once, even with HMR reload
+if (typeof process !== 'undefined' && !(globalThis as Record<string, unknown>).__dbShutdownRegistered) {
   process.on('SIGINT', shutdownDatabase);
   process.on('SIGTERM', shutdownDatabase);
+  (globalThis as Record<string, unknown>).__dbShutdownRegistered = true;
 }

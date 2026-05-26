@@ -16,7 +16,14 @@ export async function GET(request: Request) {
       limit: searchParams.get('limit') || undefined,
     });
 
-    const { sportId, limit = 20 } = validation.success ? validation.data : { limit: 20 };
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: validation.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { sportId, limit = 20 } = validation.data;
 
     const where: Prisma.ExpertWhereInput = {};
     if (sportId) where.specialtyId = sportId;
