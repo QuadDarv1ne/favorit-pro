@@ -65,9 +65,12 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
         name: { label: 'Name', type: 'text', optional: true },
+        action: { label: 'Action', type: 'text', optional: true },
       },
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
+
+        const action = credentials.action === 'register' ? 'register' : 'login';
 
         // Extract client IP: prefer x-real-ip (set by reverse proxy) over x-forwarded-for
         // x-forwarded-for can be spoofed if not behind a trusted proxy
@@ -83,18 +86,11 @@ export const authOptions: NextAuthOptions = {
 
         const user = await db.user.findUnique({ where: { email } });
 
-        if (user) {
-          if (user.passwordHash) {
-            const valid = await bcrypt.compare(credentials.password, user.passwordHash);
-            if (!valid) return null;
-          }
-          await db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
-          return { id: user.id, name: user.name ?? user.email, email: user.email, role: user.role };
-        }
+        // REGISTRATION FLOW
+        if (action === 'register') {
+          if (user) return null; // Email already exists
 
-        // Registration: only when name is provided (explicit registration, not accidental login)
-        if (credentials.name) {
-          const sanitizedName = sanitizeString(credentials.name, MAX_NAME_LENGTH);
+          const sanitizedName = sanitizeString(credentials.name ?? '', MAX_NAME_LENGTH);
           if (!sanitizedName) return null;
 
           if (credentials.password.length < 8) return null;
@@ -111,7 +107,15 @@ export const authOptions: NextAuthOptions = {
           return { id: newUser.id, name: newUser.name ?? newUser.email, email: newUser.email, role: newUser.role };
         }
 
-        return null;
+        // LOGIN FLOW
+        if (!user) return null; // User not found — do not auto-register
+
+        if (user.passwordHash) {
+          const valid = await bcrypt.compare(credentials.password, user.passwordHash);
+          if (!valid) return null;
+        }
+        await db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+        return { id: user.id, name: user.name ?? user.email, email: user.email, role: user.role };
       },
     }),
   ],
