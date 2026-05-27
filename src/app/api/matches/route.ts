@@ -36,6 +36,8 @@ export async function GET(request: Request) {
       include: {
         sport: true,
         predictions: {
+          take: 5,
+          orderBy: { createdAt: 'desc' },
           include: { expert: true },
         },
       },

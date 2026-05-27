@@ -28,7 +28,11 @@ export async function GET() {
     return NextResponse.json({ likes });
   } catch (error) {
     console.error('Error fetching likes:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch likes' },
+      { status: 500 }
+    );
   }
 }
 
@@ -60,7 +64,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Already liked' }, { status: 200 });
     }
     console.error('Error creating like:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to create like' },
+      { status: 500 }
+    );
   }
 }
 
@@ -93,6 +101,10 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ deleted: deleted.count });
   } catch (error) {
     console.error('Error deleting like:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to delete like' },
+      { status: 500 }
+    );
   }
 }

@@ -67,6 +67,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ matches, experts, predictions });
   } catch (error) {
     console.error('Search failed:', error);
-    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Search failed' },
+      { status: 500 }
+    );
   }
 }
