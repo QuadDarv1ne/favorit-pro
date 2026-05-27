@@ -56,6 +56,12 @@ function mapApiMatch(m: ApiMatch): Match {
 
 export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
   const { data, isLoading, isError, refetch } = useMatches('upcoming');
+  const addBet = useAppStore((s) => s.addBet);
+  const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
+  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
+  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const storeRef = useRef(useAppStore.getState);
+
   const matches = data?.matches?.length
     ? data.matches.map(mapApiMatch)
     : upcomingMatches;
@@ -105,12 +111,6 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
     );
   }
 
-  const addBet = useAppStore((s) => s.addBet);
-  const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
-  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
-  const storeRef = useRef(useAppStore.getState);
-
   const handleOddsClick = (e: React.MouseEvent, match: Match, type: '1' | 'X' | '2', odds: number) => {
     e.stopPropagation();
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
@@ -124,14 +124,14 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
       league: match.league,
     });
     const isInSlip = storeRef.current().betSlip.find((b) => b.id === betId);
-    if (!isInSlip) {
-      toast.info('Удалено из купона', {
-        description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
-      });
-    } else {
+    if (isInSlip) {
       toast.success('Добавлено в купон', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction} @ ${odds.toFixed(2)}`,
         action: { label: 'Открыть', onClick: () => setBetSlipOpen(true) },
+      });
+    } else {
+      toast.info('Удалено из купона', {
+        description: `${match.homeTeam} — ${match.awayTeam}: ${prediction}`,
       });
     }
   };

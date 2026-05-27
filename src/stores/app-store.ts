@@ -255,7 +255,7 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'favoritpro-store',
       version: 1,
-      partialize: (state) => ({
+      partialize: (state: AppStore) => ({
         betSlip: state.betSlip,
         favoriteExperts: state.favoriteExperts,
         favoriteMatches: state.favoriteMatches,
@@ -263,7 +263,7 @@ export const useAppStore = create<AppStore>()(
         theme: state.theme,
         subscribedExperts: state.subscribedExperts,
       }),
-      migrate: (persisted: Record<string, unknown>, version: number) => {
+      migrate: (persisted: unknown, version: number) => {
         // v0 -> v1: clear stale data from before versioning was added
         if (version === 0) {
           return {
@@ -275,7 +275,15 @@ export const useAppStore = create<AppStore>()(
             subscribedExperts: [],
           };
         }
-        return persisted as AppStore;
+        return {
+          betSlip: [],
+          favoriteExperts: [],
+          favoriteMatches: [],
+          favoritePredictions: [],
+          theme: 'dark',
+          subscribedExperts: [],
+          ...(persisted && typeof persisted === 'object' ? persisted : {}),
+        } as AppStore;
       },
     }
   )
