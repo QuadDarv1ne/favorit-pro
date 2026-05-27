@@ -1,22 +1,19 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { requireAuth, validateBody } from '@/lib/api-helpers';
 
 const likesSchema = z.object({
-  predictionId: z.string(),
+  predictionId: z.string().min(1, 'predictionId required'),
 });
 
-export async function GET(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function GET() {
+  const auth = await requireAuth();
+  if ('error' in auth) return auth.error;
 
+  try {
     const likes = await db.like.findMany({
-      where: { userId: session.user.id },
+      where: { userId: auth.userId },
       include: {
         prediction: {
           include: {
@@ -36,60 +33,55 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth();
+  if ('error' in auth) return auth.error;
+
+  const validation = await validateBody(request, likesSchema);
+  if ('error' in validation) return validation.error;
+
+  const { predictionId } = validation.data;
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const prediction = await db.prediction.findUnique({ where: { id: predictionId } });
+    if (!prediction) {
+      return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
     }
-
-    const body = await request.json();
-    const validation = likesSchema.safeParse(body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: 'Invalid request body', details: validation.error.flatten().fieldErrors },
-        { status: 400 }
-      );
-    }
-
-    const { predictionId } = validation.data;
 
     const like = await db.like.create({
       data: {
-        userId: session.user.id,
+        userId: auth.userId,
         predictionId,
       },
     });
 
     return NextResponse.json({ like }, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'P2002') {
+      return NextResponse.json({ message: 'Already liked' }, { status: 200 });
+    }
     console.error('Error creating like:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request) {
+  const auth = await requireAuth();
+  if ('error' in auth) return auth.error;
+
+  const validation = await validateBody(request, likesSchema);
+  if ('error' in validation) return validation.error;
+
+  const { predictionId } = validation.data;
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const prediction = await db.prediction.findUnique({ where: { id: predictionId } });
+    if (!prediction) {
+      return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
     }
-
-    const body = await request.json();
-    const validation = likesSchema.safeParse(body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: 'Invalid request body', details: validation.error.flatten().fieldErrors },
-        { status: 400 }
-      );
-    }
-
-    const { predictionId } = validation.data;
 
     const deleted = await db.like.deleteMany({
       where: {
-        userId: session.user.id,
+        userId: auth.userId,
         predictionId,
       },
     });
