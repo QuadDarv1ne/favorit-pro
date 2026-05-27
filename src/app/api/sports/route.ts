@@ -30,6 +30,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ sports });
   } catch (error) {
     console.error('Error fetching sports:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch sports' },
+      { status: 500 }
+    );
   }
 }

@@ -43,14 +43,6 @@ export async function validateBody<T extends z.ZodType>(
   }
 }
 
-export function apiError(message: string, status = 500) {
-  return NextResponse.json({ error: message }, { status });
-}
-
-export function apiSuccess(data: unknown, status = 200) {
-  return NextResponse.json(data, { status });
-}
-
 export function sanitizeString(input: string, maxLength = 100): string {
   if (!input) return '';
   // Strip control characters (except newlines/tabs which we'll collapse)

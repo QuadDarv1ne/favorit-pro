@@ -17,13 +17,15 @@ const MAX_STORE_SIZE = 10_000;
 let lastCleanup = Date.now();
 
 function getClientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
+  // Prefer x-real-ip (set by trusted reverse proxy) over x-forwarded-for
+  // to prevent rate limit bypass via client-spoofed x-forwarded-for headers.
   const realIp = request.headers.get('x-real-ip');
   if (realIp) {
     return realIp.trim();
+  }
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
   }
   return 'unknown';
 }

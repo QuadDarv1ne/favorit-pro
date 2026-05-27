@@ -28,7 +28,7 @@ export async function GET() {
     // Get active expert subscriptions
     const subscriptions = await db.subscription.findMany({
       where: { userId },
-      include: { expert: { select: { id: true, name: true } } },
+      select: { expertId: true },
     });
 
     return NextResponse.json({
