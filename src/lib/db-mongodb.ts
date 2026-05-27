@@ -280,9 +280,7 @@ export class MongoAdapter {
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
 
-        if (!session.transaction.isActive) {
-          // Transaction was aborted, nothing to abort
-        } else {
+        if (session.inTransaction()) {
           await session.abortTransaction().catch(() => {});
         }
 
@@ -318,14 +316,13 @@ export class MongoAdapter {
  * This ensures all reads and writes participate in the transaction.
  */
 class MongoAdapterWithSession extends MongoAdapter {
-  private parent: MongoAdapter;
-  private session: ClientSession;
+  declare private parent: MongoAdapter;
+  declare private session: ClientSession;
 
   constructor(parent: MongoAdapter, session: ClientSession) {
-    // @ts-expect-error - Parent constructor requires uri, but we bypass via session-based operations
     super('');
-    (this as any).parent = parent;
-    (this as any).session = session;
+    this.parent = parent;
+    this.session = session;
   }
 
   protected get col() {
@@ -344,27 +341,27 @@ class MongoAdapterWithSession extends MongoAdapter {
     });
   }
 
-  private sessionCol<T>(collection: Collection<T>): Collection<T> {
-    return collection.withSession(this.session) as Collection<T>;
+  private sessionOpts() {
+    return { session: this.session };
   }
 
   override async sportFindMany(args: { where?: Record<string, unknown> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.sport).find(args.where || {}).toArray();
+    const docs = await parentCol.sport.find(args.where || {}, this.sessionOpts()).toArray();
     return (this.parent as any).serializeArray(docs);
   }
 
   override async sportFindUnique(args: { where: { id: string } | { slug: string } }) {
     const parentCol = (this.parent as any).col;
     const query = 'id' in args.where ? { id: args.where.id } : { slug: args.where.slug };
-    const doc = await this.sessionCol(parentCol.sport).findOne(query as Record<string, unknown>);
+    const doc = await parentCol.sport.findOne(query as Record<string, unknown>, this.sessionOpts());
     return doc ? (this.parent as any).serialize(doc) : null;
   }
 
   override async matchFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.match)
-      .find(args.where || {})
+    const docs = await parentCol.match
+      .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { startTime: 1 })
       .limit(args.take || 20)
       .toArray();
@@ -373,14 +370,14 @@ class MongoAdapterWithSession extends MongoAdapter {
 
   override async matchFindUnique(args: { where: { id: string } }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.match).findOne({ id: args.where.id } as Record<string, unknown>);
+    const doc = await parentCol.match.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
     return doc ? (this.parent as any).serialize(doc) : null;
   }
 
   override async expertFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.expert)
-      .find(args.where || {})
+    const docs = await parentCol.expert
+      .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { winRate: -1 })
       .limit(args.take || 20)
       .toArray();
@@ -389,14 +386,14 @@ class MongoAdapterWithSession extends MongoAdapter {
 
   override async expertFindUnique(args: { where: { id: string } }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.expert).findOne({ id: args.where.id } as Record<string, unknown>);
+    const doc = await parentCol.expert.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
     return doc ? (this.parent as any).serialize(doc) : null;
   }
 
   override async predictionFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.prediction)
-      .find(args.where || {})
+    const docs = await parentCol.prediction
+      .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { createdAt: -1 })
       .limit(args.take || 50)
       .toArray();
@@ -405,7 +402,7 @@ class MongoAdapterWithSession extends MongoAdapter {
 
   override async predictionCreate(args: { data: Record<string, unknown> }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.prediction).insertOne(args.data as unknown as MongoPrediction);
+    const doc = await parentCol.prediction.insertOne(args.data as unknown as MongoPrediction, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Prediction;
   }
 
@@ -413,7 +410,7 @@ class MongoAdapterWithSession extends MongoAdapter {
     const parentCol = (this.parent as any).col;
     const query = 'id' in args.where ? { id: args.where.id } : { email: args.where.email };
     const projection = args.select ? Object.fromEntries(Object.entries(args.select).filter(([, v]) => v).map(([k]) => [k, 1])) : {};
-    const doc = await this.sessionCol(parentCol.user).findOne(query as Record<string, unknown>, { projection });
+    const doc = await parentCol.user.findOne(query as Record<string, unknown>, { ...this.sessionOpts(), projection });
     if (!doc) return null;
     const serialized = (this.parent as any).serialize(doc);
     if (args.select) {
@@ -430,7 +427,7 @@ class MongoAdapterWithSession extends MongoAdapter {
 
   override async userCreate(args: { data: Record<string, unknown> }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.user).insertOne(args.data as unknown as MongoUser);
+    const doc = await parentCol.user.insertOne(args.data as unknown as MongoUser, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as User;
   }
 
@@ -457,14 +454,14 @@ class MongoAdapterWithSession extends MongoAdapter {
     if (Object.keys(setData).length > 0) update.$set = setData;
     if (Object.keys(incData).length > 0) update.$inc = incData;
 
-    await this.sessionCol(parentCol.user).updateOne({ id: args.where.id } as Record<string, unknown>, update);
-    const updated = await this.sessionCol(parentCol.user).findOne({ id: args.where.id } as Record<string, unknown>);
+    await parentCol.user.updateOne({ id: args.where.id } as Record<string, unknown>, update, this.sessionOpts());
+    const updated = await parentCol.user.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
     return updated ? (this.parent as any).serialize(updated) as User : null;
   }
 
   override async likeFindUnique(args: { where: { userId_predictionId: { userId: string; predictionId: string } } }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.like).findOne({
+    const doc = await parentCol.like.findOne({
       userId: args.where.userId_predictionId.userId,
       predictionId: args.where.userId_predictionId.predictionId,
     } as Record<string, unknown>);
@@ -473,18 +470,18 @@ class MongoAdapterWithSession extends MongoAdapter {
 
   override async likeCreate(args: { data: Record<string, unknown> }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.like).insertOne(args.data as unknown as MongoLike);
+    const doc = await parentCol.like.insertOne(args.data as unknown as MongoLike, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Like;
   }
 
   override async likeDelete(args: { where: { id: string } }) {
     const parentCol = (this.parent as any).col;
-    await this.sessionCol(parentCol.like).deleteOne({ id: args.where.id } as Record<string, unknown>);
+    await parentCol.like.deleteOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
   }
 
   override async subscriptionFindMany(args: { where?: Record<string, unknown> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.subscription).find(args.where || {}).toArray();
+    const docs = await parentCol.subscription.find(args.where || {}, this.sessionOpts()).toArray();
     return (this.parent as any).serializeArray(docs);
   }
 
@@ -496,25 +493,25 @@ class MongoAdapterWithSession extends MongoAdapter {
     } else {
       query = { id: args.where.id };
     }
-    const doc = await this.sessionCol(parentCol.subscription).findOne(query);
+    const doc = await parentCol.subscription.findOne(query, this.sessionOpts());
     return doc ? (this.parent as any).serialize(doc) : null;
   }
 
   override async subscriptionCreate(args: { data: Record<string, unknown> }) {
     const parentCol = (this.parent as any).col;
-    const doc = await this.sessionCol(parentCol.subscription).insertOne(args.data as unknown as MongoSubscription);
+    const doc = await parentCol.subscription.insertOne(args.data as unknown as MongoSubscription, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Subscription;
   }
 
   override async subscriptionDelete(args: { where: { id: string } }) {
     const parentCol = (this.parent as any).col;
-    await this.sessionCol(parentCol.subscription).deleteOne({ id: args.where.id } as Record<string, unknown>);
+    await parentCol.subscription.deleteOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
   }
 
   override async newsArticleFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
     const parentCol = (this.parent as any).col;
-    const docs = await this.sessionCol(parentCol.newsArticle)
-      .find(args.where || {})
+    const docs = await parentCol.newsArticle
+      .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { publishedAt: -1 })
       .limit(args.take || 20)
       .toArray();

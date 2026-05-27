@@ -271,7 +271,7 @@ export const useAppStore = create<AppStore>()(
             favoriteExperts: [],
             favoriteMatches: [],
             favoritePredictions: [],
-            theme: 'dark',
+            theme: 'dark' as const,
             subscribedExperts: [],
           };
         }
@@ -280,10 +280,10 @@ export const useAppStore = create<AppStore>()(
           favoriteExperts: [],
           favoriteMatches: [],
           favoritePredictions: [],
-          theme: 'dark',
+          theme: 'dark' as const,
           subscribedExperts: [],
           ...(persisted && typeof persisted === 'object' ? persisted : {}),
-        } as AppStore;
+        };
       },
     }
   )
