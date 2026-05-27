@@ -11,14 +11,31 @@ const predictionSchema = z.object({
   analysis: z.string().max(5000).optional(),
 });
 
+const predictionsQuerySchema = z.object({
+  result: z.enum(['win', 'loss', 'pending']).optional(),
+  sportId: z.string().optional(),
+  expertId: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20).optional(),
+});
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const result = searchParams.get('result');
-    const sportId = searchParams.get('sportId');
-    const expertId = searchParams.get('expertId');
-    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
-    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 100) : 20;
+    const validation = predictionsQuerySchema.safeParse({
+      result: searchParams.get('result') ?? undefined,
+      sportId: searchParams.get('sportId') ?? undefined,
+      expertId: searchParams.get('expertId') ?? undefined,
+      limit: searchParams.get('limit') ?? undefined,
+    });
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { result, sportId, expertId, limit = 20 } = validation.data;
 
     const where: Record<string, unknown> = {};
     if (result) where.result = result;
@@ -34,7 +51,7 @@ export async function GET(request: Request) {
         },
       },
       orderBy: { createdAt: 'desc' },
-      take: limit,
+      take: Math.min(limit, 100),
     });
 
     return NextResponse.json({ predictions });

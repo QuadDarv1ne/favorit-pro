@@ -103,8 +103,8 @@ function applyRateLimitHeaders(
   }
 }
 
-const API_READ_PREFIXES = ['/api/experts', '/api/matches', '/api/sports', '/api/predictions', '/api/search', '/api/news'];
-const API_WRITE_PREFIXES = ['/api/predictions', '/api/subscribe', '/api/likes'];
+const API_READ_PREFIXES = ['/api/experts', '/api/matches', '/api/sports', '/api/predictions', '/api/search', '/api/news', '/api/subscription/status'];
+const API_WRITE_PREFIXES = ['/api/predictions', '/api/subscribe', '/api/likes', '/api/profile', '/api/subscription/upgrade'];
 
 const SECURITY_HEADERS: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',
