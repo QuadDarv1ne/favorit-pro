@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, Prisma } from '@/lib/db';
 import { z } from 'zod';
 import { requireAuth, validateBody } from '@/lib/api-helpers';
 
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     const { result, sportId, expertId, limit = 20 } = validation.data;
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.PredictionWhereInput = {};
     if (result) where.result = result;
     if (expertId) where.expertId = expertId;
     if (sportId) where.match = { sportId };

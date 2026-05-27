@@ -41,6 +41,9 @@ model Match {
   updatedAt    DateTime @updatedAt
   sport        Sport    @relation(fields: [sportId], references: [id])
   predictions  Prediction[]
+
+  @@index([sportId, status])
+  @@index([startTime])
 }
 
 model Expert {
@@ -59,6 +62,8 @@ model Expert {
   specialty        Sport    @relation(fields: [specialtyId], references: [id])
   predictions      Prediction[]
   subscribers      Subscription[]
+
+  @@index([specialtyId])
 }
 
 model Prediction {
@@ -75,6 +80,10 @@ model Prediction {
   expert      Expert   @relation(fields: [expertId], references: [id])
   match       Match    @relation(fields: [matchId], references: [id])
   likes       Like[]
+
+  @@index([expertId])
+  @@index([result])
+  @@index([createdAt])
 }
 
 model User {
@@ -102,6 +111,8 @@ model Like {
   prediction    Prediction @relation(fields: [predictionId], references: [id])
 
   @@unique([userId, predictionId])
+  @@index([userId])
+  @@index([predictionId])
 }
 
 model Subscription {
@@ -113,6 +124,7 @@ model Subscription {
   expert    Expert   @relation(fields: [expertId], references: [id])
 
   @@unique([userId, expertId])
+  @@index([userId])
 }
 
 model NewsArticle {
@@ -127,4 +139,6 @@ model NewsArticle {
   readTime    Int      @default(3)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
 }
