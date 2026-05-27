@@ -150,6 +150,289 @@ favorit-pro/
 └── components.json
 ```
 
+## Развёртывание (Deployment)
+
+Проект настроен с `output: "standalone"` в `next.config.ts`, что позволяет разворачивать его на любой платформе, поддерживающей Node.js. Ниже приведены инструкции для 4 основных платформ.
+
+### Сравнение платформ
+
+| Платформа | Сложность | Цена | БД | Для кого |
+|-----------|-----------|------|-----|----------|
+| **Vercel** | Очень легко | Бесплатно (Hobby) | PostgreSQL (Neon, Supabase) | Быстрый запуск, прототипы |
+| **Railway** | Легко | $5/мес | PostgreSQL (встроенная) | Продакшен без настройки сервера |
+| **Docker** | Средне | Зависит от хоста | SQLite / PostgreSQL | Контейнеризация, CI/CD |
+| **VPS** | Сложнее | От $3/мес (Aeza, DigitalOcean) | SQLite / PostgreSQL | Полный контроль, продакшен |
+
+---
+
+### 1. Vercel (рекомендуется для быстрого запуска)
+
+Vercel — создатели Next.js, лучшая совместимость и автоматическая оптимизация.
+
+**Шаг 1:** Подключите репозиторий
+```bash
+# Установите Vercel CLI
+npm i -g vercel
+
+# Войдите в аккаунт
+vercel login
+
+# Разверните проект
+vercel --prod
+```
+
+Или через веб-интерфейс: [vercel.com/new](https://vercel.com/new) → Import Git Repository → выберите репозиторий.
+
+**Шаг 2:** Настройте базу данных
+Vercel не поддерживает SQLite. Подключите PostgreSQL через [Neon](https://neon.tech) или [Supabase](https://supabase.com):
+```
+DATABASE_URL="postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/favoritpro?sslmode=require"
+```
+
+**Шаг 3:** Добавьте переменные окружения в Vercel Dashboard:
+```
+DATABASE_URL=postgresql://...
+NEXTAUTH_SECRET=<сгенерируйте: openssl rand -base64 32>
+NEXTAUTH_URL=https://ваш-домен.vercel.app
+NODE_ENV=production
+```
+
+**Шаг 4:** Настройте Prisma для продакшена. В `package.json` добавьте в `scripts`:
+```json
+"vercel-build": "prisma generate && prisma migrate deploy && next build"
+```
+
+**Шаг 5:** Перезапустите деплой. Приложение будет доступно по `https://ваш-проект.vercel.app`.
+
+---
+
+### 2. Railway
+
+Railway предоставляет встроенную PostgreSQL и автоматический деплой из GitHub.
+
+**Шаг 1:** Зарегистрируйтесь на [railway.app](https://railway.app) и нажмите "New Project" → "Deploy from GitHub repo".
+
+**Шаг 2:** Добавьте сервис PostgreSQL в проект: "New" → "Database" → "Add PostgreSQL". Railway автоматически добавит `DATABASE_URL` в переменные окружения.
+
+**Шаг 3:** Настройте переменные окружения в Railway Dashboard:
+```
+NEXTAUTH_SECRET=<сгенерируйте: openssl rand -base64 32>
+NEXTAUTH_URL=<автоматически сгенерированный Railway URL>
+NODE_ENV=production
+```
+
+**Шаг 4:** Убедитесь, что в `package.json` есть команды:
+```json
+"build": "prisma generate && prisma migrate deploy && next build",
+"start": "next start"
+```
+
+Railway автоматически определит Next.js проект и запустит его.
+
+**Шаг 5:** Приложение будет доступно по `https://ваш-проект.up.railway.app`.
+
+---
+
+### 3. Docker (контейнеризация)
+
+Создайте `Dockerfile` в корне проекта:
+
+```dockerfile
+# === Builder stage ===
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npx prisma generate
+RUN npm run build
+
+# === Runner stage ===
+FROM node:20-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
+RUN npm ci --omit=dev && npx prisma generate
+
+ENV NODE_ENV=production
+ENV PORT=3000
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+```
+
+Создайте `.dockerignore`:
+```
+node_modules
+.next
+.git
+*.md
+.env
+```
+
+**Сборка и запуск:**
+```bash
+# Собрать образ
+docker build -t favorit-pro .
+
+# Запустить с PostgreSQL
+docker run -d -p 3000:3000 \
+  -e DATABASE_URL="postgresql://user:pass@host:5432/favoritpro" \
+  -e NEXTAUTH_SECRET="your-secret" \
+  -e NEXTAUTH_URL="http://localhost:3000" \
+  favorit-pro
+```
+
+**Docker Compose** (с PostgreSQL):
+```yaml
+version: "3.8"
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgresql://favorit:secret@db:5432/favoritpro
+      NEXTAUTH_SECRET: your-secret-here
+      NEXTAUTH_URL: http://localhost:3000
+      NODE_ENV: production
+    depends_on: [db]
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: favorit
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: favoritpro
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+```
+
+```bash
+docker compose up -d --build
+```
+
+---
+
+### 4. VPS (Aeza, DigitalOcean, Hetzner)
+
+Полный контроль над сервером. Рекомендуется для продакшена с большим трафиком.
+
+**Шаг 1:** Арендуйте VPS (Ubuntu 22.04+, 1 CPU, 1 GB RAM минимум).
+
+**Шаг 2:** Подключитесь к серверу и установите зависимости:
+```bash
+ssh root@your-server-ip
+
+# Обновите систему
+apt update && apt upgrade -y
+
+# Установите Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs nginx certbot python3-certbot-nginx
+
+# Установите PM2 для управления процессами
+npm i -g pm2
+```
+
+**Шаг 3:** Клонируйте проект и настройте:
+```bash
+cd /var/www
+git clone https://github.com/your-username/favorit-pro.git
+cd favorit-pro
+
+npm ci
+cp .env.example .env
+# Отредактируйте .env (nano .env)
+```
+
+**Шаг 4:** Настройте `.env`:
+```env
+DATABASE_URL="file:./prisma/dev.db"
+NEXTAUTH_SECRET="<openssl rand -base64 32>"
+NEXTAUTH_URL="http://your-domain.com"
+NODE_ENV=production
+PORT=3000
+```
+
+**Шаг 5:** Соберите и запустите:
+```bash
+npx prisma generate
+npx prisma db push
+npm run build
+
+# Запустите через PM2
+pm2 start npm --name "favorit-pro" -- start
+pm2 save
+pm2 startup
+```
+
+**Шаг 6:** Настройте Nginx как обратный прокси:
+```bash
+nano /etc/nginx/sites-available/favorit-pro
+```
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+```bash
+ln -s /etc/nginx/sites-available/favorit-pro /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
+
+**Шаг 7:** Настройте HTTPS через Let's Encrypt:
+```bash
+certbot --nginx -d your-domain.com
+```
+
+---
+
+### Переменные окружения
+
+| Переменная | Обязательно | Описание | Пример |
+|------------|-------------|----------|--------|
+| `DATABASE_URL` | Да | Строка подключения к БД | `file:./dev.db` или `postgresql://...` |
+| `NEXTAUTH_SECRET` | Да | Секретный ключ сессий | `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | Да | URL приложения | `https://your-domain.com` |
+| `NODE_ENV` | Нет | Среда выполнения | `production` |
+| `PORT` | Нет | Порт сервера | `3000` |
+
+### Миграция базы данных при деплое
+
+После каждого обновления кода применяйте миграции:
+```bash
+npx prisma migrate deploy
+```
+
+> **Важно:** Используйте `migrate deploy` (не `db push`) в продакшене — это применяет только подтверждённые миграции.
+
+### Проверка после деплоя
+
+1. Откройте `https://your-domain.com` — главная страница должна загрузиться
+2. Проверьте API: `curl https://your-domain.com/api/matches` — должен вернуть JSON
+3. Проверьте БД: `npx prisma db push` (для инициализации)
+4. Откройте разделы: Спорт, Эксперты, Калькулятор — всё должно работать
+5. Проверьте мобильную версию через Chrome DevTools
+
 ## Дорожная карта
 
 - [x] Основная SPA с 6 секциями
