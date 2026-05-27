@@ -1,17 +1,32 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { z } from 'zod';
+
+const searchQuerySchema = z.object({
+  q: z.string().min(2, 'Search query must be at least 2 characters').max(100),
+});
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const rawQ = searchParams.get('q') || '';
-    const q = rawQ.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s-]/g, '').trim().slice(0, 100).toLowerCase();
+    const validation = searchQuerySchema.safeParse({
+      q: searchParams.get('q') || '',
+    });
 
-    if (!q || q.length < 2) {
-      return NextResponse.json({ error: 'Search query must be at least 2 characters', matches: [], experts: [], predictions: [] }, { status: 400 });
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: validation.error.errors[0]?.message || 'Invalid search query',
+          matches: [],
+          experts: [],
+          predictions: [],
+        },
+        { status: 400 }
+      );
     }
 
-    // Run all three searches in parallel for faster response
+    const { q } = validation.data;
+
     const [matches, experts, predictions] = await Promise.all([
       db.match.findMany({
         where: {
