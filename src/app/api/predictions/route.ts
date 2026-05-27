@@ -66,45 +66,53 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
+  try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
 
-  const validation = await validateBody(request, predictionSchema);
-  if ('error' in validation) return validation.error;
+    const validation = await validateBody(request, predictionSchema);
+    if ('error' in validation) return validation.error;
 
-  const { matchId, prediction, odds, confidence, analysis } = validation.data;
-  const { userId: expertId } = auth;
+    const { matchId, prediction, odds, confidence, analysis } = validation.data;
+    const { userId: expertId } = auth;
 
-  // Verify user is an expert
-  const user = await db.user.findUnique({ where: { id: expertId } });
-  if (!user || user.role !== 'expert') {
-    return NextResponse.json({ error: 'Only experts can create predictions' }, { status: 403 });
+    const user = await db.user.findUnique({ where: { id: expertId } });
+    if (!user || user.role !== 'expert') {
+      return NextResponse.json({ error: 'Only experts can create predictions' }, { status: 403 });
+    }
+
+    const match = await db.match.findUnique({ where: { id: matchId } });
+    if (!match) {
+      return NextResponse.json({ error: 'Match not found' }, { status: 404 });
+    }
+
+    if (match.status === 'finished') {
+      return NextResponse.json({ error: 'Cannot create predictions for finished matches' }, { status: 400 });
+    }
+
+    const newPrediction = await db.prediction.create({
+      data: {
+        expertId,
+        matchId,
+        prediction,
+        odds,
+        confidence,
+        analysis: analysis || '',
+        result: 'pending',
+      },
+      include: {
+        expert: true,
+        match: { include: { sport: true } },
+      },
+    });
+
+    return NextResponse.json({ prediction: newPrediction }, { status: 201 });
+  } catch (error) {
+    console.error('Failed to create prediction:', error);
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to create prediction' },
+      { status: 500 }
+    );
   }
-
-  const match = await db.match.findUnique({ where: { id: matchId } });
-  if (!match) {
-    return NextResponse.json({ error: 'Match not found' }, { status: 404 });
-  }
-
-  if (match.status === 'finished') {
-    return NextResponse.json({ error: 'Cannot create predictions for finished matches' }, { status: 400 });
-  }
-
-  const newPrediction = await db.prediction.create({
-    data: {
-      expertId,
-      matchId,
-      prediction,
-      odds,
-      confidence,
-      analysis: analysis || '',
-      result: 'pending',
-    },
-    include: {
-      expert: true,
-      match: { include: { sport: true } },
-    },
-  });
-
-  return NextResponse.json({ prediction: newPrediction }, { status: 201 });
 }

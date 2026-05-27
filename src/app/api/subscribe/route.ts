@@ -8,16 +8,16 @@ const subscribeSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const validation = await validateBody(request, subscribeSchema);
-  if ('error' in validation) return validation.error;
-
-  const { expertId } = validation.data;
-  const { userId } = auth;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, subscribeSchema);
+    if ('error' in validation) return validation.error;
+
+    const { expertId } = validation.data;
+    const { userId } = auth;
+
     const expert = await db.expert.findUnique({ where: { id: expertId } });
     if (!expert) {
       return NextResponse.json({ error: 'Expert not found' }, { status: 404 });

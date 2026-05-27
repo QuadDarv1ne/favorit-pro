@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, memo } from 'react';
 import { useAppStore, FavoritePrediction } from '@/stores/app-store';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,7 +55,7 @@ const defaultNotifications = [
   { id: 'promotions', label: 'Акции и бонусы', desc: 'Специальные предложения и промокоды', enabled: true },
 ];
 
-export function UserCabinet() {
+export const UserCabinet = memo(function UserCabinet() {
   const { user, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
   const { signOut } = useAuth();
   const [notifications, setNotifications] = useState(defaultNotifications);
@@ -728,4 +728,4 @@ export function UserCabinet() {
       </Suspense>
     </div>
   );
-}
+});
