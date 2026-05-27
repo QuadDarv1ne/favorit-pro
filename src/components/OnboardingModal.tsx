@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -42,13 +42,14 @@ const steps = [
 export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
-  useEffect(() => {
-    if (open) setCurrentStep(0);
-  }, [open]);
-
   const handleClose = () => {
     localStorage.setItem('favoritpro-onboarding-seen', 'true');
     onClose();
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) setCurrentStep(0);
+    if (!isOpen) handleClose();
   };
 
   const handleNext = () => {
@@ -67,7 +68,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   const Icon = step.icon;
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-[#0d1117] border-gray-700/50 text-white max-w-md p-0 overflow-hidden">
         <DialogTitle className="sr-only">Добро пожаловать в Favorit Pro</DialogTitle>
         <div className="relative">

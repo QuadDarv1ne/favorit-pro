@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import net from 'net';
 import { fileURLToPath } from 'url';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 
 /**
  * Find a free port starting from the given port number.
