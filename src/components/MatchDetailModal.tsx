@@ -20,19 +20,22 @@ interface MatchDetailModalProps {
 }
 
 export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps) {
-  const store = useAppStore();
+  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const addBet = useAppStore((s) => s.addBet);
+  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
+  const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
   const storeRef = useRef(useAppStore.getState);
 
   if (!match || !open) return null;
 
   const sportEmoji = match.sport === 'football' ? '⚽' : match.sport === 'hockey' ? '🏒' : match.sport === 'basketball' ? '🏀' : match.sport === 'tennis' ? '🎾' : '🎮';
-  const isFavorite = store.favoriteMatches.find((f) => f.id === match.id);
+  const isFavorite = favoriteMatches.find((f) => f.id === match.id);
 
   const handleOddsClick = (type: '1' | 'X' | '2', odds: number) => {
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
     const betId = `${match.id}-${type}`;
     const wasInSlip = !!storeRef.current().betSlip.find((b) => b.id === betId);
-    store.addBet({
+    addBet({
       id: betId,
       matchTitle: `${match.homeTeam} — ${match.awayTeam}`,
       prediction,
@@ -47,7 +50,7 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
     } else {
       toast.success('Добавлено в купон', {
         description: `${match.homeTeam} — ${match.awayTeam}: ${prediction} @ ${odds.toFixed(2)}`,
-        action: { label: 'Открыть', onClick: () => store.setBetSlipOpen(true) },
+        action: { label: 'Открыть', onClick: () => setBetSlipOpen(true) },
       });
     }
   };
@@ -61,7 +64,7 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
       sport: match.sport,
       startTime: match.startTime,
     };
-    store.toggleFavoriteMatch(favMatch);
+    toggleFavoriteMatch(favMatch);
     const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
     toast[isFav ? 'success' : 'info'](
       isFav ? 'Добавлено в избранное' : 'Удалено из избранного',

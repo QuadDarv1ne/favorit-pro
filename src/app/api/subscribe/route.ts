@@ -43,6 +43,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ subscribed: true, message: 'Already subscribed' }, { status: 200 });
     }
     console.error('Subscribe error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
