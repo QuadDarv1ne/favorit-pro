@@ -36,7 +36,8 @@ export async function validateBody<T extends z.ZodType>(
     }
 
     return { data: parsed.data };
-  } catch {
+  } catch (error) {
+    console.error('[api-helpers] Failed to parse JSON body:', error);
     return {
       error: NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 }),
     };
