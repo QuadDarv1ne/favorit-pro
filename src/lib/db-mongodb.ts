@@ -6,6 +6,34 @@ import type {
 // MongoDB document extends ObjectId
 type MongoId = string;
 
+/** Prisma increment/decrement update operators translated to MongoDB $inc */
+interface PrismaIncrementOp { increment: number }
+interface PrismaDecrementOp { decrement: number }
+
+function isPrismaIncrementOp(value: unknown): value is PrismaIncrementOp {
+  return typeof value === 'object' && value !== null && 'increment' in value && typeof (value as PrismaIncrementOp).increment === 'number';
+}
+
+function isPrismaDecrementOp(value: unknown): value is PrismaDecrementOp {
+  return typeof value === 'object' && value !== null && 'decrement' in value && typeof (value as PrismaDecrementOp).decrement === 'number';
+}
+
+/** Public accessor interface for MongoAdapter protected members used by MongoAdapterWithSession */
+interface MongoAdapterPublic {
+  col: {
+    sport: Collection<MongoSport>;
+    match: Collection<MongoMatch>;
+    expert: Collection<MongoExpert>;
+    prediction: Collection<MongoPrediction>;
+    user: Collection<MongoUser>;
+    like: Collection<MongoLike>;
+    subscription: Collection<MongoSubscription>;
+    newsArticle: Collection<MongoNewsArticle>;
+  };
+  serialize: <T extends { _id: ObjectId }>(doc: T) => Omit<T, '_id'> & { id: string };
+  serializeArray: <T extends { _id: ObjectId }>(docs: T[]) => (Omit<T, '_id'> & { id: string })[];
+}
+
 interface MongoSport extends Omit<Sport, 'id'> { _id: ObjectId; id: MongoId; }
 interface MongoMatch extends Omit<Match, 'id' | 'homeScore' | 'awayScore'> { _id: ObjectId; id: MongoId; homeScore?: number; awayScore?: number; }
 interface MongoExpert extends Omit<Expert, 'id'> { _id: ObjectId; id: MongoId; }
@@ -177,15 +205,13 @@ export class MongoAdapter {
     const incData: Record<string, number> = {};
 
     for (const [key, value] of Object.entries(args.data)) {
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        if ('decrement' in value && typeof (value as any).decrement === 'number') {
-          incData[key] = -(value as any).decrement;
-          continue;
-        }
-        if ('increment' in value && typeof (value as any).increment === 'number') {
-          incData[key] = (value as any).increment;
-          continue;
-        }
+      if (isPrismaDecrementOp(value)) {
+        incData[key] = -value.decrement;
+        continue;
+      }
+      if (isPrismaIncrementOp(value)) {
+        incData[key] = value.increment;
+        continue;
       }
       setData[key] = value;
     }
@@ -326,12 +352,13 @@ class MongoAdapterWithSession extends MongoAdapter {
   }
 
   protected get col() {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     return new Proxy(parentCol, {
       get: (target, prop) => {
-        const collection = target[prop as string];
+        const key = prop as keyof typeof target;
+        const collection = target[key];
         if (collection && typeof collection === 'object' && 'bind' in collection) {
-          return collection.bind(collection);
+          return (collection as { bind: (...args: unknown[]) => unknown }).bind(collection);
         }
         if (collection && typeof collection === 'function') {
           return collection;
@@ -346,73 +373,73 @@ class MongoAdapterWithSession extends MongoAdapter {
   }
 
   override async sportFindMany(args: { where?: Record<string, unknown> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.sport.find(args.where || {}, this.sessionOpts()).toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 
   override async sportFindUnique(args: { where: { id: string } | { slug: string } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const query = 'id' in args.where ? { id: args.where.id } : { slug: args.where.slug };
     const doc = await parentCol.sport.findOne(query as Record<string, unknown>, this.sessionOpts());
-    return doc ? (this.parent as any).serialize(doc) : null;
+    return doc ? (this.parent as unknown as MongoAdapterPublic).serialize(doc) : null;
   }
 
   override async matchFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.match
       .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { startTime: 1 })
       .limit(args.take || 20)
       .toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 
   override async matchFindUnique(args: { where: { id: string } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.match.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
-    return doc ? (this.parent as any).serialize(doc) : null;
+    return doc ? (this.parent as unknown as MongoAdapterPublic).serialize(doc) : null;
   }
 
   override async expertFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.expert
       .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { winRate: -1 })
       .limit(args.take || 20)
       .toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 
   override async expertFindUnique(args: { where: { id: string } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.expert.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
-    return doc ? (this.parent as any).serialize(doc) : null;
+    return doc ? (this.parent as unknown as MongoAdapterPublic).serialize(doc) : null;
   }
 
   override async predictionFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.prediction
       .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { createdAt: -1 })
       .limit(args.take || 50)
       .toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 
   override async predictionCreate(args: { data: Record<string, unknown> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.prediction.insertOne(args.data as unknown as MongoPrediction, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Prediction;
   }
 
   override async userFindUnique(args: { where: { id: string } | { email: string }; select?: Record<string, boolean> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const query = 'id' in args.where ? { id: args.where.id } : { email: args.where.email };
     const projection = args.select ? Object.fromEntries(Object.entries(args.select).filter(([, v]) => v).map(([k]) => [k, 1])) : {};
     const doc = await parentCol.user.findOne(query as Record<string, unknown>, { ...this.sessionOpts(), projection });
     if (!doc) return null;
-    const serialized = (this.parent as any).serialize(doc);
+    const serialized = (this.parent as unknown as MongoAdapterPublic).serialize(doc);
     if (args.select) {
       const result = {} as typeof serialized;
       for (const [key, value] of Object.entries(args.select)) {
@@ -426,26 +453,24 @@ class MongoAdapterWithSession extends MongoAdapter {
   }
 
   override async userCreate(args: { data: Record<string, unknown> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.user.insertOne(args.data as unknown as MongoUser, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as User;
   }
 
   override async userUpdate(args: { where: { id: string }; data: Record<string, unknown> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const setData: Record<string, unknown> = {};
     const incData: Record<string, number> = {};
 
     for (const [key, value] of Object.entries(args.data)) {
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        if ('decrement' in value && typeof (value as any).decrement === 'number') {
-          incData[key] = -(value as any).decrement;
-          continue;
-        }
-        if ('increment' in value && typeof (value as any).increment === 'number') {
-          incData[key] = (value as any).increment;
-          continue;
-        }
+      if (isPrismaDecrementOp(value)) {
+        incData[key] = -value.decrement;
+        continue;
+      }
+      if (isPrismaIncrementOp(value)) {
+        incData[key] = value.increment;
+        continue;
       }
       setData[key] = value;
     }
@@ -456,37 +481,37 @@ class MongoAdapterWithSession extends MongoAdapter {
 
     await parentCol.user.updateOne({ id: args.where.id } as Record<string, unknown>, update, this.sessionOpts());
     const updated = await parentCol.user.findOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
-    return updated ? (this.parent as any).serialize(updated) as User : null;
+    return updated ? (this.parent as unknown as MongoAdapterPublic).serialize(updated) as User : null;
   }
 
   override async likeFindUnique(args: { where: { userId_predictionId: { userId: string; predictionId: string } } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.like.findOne({
       userId: args.where.userId_predictionId.userId,
       predictionId: args.where.userId_predictionId.predictionId,
-    } as Record<string, unknown>);
-    return doc ? (this.parent as any).serialize(doc) : null;
+    } as Record<string, unknown>, this.sessionOpts());
+    return doc ? (this.parent as unknown as MongoAdapterPublic).serialize(doc) : null;
   }
 
   override async likeCreate(args: { data: Record<string, unknown> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.like.insertOne(args.data as unknown as MongoLike, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Like;
   }
 
   override async likeDelete(args: { where: { id: string } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     await parentCol.like.deleteOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
   }
 
   override async subscriptionFindMany(args: { where?: Record<string, unknown> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.subscription.find(args.where || {}, this.sessionOpts()).toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 
   override async subscriptionFindUnique(args: { where: { id: string } | { userId_expertId: { userId: string; expertId: string } } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     let query: Record<string, unknown>;
     if ('userId_expertId' in args.where) {
       query = { userId: args.where.userId_expertId.userId, expertId: args.where.userId_expertId.expertId };
@@ -494,28 +519,28 @@ class MongoAdapterWithSession extends MongoAdapter {
       query = { id: args.where.id };
     }
     const doc = await parentCol.subscription.findOne(query, this.sessionOpts());
-    return doc ? (this.parent as any).serialize(doc) : null;
+    return doc ? (this.parent as unknown as MongoAdapterPublic).serialize(doc) : null;
   }
 
   override async subscriptionCreate(args: { data: Record<string, unknown> }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const doc = await parentCol.subscription.insertOne(args.data as unknown as MongoSubscription, this.sessionOpts());
     return { id: doc.insertedId.toHexString(), ...args.data } as Subscription;
   }
 
   override async subscriptionDelete(args: { where: { id: string } }) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     await parentCol.subscription.deleteOne({ id: args.where.id } as Record<string, unknown>, this.sessionOpts());
   }
 
   override async newsArticleFindMany(args: { where?: Record<string, unknown>; take?: number; orderBy?: Record<string, 1 | -1> } = {}) {
-    const parentCol = (this.parent as any).col;
+    const parentCol = (this.parent as unknown as MongoAdapterPublic).col;
     const docs = await parentCol.newsArticle
       .find(args.where || {}, this.sessionOpts())
       .sort(args.orderBy || { publishedAt: -1 })
       .limit(args.take || 20)
       .toArray();
-    return (this.parent as any).serializeArray(docs);
+    return (this.parent as unknown as MongoAdapterPublic).serializeArray(docs);
   }
 }
 
