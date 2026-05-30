@@ -86,7 +86,9 @@ const tiers = [
 ];
 
 export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
-  const { setTier, user, updateBalance: _updateBalance, isLoggedIn } = useAppStore();
+  const setTier = useAppStore((s) => s.setTier);
+  const user = useAppStore((s) => s.user);
+  const isLoggedIn = useAppStore((s) => s.isLoggedIn);
   const [processingTier, setProcessingTier] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

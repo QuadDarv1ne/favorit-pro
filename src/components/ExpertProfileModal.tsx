@@ -36,7 +36,9 @@ function generatePerformanceData(expert: Expert) {
 }
 
 export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModalProps) {
-  const { favoriteExpertIds, subscribedExperts, toggleSubscription } = useAppStore();
+  const favoriteExpertIds = useAppStore((s) => s.favoriteExpertIds);
+  const subscribedExperts = useAppStore((s) => s.subscribedExperts);
+  const toggleSubscription = useAppStore((s) => s.toggleSubscription);
   const subscribeMutation = useSubscribe();
   const { toggleExpert } = useSyncFavorites();
 

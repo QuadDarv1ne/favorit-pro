@@ -71,7 +71,9 @@ export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [sportFilter, setSportFilter] = useState<string | null>(null);
-  const { isLoggedIn, subscriptionModalOpen, setSubscriptionModalOpen } = useAppStore();
+  const isLoggedIn = useAppStore((s) => s.isLoggedIn);
+  const subscriptionModalOpen = useAppStore((s) => s.subscriptionModalOpen);
+  const setSubscriptionModalOpen = useAppStore((s) => s.setSubscriptionModalOpen);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === 'undefined') return false;

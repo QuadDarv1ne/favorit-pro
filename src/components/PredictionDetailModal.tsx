@@ -19,7 +19,9 @@ interface PredictionDetailModalProps {
 }
 
 export function PredictionDetailModal({ prediction, open, onClose }: PredictionDetailModalProps) {
-  const { favoritePredictionIds, addBet, setBetSlipOpen } = useAppStore();
+  const favoritePredictionIds = useAppStore((s) => s.favoritePredictionIds);
+  const addBet = useAppStore((s) => s.addBet);
+  const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
   const { togglePrediction } = useSyncFavorites();
   const storeRef = useRef(useAppStore.getState);
 

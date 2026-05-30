@@ -15,7 +15,11 @@ import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?: (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => void }) {
-  const { betSlip, removeBet, clearBetSlip, betSlipOpen, setBetSlipOpen } = useAppStore();
+  const betSlip = useAppStore((s) => s.betSlip);
+  const removeBet = useAppStore((s) => s.removeBet);
+  const clearBetSlip = useAppStore((s) => s.clearBetSlip);
+  const betSlipOpen = useAppStore((s) => s.betSlipOpen);
+  const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
   const [stake, setStake] = useState('1000');
   const [activeTab, setActiveTab] = useState('single');
 

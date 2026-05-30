@@ -234,7 +234,7 @@ export function useFavoritesDetail() {
 
 export function useFavorites() {
   const queryClient = useQueryClient();
-  const { isLoggedIn } = useAppStore();
+  const isLoggedIn = useAppStore((s) => s.isLoggedIn);
 
   const { data, isLoading } = useQuery({
     queryKey: ['favorites'],

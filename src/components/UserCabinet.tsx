@@ -57,7 +57,10 @@ const defaultNotifications = [
 ];
 
 export const UserCabinet = memo(function UserCabinet() {
-  const { user, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
+  const user = useAppStore((s) => s.user);
+  const subscribedExperts = useAppStore((s) => s.subscribedExperts);
+  const setSubscriptionModalOpen = useAppStore((s) => s.setSubscriptionModalOpen);
+  const updateUser = useAppStore((s) => s.updateUser);
   const { favorites } = useFavoritesDetail();
   const { signOut } = useAuth();
   const [notifications, setNotifications] = useState(defaultNotifications);

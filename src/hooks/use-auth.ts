@@ -34,7 +34,8 @@ function sessionToProfile(session: { user?: { id?: string; name?: string | null;
 
 export function useAuth() {
   const { data: session, status } = useSession();
-  const { login, logout } = useAppStore();
+  const login = useAppStore((s) => s.login);
+  const logout = useAppStore((s) => s.logout);
   const queryClient = useQueryClient();
   const demoModeRef = useRef(false);
 

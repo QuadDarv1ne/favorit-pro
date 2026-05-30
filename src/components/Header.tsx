@@ -36,7 +36,8 @@ interface HeaderProps {
 export const Header = React.memo(function Header({ activeSection, onSectionChange, onAuthClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { isLoggedIn, user } = useAppStore();
+  const isLoggedIn = useAppStore((s) => s.isLoggedIn);
+  const user = useAppStore((s) => s.user);
 
   const handlePlaceBet = useCallback(async (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => {
     try {
