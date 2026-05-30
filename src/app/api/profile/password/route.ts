@@ -50,6 +50,13 @@ export async function PATCH(request: Request) {
       );
     }
 
+    if (currentPassword === newPassword) {
+      return NextResponse.json(
+        { error: 'New password must be different from current password' },
+        { status: 400 }
+      );
+    }
+
     const newHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     await db.user.update({
       where: { id: userId },

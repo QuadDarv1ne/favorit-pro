@@ -121,6 +121,10 @@ export const UserCabinet = memo(function UserCabinet() {
         toast.error('Введите текущий пароль');
         return;
       }
+      if (currentPassword === editValue) {
+        toast.error('Новый пароль должен отличаться от текущего');
+        return;
+      }
       if (editValue !== confirmPassword) {
         toast.error('Пароли не совпадают');
         return;
