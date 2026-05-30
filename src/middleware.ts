@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { checkRateLimit, buildRateLimitHeaders } from '@/lib/rate-limiter';
+import { checkRateLimit, buildRateLimitHeaders, getClientIp as extractClientIp } from '@/lib/rate-limiter';
 
 // Rate limit configuration
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -12,7 +12,6 @@ const API_READ_PREFIXES = [
   '/api/experts',
   '/api/matches',
   '/api/sports',
-  '/api/predictions',
   '/api/search',
   '/api/news',
   '/api/subscription/status',
@@ -55,20 +54,6 @@ function applyRateLimitHeaders(
   }
 }
 
-function getClientIp(request: NextRequest): string {
-  // Prefer x-real-ip (set by trusted reverse proxy) over x-forwarded-for
-  // to prevent rate limit bypass via client-spoofed x-forwarded-for headers.
-  const realIp = request.headers.get('x-real-ip');
-  if (realIp) {
-    return realIp.trim();
-  }
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  return 'unknown';
-}
-
 function createRateLimitedResponse(
   error: string,
   status: number,
@@ -100,7 +85,7 @@ export function middleware(request: NextRequest) {
   const isReadPath = API_READ_PREFIXES.some((prefix) => pathname.startsWith(prefix));
   const isWritePath = API_WRITE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
-  const clientIp = getClientIp(request);
+  const clientIp = extractClientIp(request.headers);
 
   // Write endpoints: stricter limit.
   if (isWriteMethod && isWritePath) {
@@ -125,7 +110,7 @@ export function middleware(request: NextRequest) {
 
   // Read endpoints: higher limit.
   if (isReadPath) {
-    const readKey = `read:${clientIp}`;
+    const readKey = `read:${clientIp}:${pathname}`;
     const result = checkRateLimit(readKey, {
       maxRequests: RATE_LIMIT_MAX_READ,
       windowMs: RATE_LIMIT_WINDOW_MS,
