@@ -62,6 +62,8 @@ export const UserCabinet = memo(function UserCabinet() {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<'name' | 'email' | 'password' | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [selectedPrediction, setSelectedPrediction] = useState<FavoritePrediction | null>(null);
   const [predictionModalOpen, setPredictionModalOpen] = useState(false);
 
@@ -97,7 +99,7 @@ export const UserCabinet = memo(function UserCabinet() {
 
   const handleEditProfile = (field: 'name' | 'email' | 'password') => {
     setEditingField(field);
-    setEditValue(field === 'password' ? '' : currentUser[field]);
+    setEditValue('');
   };
 
   const handleSaveProfile = async () => {
@@ -110,10 +112,36 @@ export const UserCabinet = memo(function UserCabinet() {
         toast.error('Пароль должен быть не менее 8 символов');
         return;
       }
-      // TODO: Implement password change API endpoint
-      toast.info('Смена пароля будет доступна в ближайшее время');
+      if (!currentPassword) {
+        toast.error('Введите текущий пароль');
+        return;
+      }
+      if (editValue !== confirmPassword) {
+        toast.error('Пароли не совпадают');
+        return;
+      }
+      try {
+        const res = await fetch('/api/profile/password', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword, newPassword: editValue }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to change password');
+        }
+
+        toast.success('Пароль успешно изменён');
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Не удалось сменить пароль';
+        toast.error('Ошибка смены пароля', { description: message });
+        return;
+      }
       setEditingField(null);
       setEditValue('');
+      setCurrentPassword('');
+      setConfirmPassword('');
       return;
     }
 
@@ -666,7 +694,7 @@ export const UserCabinet = memo(function UserCabinet() {
       </Dialog>
 
       {/* Edit profile dialog */}
-      <Dialog open={editingField !== null} onOpenChange={(open) => { if (!open) { setEditingField(null); setEditValue(''); } }}>
+      <Dialog open={editingField !== null} onOpenChange={(open) => { if (!open) { setEditingField(null); setEditValue(''); setCurrentPassword(''); setConfirmPassword(''); } }}>
         <DialogContent className="bg-[#151b23] border-gray-700/50">
           <DialogHeader>
             <DialogTitle className="text-white">
@@ -677,23 +705,51 @@ export const UserCabinet = memo(function UserCabinet() {
             <DialogDescription className="text-gray-400">
               {editingField === 'name' && 'Введите новое имя'}
               {editingField === 'email' && 'Введите новый email'}
-              {editingField === 'password' && 'Введите новый пароль (мин. 8 символов)'}
+              {editingField === 'password' && 'Введите текущий и новый пароль (мин. 8 символов)'}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-2">
-            <input
-              type={editingField === 'password' ? 'password' : 'text'}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
-              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-              placeholder={
-                editingField === 'name' ? 'Ваше имя' :
-                editingField === 'email' ? 'email@example.com' :
-                'Новый пароль'
-              }
-              autoFocus
-            />
+          <div className="py-2 space-y-3">
+            {editingField === 'password' ? (
+              <>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  placeholder="Текущий пароль"
+                  autoFocus
+                />
+                <input
+                  type="password"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  placeholder="Новый пароль"
+                />
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  placeholder="Подтвердите пароль"
+                />
+              </>
+            ) : (
+              <input
+                type="text"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                placeholder={
+                  editingField === 'name' ? 'Ваше имя' : 'email@example.com'
+                }
+                autoFocus
+              />
+            )}
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" size="sm" onClick={() => setEditingField(null)} className="border-gray-600 text-gray-300">

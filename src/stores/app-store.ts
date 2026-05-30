@@ -93,6 +93,17 @@ interface AppStore {
   setSubscriptionModalOpen: (open: boolean) => void;
 }
 
+interface PersistedState {
+  betSlip: BetSlipItem[];
+  favoriteExperts: string[];
+  favoriteMatches: FavoriteMatch[];
+  favoritePredictions: FavoritePrediction[];
+  theme: 'dark' | 'light';
+  subscribedExperts: string[];
+  isLoggedIn: boolean;
+  user: UserProfile | null;
+}
+
 export const useAppStore = create<AppStore>()(
   persist(
     (set, get) => ({
@@ -254,7 +265,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'favoritpro-store',
-      version: 1,
+      version: 2,
       partialize: (state: AppStore) => ({
         betSlip: state.betSlip,
         favoriteExperts: state.favoriteExperts,
@@ -262,9 +273,18 @@ export const useAppStore = create<AppStore>()(
         favoritePredictions: state.favoritePredictions,
         theme: state.theme,
         subscribedExperts: state.subscribedExperts,
+        isLoggedIn: state.isLoggedIn,
+        user: state.user,
       }),
-      migrate: (persisted: unknown, version: number) => {
-        // v0 -> v1: clear stale data from before versioning was added
+      migrate: (persisted: unknown, version: number): PersistedState => {
+        const safe = (persisted && typeof persisted === 'object' ? persisted : {}) as Record<string, unknown>;
+
+        const get = <T>(key: string, fallback: T): T => {
+          const val = safe[key];
+          return val !== undefined ? (val as T) : fallback;
+        };
+
+        // v0 -> v2: clear stale data from before versioning was added
         if (version === 0) {
           return {
             betSlip: [],
@@ -273,16 +293,32 @@ export const useAppStore = create<AppStore>()(
             favoritePredictions: [],
             theme: 'dark' as const,
             subscribedExperts: [],
+            isLoggedIn: false,
+            user: null,
+          };
+        }
+        // v1 -> v2: add login persistence fields
+        if (version === 1) {
+          return {
+            betSlip: get('betSlip', []),
+            favoriteExperts: get('favoriteExperts', []),
+            favoriteMatches: get('favoriteMatches', []),
+            favoritePredictions: get('favoritePredictions', []),
+            theme: get('theme', 'dark' as const),
+            subscribedExperts: get('subscribedExperts', []),
+            isLoggedIn: false,
+            user: null,
           };
         }
         return {
-          betSlip: [],
-          favoriteExperts: [],
-          favoriteMatches: [],
-          favoritePredictions: [],
-          theme: 'dark' as const,
-          subscribedExperts: [],
-          ...(persisted && typeof persisted === 'object' ? persisted : {}),
+          betSlip: get('betSlip', []),
+          favoriteExperts: get('favoriteExperts', []),
+          favoriteMatches: get('favoriteMatches', []),
+          favoritePredictions: get('favoritePredictions', []),
+          theme: get('theme', 'dark' as const),
+          subscribedExperts: get('subscribedExperts', []),
+          isLoggedIn: get('isLoggedIn', false),
+          user: get('user', null),
         };
       },
     }
