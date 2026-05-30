@@ -23,6 +23,7 @@ const API_WRITE_PREFIXES = [
   '/api/likes',
   '/api/profile',
   '/api/subscription/upgrade',
+  '/api/bets',
 ];
 
 const SECURITY_HEADERS: Record<string, string> = {

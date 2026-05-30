@@ -3,6 +3,18 @@ import { db } from '@/lib/db';
 import { z } from 'zod';
 import { requireAuth, validateBody, handleApiError } from '@/lib/api-helpers';
 
+const BET_ERRORS = {
+  INSUFFICIENT_FUNDS: 'INSUFFICIENT_FUNDS',
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+} as const;
+
+class BetError extends Error {
+  constructor(message: string, public code: keyof typeof BET_ERRORS) {
+    super(message);
+    this.name = 'BetError';
+  }
+}
+
 const selectionSchema = z.object({
   prediction: z.string().min(1),
   odds: z.number().min(1.01),
@@ -41,11 +53,11 @@ export async function POST(request: Request) {
       });
 
       if (!user) {
-        throw new Error('User not found');
+        throw new BetError('User not found', BET_ERRORS.USER_NOT_FOUND);
       }
 
       if (user.balance < stake) {
-        throw new Error('Недостаточно средств на балансе');
+        throw new BetError('Недостаточно средств на балансе', BET_ERRORS.INSUFFICIENT_FUNDS);
       }
 
       const bet = await tx.bet.create({
@@ -72,11 +84,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ bet: result }, { status: 201 });
   } catch (error) {
-    if (error instanceof Error && error.message === 'User not found') {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    if (error instanceof Error && error.message === 'Недостаточно средств на балансе') {
-      return NextResponse.json({ error: 'Недостаточно средств на балансе' }, { status: 400 });
+    if (error instanceof BetError) {
+      if (error.code === BET_ERRORS.USER_NOT_FOUND) {
+        return NextResponse.json({ error: error.message }, { status: 404 });
+      }
+      if (error.code === BET_ERRORS.INSUFFICIENT_FUNDS) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
     }
     return handleApiError(error, 'Failed to place bet');
   }
