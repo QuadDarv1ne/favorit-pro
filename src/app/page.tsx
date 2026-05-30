@@ -119,17 +119,17 @@ export default function Home() {
       case 'main':
         return (
           <>
-            <HeroSection />
-            <HotStreaks />
-            <RecentWinsFeed />
-            <LiveMatches onMatchClick={handleMatchClick} />
-            <ExpressOfDay />
-            <DailyTips />
-            <ValueBetScanner />
-            <TopPredictions onPredictionClick={handlePredictionClick} />
-            <PromotionsBanner />
-            <SportCategories />
-            <UpcomingMatches onMatchClick={handleMatchClick} />
+            <ErrorBoundary resetKey={`main-hero-${activeSection}`}><HeroSection /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-streaks-${activeSection}`}><HotStreaks /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-wins-${activeSection}`}><RecentWinsFeed /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-live-${activeSection}`}><LiveMatches onMatchClick={handleMatchClick} /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-express-${activeSection}`}><ExpressOfDay /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-tips-${activeSection}`}><DailyTips /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-value-${activeSection}`}><ValueBetScanner /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-preds-${activeSection}`}><TopPredictions onPredictionClick={handlePredictionClick} /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-promo-${activeSection}`}><PromotionsBanner /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-sports-${activeSection}`}><SportCategories /></ErrorBoundary>
+            <ErrorBoundary resetKey={`main-upcoming-${activeSection}`}><UpcomingMatches onMatchClick={handleMatchClick} /></ErrorBoundary>
           </>
         );
       case 'sports':
@@ -139,18 +139,18 @@ export default function Home() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Все события</h2>
               </div>
-              <SportFilter activeFilter={sportFilter} onFilterChange={setSportFilter} />
+              <ErrorBoundary resetKey={`sports-filter-${activeSection}`}><SportFilter activeFilter={sportFilter} onFilterChange={setSportFilter} /></ErrorBoundary>
             </div>
-            <SportCategories detailed />
-            <LiveMatches onMatchClick={handleMatchClick} />
-            <UpcomingMatches onMatchClick={handleMatchClick} />
+            <ErrorBoundary resetKey={`sports-cats-${activeSection}`}><SportCategories detailed /></ErrorBoundary>
+            <ErrorBoundary resetKey={`sports-live-${activeSection}`}><LiveMatches onMatchClick={handleMatchClick} /></ErrorBoundary>
+            <ErrorBoundary resetKey={`sports-upcoming-${activeSection}`}><UpcomingMatches onMatchClick={handleMatchClick} /></ErrorBoundary>
           </>
         );
       case 'experts':
         return (
           <>
-            <ExpertsRating detailed onExpertClick={handleExpertClick} />
-            <TopPredictions onPredictionClick={handlePredictionClick} />
+            <ErrorBoundary resetKey={`experts-rating-${activeSection}`}><ExpertsRating detailed onExpertClick={handleExpertClick} /></ErrorBoundary>
+            <ErrorBoundary resetKey={`experts-preds-${activeSection}`}><TopPredictions onPredictionClick={handlePredictionClick} /></ErrorBoundary>
           </>
         );
       case 'stats':
@@ -215,7 +215,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0d1117] text-gray-100">
-      <ErrorBoundary>
+      <ErrorBoundary resetKey={`page-${activeSection}`}>
         <Header
           activeSection={activeSection}
           onSectionChange={handleSectionChange}

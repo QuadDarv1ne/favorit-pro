@@ -6,21 +6,42 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
+  /**
+   * When this value changes, the error state is automatically reset
+   * and children are re-rendered.  Use it to break out of infinite
+   * crash loops — e.g. pass an incrementing counter on "retry" so
+   * React remounts children with fresh state and fresh data fetches.
+   */
+  resetKey?: unknown;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
+  prevResetKey: unknown;
 }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, prevResetKey: props.resetKey };
+  }
+
+  static getDerivedStateFromProps(
+    props: ErrorBoundaryProps,
+    state: ErrorBoundaryState,
+  ): Partial<ErrorBoundaryState> | null {
+    if (state.hasError && props.resetKey !== state.prevResetKey) {
+      return { hasError: false, error: null, prevResetKey: props.resetKey };
+    }
+    if (props.resetKey !== state.prevResetKey) {
+      return { prevResetKey: props.resetKey };
+    }
+    return null;
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+    return { hasError: true, error, prevResetKey: (error as unknown as { prevResetKey?: unknown }).prevResetKey };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -28,7 +49,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+    // Increment an internal counter so resetKey changes and
+    // getDerivedStateFromProps resets the error state AND React
+    // sees a new key on the next render, forcing a full remount.
+    this.setState((prev) => ({
+      hasError: false,
+      error: null,
+      prevResetKey: (prev.prevResetKey as number | 0) + 1,
+    }));
   };
 
   render() {

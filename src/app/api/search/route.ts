@@ -2,12 +2,28 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limiter';
+
+const SEARCH_RATE_LIMIT = 20; // requests per window
+const SEARCH_WINDOW_MS = 60_000; // 1 minute
 
 const searchQuerySchema = z.object({
   q: z.string().min(2, 'Search query must be at least 2 characters').max(100),
 });
 
 export async function GET(request: Request) {
+  // Rate limit check
+  const ip = getClientIp(request.headers);
+  const rateLimit = checkRateLimit(ip, SEARCH_RATE_LIMIT, SEARCH_WINDOW_MS);
+
+  if (!rateLimit.allowed) {
+    const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const validation = searchQuerySchema.safeParse({
