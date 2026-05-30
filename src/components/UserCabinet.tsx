@@ -16,7 +16,7 @@ import {
   Calendar, Target, BarChart3, Users, Check, X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { experts, liveMatches, upcomingMatches, finishedMatches, topPredictions } from '@/lib/data';
+import { experts } from '@/lib/data';
 import { toast } from 'sonner';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { BankrollTracker } from '@/components/BankrollTracker';
