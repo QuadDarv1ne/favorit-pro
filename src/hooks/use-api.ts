@@ -200,3 +200,48 @@ export function useSubscribe() {
     },
   });
 }
+
+export interface FavoritesResponse {
+  matchIds: string[];
+  expertIds: string[];
+  predictionIds: string[];
+}
+
+export function useFavorites() {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: async () => {
+      const res = await fetch('/api/favorites');
+      if (!res.ok) throw new Error('Failed to fetch favorites');
+      return res.json() as Promise<FavoritesResponse>;
+    },
+    staleTime: 30_000,
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ entityType, entityId }: { entityType: 'match' | 'expert' | 'prediction'; entityId: string }) => {
+      const res = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityType, entityId }),
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Failed to update favorite' }));
+        throw new Error(error.error);
+      }
+      return res.json() as Promise<{ favorited: boolean }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+    },
+  });
+
+  return {
+    favorites: data ?? { matchIds: [], expertIds: [], predictionIds: [] },
+    isLoading,
+    toggleFavorite: toggleMutation.mutate,
+    toggleFavoriteAsync: toggleMutation.mutateAsync,
+  };
+}

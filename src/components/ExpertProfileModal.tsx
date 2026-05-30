@@ -13,7 +13,7 @@ import {
   BarChart, Bar,
 } from 'recharts';
 import { useAppStore } from '@/stores/app-store';
-import { useSubscribe } from '@/hooks/use-api';
+import { useSubscribe, useFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 
 interface ExpertProfileModalProps {
@@ -38,6 +38,7 @@ function generatePerformanceData(expert: Expert) {
 export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModalProps) {
   const { favoriteExperts, toggleFavoriteExpert, subscribedExperts, toggleSubscription } = useAppStore();
   const subscribeMutation = useSubscribe();
+  const { favorites, toggleFavorite } = useFavorites();
 
   const performanceData = useMemo(() => {
     if (!expert) return [];
@@ -47,8 +48,27 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
   if (!expert) return null;
 
   const lastResults = expert.lastResults;
-  const isFavorite = favoriteExperts.includes(expert.id);
+  const isFavorite = favoriteExperts.includes(expert.id) || favorites.expertIds.includes(expert.id);
   const isSubscribed = subscribedExperts.includes(expert.id);
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavorite(
+      { entityType: 'expert', entityId: expert.id },
+      {
+        onSuccess: (data) => {
+          toggleFavoriteExpert(expert.id);
+          toast[data.favorited ? 'success' : 'info'](
+            data.favorited ? 'Добавлено в избранное' : 'Удалено из избранного',
+            { description: expert.name }
+          );
+        },
+        onError: (error) => {
+          toast.error('Ошибка', { description: error.message });
+        },
+      },
+    );
+  };
 
   const handleSubscribe = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -69,15 +89,6 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
           toast.error('Ошибка подписки', { description: error.message });
         },
       },
-    );
-  };
-
-  const handleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleFavoriteExpert(expert.id);
-    toast[isFavorite ? 'info' : 'success'](
-      isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное',
-      { description: expert.name }
     );
   };
 

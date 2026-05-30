@@ -100,6 +100,7 @@ model User {
   updatedAt     DateTime       @updatedAt
   likes         Like[]
   subscriptions Subscription[]
+  favorites     Favorite[]
 }
 
 model Like {
@@ -124,6 +125,18 @@ model Subscription {
   expert    Expert   @relation(fields: [expertId], references: [id])
 
   @@unique([userId, expertId])
+  @@index([userId])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  entityType String   // "match" | "expert" | "prediction"
+  entityId   String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, entityType, entityId])
   @@index([userId])
 }
 
