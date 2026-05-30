@@ -13,6 +13,7 @@ import {
   BarChart, Bar,
 } from 'recharts';
 import { useAppStore } from '@/stores/app-store';
+import { useSubscribe } from '@/hooks/use-api';
 import { toast } from 'sonner';
 
 interface ExpertProfileModalProps {
@@ -36,6 +37,7 @@ function generatePerformanceData(expert: Expert) {
 
 export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModalProps) {
   const { favoriteExperts, toggleFavoriteExpert, subscribedExperts, toggleSubscription } = useAppStore();
+  const subscribeMutation = useSubscribe();
 
   const performanceData = useMemo(() => {
     if (!expert) return [];
@@ -50,14 +52,24 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
   const handleSubscribe = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleSubscription(expert.id);
-    if (!isSubscribed) {
-      toast.success(`Вы подписались на ${expert.name}`, {
-        description: 'Теперь вы будете получать его прогнозы',
-      });
-    } else {
-      toast.info(`Подписка на ${expert.name} отменена`);
-    }
+    subscribeMutation.mutate(
+      { expertId: expert.id },
+      {
+        onSuccess: (data) => {
+          toggleSubscription(expert.id);
+          if (data.subscribed) {
+            toast.success(`Вы подписались на ${expert.name}`, {
+              description: 'Теперь вы будете получать его прогнозы',
+            });
+          } else {
+            toast.info(`Подписка на ${expert.name} отменена`);
+          }
+        },
+        onError: (error) => {
+          toast.error('Ошибка подписки', { description: error.message });
+        },
+      },
+    );
   };
 
   const handleFavorite = (e: React.MouseEvent) => {
