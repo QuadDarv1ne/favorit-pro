@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
-import { requireAuth, validateBody } from '@/lib/api-helpers';
-import { logger } from '@/lib/logger';
+import { requireAuth, validateBody, handleApiError } from '@/lib/api-helpers';
 
 const likesSchema = z.object({
   predictionId: z.string().min(1, 'predictionId required'),
 });
 
 export async function GET() {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
     const likes = await db.like.findMany({
       where: { userId: auth.userId },
       include: {
@@ -28,25 +27,20 @@ export async function GET() {
 
     return NextResponse.json({ likes });
   } catch (error) {
-    logger.error('Error fetching likes', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch likes' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch likes');
   }
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const validation = await validateBody(request, likesSchema);
-  if ('error' in validation) return validation.error;
-
-  const { predictionId } = validation.data;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, likesSchema);
+    if ('error' in validation) return validation.error;
+
+    const { predictionId } = validation.data;
+
     const prediction = await db.prediction.findUnique({ where: { id: predictionId } });
     if (!prediction) {
       return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
@@ -64,25 +58,20 @@ export async function POST(request: Request) {
     if (error instanceof Error && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ message: 'Already liked' }, { status: 200 });
     }
-    logger.error('Error creating like', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to create like' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to create like');
   }
 }
 
 export async function DELETE(request: Request) {
-  const auth = await requireAuth();
-  if ('error' in auth) return auth.error;
-
-  const validation = await validateBody(request, likesSchema);
-  if ('error' in validation) return validation.error;
-
-  const { predictionId } = validation.data;
-
   try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, likesSchema);
+    if ('error' in validation) return validation.error;
+
+    const { predictionId } = validation.data;
+
     const prediction = await db.prediction.findUnique({ where: { id: predictionId } });
     if (!prediction) {
       return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
@@ -101,11 +90,6 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ deleted: deleted.count });
   } catch (error) {
-    logger.error('Error deleting like', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to delete like' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to delete like');
   }
 }

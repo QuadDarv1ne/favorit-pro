@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { requireAuth, validateBody } from '@/lib/api-helpers';
-import { logger } from '@/lib/logger';
+import { requireAuth, validateBody, handleApiError } from '@/lib/api-helpers';
 
 const selectionSchema = z.object({
   prediction: z.string().min(1),
@@ -79,12 +78,7 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === 'Недостаточно средств на балансе') {
       return NextResponse.json({ error: 'Недостаточно средств на балансе' }, { status: 400 });
     }
-    logger.error('Place bet failed', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to place bet' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to place bet');
   }
 }
 
@@ -104,11 +98,6 @@ export async function GET() {
 
     return NextResponse.json({ bets });
   } catch (error) {
-    logger.error('Fetch bets failed', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch bets' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch bets');
   }
 }

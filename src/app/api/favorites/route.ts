@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { requireAuth, validateBody } from '@/lib/api-helpers';
-import { logger } from '@/lib/logger';
+import { requireAuth, validateBody, handleApiError } from '@/lib/api-helpers';
 
 const favoriteSchema = z.object({
   entityType: z.enum(['match', 'expert', 'prediction'], {
@@ -62,12 +61,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    logger.error('Failed to fetch favorites', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch favorites' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch favorites');
   }
 }
 
@@ -101,11 +95,6 @@ export async function POST(request: Request) {
     if (error instanceof Error && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ favorited: true, message: 'Already favorited' }, { status: 200 });
     }
-    logger.error('Favorite toggle error', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Internal server error');
   }
 }

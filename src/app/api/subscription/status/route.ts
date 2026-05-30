@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { requireAuth } from '@/lib/api-helpers';
-import { logger } from '@/lib/logger';
+import { requireAuth, handleApiError } from '@/lib/api-helpers';
 
 export async function GET() {
   try {
@@ -37,11 +36,6 @@ export async function GET() {
       subscribedExperts: subscriptions.map((s) => s.expertId),
     });
   } catch (error) {
-    logger.error('Failed to fetch subscription status', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch subscription status' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch subscription status');
   }
 }

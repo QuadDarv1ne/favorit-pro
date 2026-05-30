@@ -106,6 +106,12 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
   // Track pending timeouts for cleanup
   const timeoutIdsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   // Sync refs when matches change (new matches arrive, old ones leave)
   useEffect(() => {
@@ -135,6 +141,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
     if (currentMatches.length === 0) return;
 
     const interval = setInterval(() => {
+      if (!mountedRef.current) return;
       const prev = matchOddsMapRef.current;
       const updated = { ...prev };
       const matchIndex = Math.floor(Math.random() * currentMatches.length);
@@ -186,26 +193,27 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
   // Simulate occasional score changes
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        const currentMatches = matchesRef.current.filter(m => m.status === 'live');
-        if (currentMatches.length === 0) return;
-        const prev = matchScoresRef.current;
-        const updated = { ...prev };
-        const matchIndex = Math.floor(Math.random() * currentMatches.length);
-        const match = currentMatches[matchIndex];
-        if (!match) return;
-        const team = Math.random() > 0.5 ? 'home' : 'away';
-        updated[match.id] = {
-          ...updated[match.id],
-          [team]: (updated[match.id]?.[team] ?? match[team === 'home' ? 'homeScore' : 'awayScore'] ?? 0) + 1,
-        };
-        matchScoresRef.current = updated;
-        forceUpdate(n => n + 1);
-        const teamName = team === 'home' ? match.homeTeam : match.awayTeam;
-        toast.success(`Гол! ${teamName} забивает!`, {
-          description: `${match.homeTeam} ${updated[match.id].home} : ${updated[match.id].away} ${match.awayTeam}`,
-        });
-      }
+      const currentMatches = matchesRef.current.filter(m => m.status === 'live');
+      if (currentMatches.length === 0) return;
+      if (Math.random() > 0.7) return;
+      if (!mountedRef.current) return;
+
+      const prev = matchScoresRef.current;
+      const updated = { ...prev };
+      const matchIndex = Math.floor(Math.random() * currentMatches.length);
+      const match = currentMatches[matchIndex];
+      if (!match) return;
+      const team = Math.random() > 0.5 ? 'home' : 'away';
+      updated[match.id] = {
+        ...updated[match.id],
+        [team]: (updated[match.id]?.[team] ?? match[team === 'home' ? 'homeScore' : 'awayScore'] ?? 0) + 1,
+      };
+      matchScoresRef.current = updated;
+      forceUpdate(n => n + 1);
+      const teamName = team === 'home' ? match.homeTeam : match.awayTeam;
+      toast.success(`Гол! ${teamName} забивает!`, {
+        description: `${match.homeTeam} ${updated[match.id].home} : ${updated[match.id].away} ${match.awayTeam}`,
+      });
     }, 15000);
 
     return () => clearInterval(interval);

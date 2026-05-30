@@ -68,3 +68,12 @@ export function sanitizeString(input: string, maxLength = 100): string {
   if (!cleaned) return '';
   return cleaned.length > maxLength ? cleaned.slice(0, maxLength) : cleaned;
 }
+
+export function handleApiError(error: unknown, context: string): NextResponse {
+  logger.error(context, { error: (error as Error).message });
+  const isDbError = error instanceof Error && error.message.includes('Prisma');
+  const message = isDbError
+    ? 'Database unavailable. Please try again later.'
+    : context;
+  return NextResponse.json({ error: message }, { status: 500 });
+}

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db, Prisma } from '@/lib/db';
 import { z } from 'zod';
-import { requireAuth, validateBody } from '@/lib/api-helpers';
-import { logger } from '@/lib/logger';
+import { requireAuth, validateBody, handleApiError } from '@/lib/api-helpers';
 
 const predictionSchema = z.object({
   matchId: z.string().min(1, 'matchId required'),
@@ -57,12 +56,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ predictions });
   } catch (error) {
-    logger.error('Failed to fetch predictions', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch predictions' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch predictions');
   }
 }
 
@@ -109,11 +103,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ prediction: newPrediction }, { status: 201 });
   } catch (error) {
-    logger.error('Failed to create prediction', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to create prediction' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to create prediction');
   }
 }

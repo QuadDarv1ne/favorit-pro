@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { logger } from '@/lib/logger';
+import { handleApiError } from '@/lib/api-helpers';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limiter';
 
 const SEARCH_RATE_LIMIT = 20; // requests per window
@@ -86,11 +86,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ matches, experts, predictions });
   } catch (error) {
-    logger.error('Search failed', { error: (error as Error).message });
-    const isDbError = error instanceof Error && error.message.includes('Prisma');
-    return NextResponse.json(
-      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Search failed' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Search failed');
   }
 }

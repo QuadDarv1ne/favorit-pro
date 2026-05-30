@@ -277,23 +277,36 @@ export function useFavorites() {
 /**
  * Bridges Zustand favorite ID toggles with the server API.
  * Zustand updates instantly for UX; API call persists in background.
+ * If the API fails, the optimistic Zustand update is rolled back.
  */
 export function useSyncFavorites() {
-  const { toggleFavorite } = useFavorites();
+  const { toggleFavoriteAsync } = useFavorites();
 
-  const toggleExpert = (expertId: string) => {
+  const toggleExpert = async (expertId: string) => {
     useAppStore.getState().toggleFavoriteExpertId(expertId);
-    toggleFavorite({ entityType: 'expert', entityId: expertId });
+    try {
+      await toggleFavoriteAsync({ entityType: 'expert', entityId: expertId });
+    } catch {
+      useAppStore.getState().toggleFavoriteExpertId(expertId);
+    }
   };
 
-  const toggleMatch = (matchId: string) => {
+  const toggleMatch = async (matchId: string) => {
     useAppStore.getState().toggleFavoriteMatchId(matchId);
-    toggleFavorite({ entityType: 'match', entityId: matchId });
+    try {
+      await toggleFavoriteAsync({ entityType: 'match', entityId: matchId });
+    } catch {
+      useAppStore.getState().toggleFavoriteMatchId(matchId);
+    }
   };
 
-  const togglePrediction = (predictionId: string) => {
+  const togglePrediction = async (predictionId: string) => {
     useAppStore.getState().toggleFavoritePredictionId(predictionId);
-    toggleFavorite({ entityType: 'prediction', entityId: predictionId });
+    try {
+      await toggleFavoriteAsync({ entityType: 'prediction', entityId: predictionId });
+    } catch {
+      useAppStore.getState().toggleFavoritePredictionId(predictionId);
+    }
   };
 
   return { toggleExpert, toggleMatch, togglePrediction };
