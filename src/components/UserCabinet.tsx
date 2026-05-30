@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, lazy, Suspense, memo } from 'react';
-import { useAppStore, FavoritePrediction } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import {
   Calendar, Target, BarChart3, Users, Check, X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { experts } from '@/lib/data';
+import { experts, liveMatches, upcomingMatches, finishedMatches, topPredictions } from '@/lib/data';
 import { toast } from 'sonner';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { BankrollTracker } from '@/components/BankrollTracker';
@@ -56,7 +56,7 @@ const defaultNotifications = [
 ];
 
 export const UserCabinet = memo(function UserCabinet() {
-  const { user, favoriteExperts, favoriteMatches, favoritePredictions, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
+  const { user, favoriteExpertIds, favoriteMatchIds, favoritePredictionIds, subscribedExperts, setSubscriptionModalOpen, updateUser } = useAppStore();
   const { signOut } = useAuth();
   const [notifications, setNotifications] = useState(defaultNotifications);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -64,7 +64,7 @@ export const UserCabinet = memo(function UserCabinet() {
   const [editValue, setEditValue] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [selectedPrediction, setSelectedPrediction] = useState<FavoritePrediction | null>(null);
+  const [selectedPrediction, setSelectedPrediction] = useState<{ id: string; matchTitle: string; prediction: string; odds: number; expertName: string } | null>(null);
   const [predictionModalOpen, setPredictionModalOpen] = useState(false);
 
   const currentUser = user ?? DEMO_USER;
@@ -222,7 +222,7 @@ export const UserCabinet = memo(function UserCabinet() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 text-red-400" />
-                    <span className="text-gray-400">{favoriteExperts.length + favoriteMatches.length + favoritePredictions.length} избранного</span>
+                    <span className="text-gray-400">{favoriteExpertIds.length + favoriteMatchIds.length + favoritePredictionIds.length} избранного</span>
                   </div>
                 </div>
               </div>
@@ -383,11 +383,11 @@ export const UserCabinet = memo(function UserCabinet() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
-                  Избранные эксперты ({favoriteExperts.length})
+                  Избранные эксперты ({favoriteExpertIds.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {favoriteExperts.length === 0 ? (
+                {favoriteExpertIds.length === 0 ? (
                   <div className="text-center py-8">
                     <Star className="w-10 h-10 text-gray-700 mx-auto mb-3" />
                     <p className="text-gray-400 mb-1">Нет избранных экспертов</p>
@@ -395,7 +395,7 @@ export const UserCabinet = memo(function UserCabinet() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {experts.filter(e => favoriteExperts.includes(e.id)).map(expert => (
+                    {experts.filter(e => favoriteExpertIds.includes(e.id)).map(expert => (
                       <div key={expert.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-xs font-bold text-white">
                           {expert.avatar}
@@ -416,11 +416,11 @@ export const UserCabinet = memo(function UserCabinet() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
                   <Heart className="w-4 h-4 text-red-400" />
-                  Избранные матчи ({favoriteMatches.length})
+                  Избранные матчи ({favoriteMatchIds.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {favoriteMatches.length === 0 ? (
+                {favoriteMatchIds.length === 0 ? (
                   <div className="text-center py-8">
                     <Heart className="w-10 h-10 text-gray-700 mx-auto mb-3" />
                     <p className="text-gray-400 mb-1">Нет избранных матчей</p>
@@ -428,17 +428,21 @@ export const UserCabinet = memo(function UserCabinet() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {favoriteMatches.map(match => (
-                      <div key={match.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
-                        <span className="text-lg">
-                          {match.sport === 'football' ? '⚽' : match.sport === 'hockey' ? '🏒' : match.sport === 'basketball' ? '🏀' : match.sport === 'tennis' ? '🎾' : '🎮'}
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{match.homeTeam} — {match.awayTeam}</p>
-                          <p className="text-xs text-gray-500">{match.league} • {match.startTime}</p>
+                    {favoriteMatchIds.map(matchId => {
+                      const match = [...liveMatches, ...upcomingMatches, ...finishedMatches].find((m) => m.id === matchId);
+                      if (!match) return null;
+                      return (
+                        <div key={match.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                          <span className="text-lg">
+                            {match.sport === 'football' ? '⚽' : match.sport === 'hockey' ? '🏒' : match.sport === 'basketball' ? '🏀' : match.sport === 'tennis' ? '🎾' : '🎮'}
+                          </span>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-white">{match.homeTeam} — {match.awayTeam}</p>
+                            <p className="text-xs text-gray-500">{match.league} • {match.startTime}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -448,11 +452,11 @@ export const UserCabinet = memo(function UserCabinet() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-white flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
-                  Сохранённые прогнозы ({favoritePredictions.length})
+                  Сохранённые прогнозы ({favoritePredictionIds.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {favoritePredictions.length === 0 ? (
+                {favoritePredictionIds.length === 0 ? (
                   <div className="text-center py-8">
                     <TrendingUp className="w-10 h-10 text-gray-700 mx-auto mb-3" />
                     <p className="text-gray-400 mb-1">Нет сохранённых прогнозов</p>
@@ -460,19 +464,23 @@ export const UserCabinet = memo(function UserCabinet() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {favoritePredictions.map(pred => (
-                      <div
-                        key={pred.id}
-                        className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30 cursor-pointer hover:bg-gray-900/70 transition-colors"
-                        onClick={() => { setSelectedPrediction(pred); setPredictionModalOpen(true); }}
-                      >
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{pred.matchTitle}</p>
-                          <p className="text-xs text-gray-500">{pred.expertName}: {pred.prediction}</p>
+                    {favoritePredictionIds.map(predId => {
+                      const pred = topPredictions.find((p) => p.id === predId);
+                      if (!pred) return null;
+                      return (
+                        <div
+                          key={pred.id}
+                          className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30 cursor-pointer hover:bg-gray-900/70 transition-colors"
+                          onClick={() => { setSelectedPrediction({ id: pred.id, matchTitle: pred.matchTitle, prediction: pred.prediction, odds: pred.odds, expertName: pred.expertName }); setPredictionModalOpen(true); }}
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-white">{pred.matchTitle}</p>
+                            <p className="text-xs text-gray-500">{pred.expertName}: {pred.prediction}</p>
+                          </div>
+                          <span className="text-sm font-bold text-emerald-400">@ {pred.odds.toFixed(2)}</span>
                         </div>
-                        <span className="text-sm font-bold text-emerald-400">@ {pred.odds.toFixed(2)}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>

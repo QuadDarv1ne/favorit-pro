@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 export async function requireAuth() {
   const session = await getServerSession(authOptions);
@@ -37,7 +38,7 @@ export async function validateBody<T extends z.ZodType>(
 
     return { data: parsed.data };
   } catch (error) {
-    console.error('[api-helpers] Failed to parse JSON body:', error);
+    logger.error('[api-helpers] Failed to parse JSON body', { error: (error as Error).message });
     return {
       error: NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 }),
     };

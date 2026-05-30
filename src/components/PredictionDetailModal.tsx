@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Share2, Clock, User, BarChart3, AlertCircle, Heart, ShoppingCart } from 'lucide-react';
-import { useAppStore, FavoritePrediction } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
+import { useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 
 interface PredictionDetailModalProps {
@@ -18,25 +19,19 @@ interface PredictionDetailModalProps {
 }
 
 export function PredictionDetailModal({ prediction, open, onClose }: PredictionDetailModalProps) {
-  const { favoritePredictions, toggleFavoritePrediction, addBet, setBetSlipOpen } = useAppStore();
+  const { favoritePredictionIds, addBet, setBetSlipOpen } = useAppStore();
+  const { togglePrediction } = useSyncFavorites();
   const storeRef = useRef(useAppStore.getState);
 
   if (!prediction || !open) return null;
 
   const sportEmoji = prediction.sport === 'football' ? '⚽' : prediction.sport === 'hockey' ? '🏒' : prediction.sport === 'basketball' ? '🏀' : prediction.sport === 'tennis' ? '🎾' : '🎮';
   const sportName = prediction.sport === 'football' ? 'Футбол' : prediction.sport === 'hockey' ? 'Хоккей' : prediction.sport === 'basketball' ? 'Баскетбол' : prediction.sport === 'tennis' ? 'Теннис' : 'Киберспорт';
-  const isFavorite = favoritePredictions.find((f) => f.id === prediction.id);
+  const isFavorite = favoritePredictionIds.includes(prediction.id);
 
   const handleFavorite = () => {
-    const fav: FavoritePrediction = {
-      id: prediction.id,
-      matchTitle: prediction.matchTitle,
-      prediction: prediction.prediction,
-      odds: prediction.odds,
-      expertName: prediction.expertName,
-    };
-    toggleFavoritePrediction(fav);
-    const isFav = storeRef.current().favoritePredictions.find((f) => f.id === prediction.id);
+    togglePrediction(prediction.id);
+    const isFav = !storeRef.current().favoritePredictionIds.includes(prediction.id);
     toast[isFav ? 'success' : 'info'](
       isFav ? 'Добавлено в избранное' : 'Удалено из избранного',
       { description: prediction.matchTitle }

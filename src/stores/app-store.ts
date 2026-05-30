@@ -24,30 +24,6 @@ export interface UserProfile {
   joinedAt: string;
 }
 
-export interface FavoriteMatch {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  league: string;
-  sport: string;
-  startTime: string;
-  status?: 'live' | 'upcoming' | 'finished';
-  prediction?: string;
-  homeOdds?: number;
-  awayOdds?: number;
-  homeScore?: number;
-  awayScore?: number;
-  confidence?: number;
-}
-
-export interface FavoritePrediction {
-  id: string;
-  matchTitle: string;
-  prediction: string;
-  odds: number;
-  expertName: string;
-}
-
 interface AppStore {
   // Bet slip
   betSlip: BetSlipItem[];
@@ -58,13 +34,14 @@ interface AppStore {
   toggleBetSlip: () => void;
   setBetSlipOpen: (open: boolean) => void;
 
-  // Favorites
-  favoriteExperts: string[];
-  toggleFavoriteExpert: (expertId: string) => void;
-  favoriteMatches: FavoriteMatch[];
-  toggleFavoriteMatch: (match: FavoriteMatch) => void;
-  favoritePredictions: FavoritePrediction[];
-  toggleFavoritePrediction: (prediction: FavoritePrediction) => void;
+  // Favorites (IDs only, synced from server)
+  favoriteMatchIds: string[];
+  favoriteExpertIds: string[];
+  favoritePredictionIds: string[];
+  setFavorites: (matchIds: string[], expertIds: string[], predictionIds: string[]) => void;
+  toggleFavoriteExpertId: (expertId: string) => void;
+  toggleFavoriteMatchId: (matchId: string) => void;
+  toggleFavoritePredictionId: (predictionId: string) => void;
 
   // Theme
   theme: 'dark' | 'light';
@@ -95,9 +72,6 @@ interface AppStore {
 
 interface PersistedState {
   betSlip: BetSlipItem[];
-  favoriteExperts: string[];
-  favoriteMatches: FavoriteMatch[];
-  favoritePredictions: FavoritePrediction[];
   theme: 'dark' | 'light';
   subscribedExperts: string[];
   isLoggedIn: boolean;
@@ -136,38 +110,28 @@ export const useAppStore = create<AppStore>()(
         set({ betSlipOpen: open });
       },
 
-      // Favorites
-      favoriteExperts: [],
+      // Favorites (IDs only, synced from server)
+      favoriteMatchIds: [],
+      favoriteExpertIds: [],
+      favoritePredictionIds: [],
 
-      toggleFavoriteExpert: (expertId) => {
-        const favorites = get().favoriteExperts;
-        if (favorites.includes(expertId)) {
-          set({ favoriteExperts: favorites.filter((id) => id !== expertId) });
-        } else {
-          set({ favoriteExperts: [...favorites, expertId] });
-        }
+      setFavorites: (matchIds, expertIds, predictionIds) => {
+        set({ favoriteMatchIds: matchIds, favoriteExpertIds: expertIds, favoritePredictionIds: predictionIds });
       },
 
-      favoriteMatches: [],
-
-      toggleFavoriteMatch: (match) => {
-        const favorites = get().favoriteMatches;
-        if (favorites.find((f) => f.id === match.id)) {
-          set({ favoriteMatches: favorites.filter((f) => f.id !== match.id) });
-        } else {
-          set({ favoriteMatches: [...favorites, match] });
-        }
+      toggleFavoriteExpertId: (expertId) => {
+        const ids = get().favoriteExpertIds;
+        set({ favoriteExpertIds: ids.includes(expertId) ? ids.filter((id) => id !== expertId) : [...ids, expertId] });
       },
 
-      favoritePredictions: [],
+      toggleFavoriteMatchId: (matchId) => {
+        const ids = get().favoriteMatchIds;
+        set({ favoriteMatchIds: ids.includes(matchId) ? ids.filter((id) => id !== matchId) : [...ids, matchId] });
+      },
 
-      toggleFavoritePrediction: (prediction) => {
-        const favorites = get().favoritePredictions;
-        if (favorites.find((f) => f.id === prediction.id)) {
-          set({ favoritePredictions: favorites.filter((f) => f.id !== prediction.id) });
-        } else {
-          set({ favoritePredictions: [...favorites, prediction] });
-        }
+      toggleFavoritePredictionId: (predictionId) => {
+        const ids = get().favoritePredictionIds;
+        set({ favoritePredictionIds: ids.includes(predictionId) ? ids.filter((id) => id !== predictionId) : [...ids, predictionId] });
       },
 
       // Theme
@@ -195,9 +159,9 @@ export const useAppStore = create<AppStore>()(
           subscribedExperts: [],
           betSlip: [],
           betSlipOpen: false,
-          favoriteExperts: [],
-          favoriteMatches: [],
-          favoritePredictions: [],
+          favoriteMatchIds: [],
+          favoriteExpertIds: [],
+          favoritePredictionIds: [],
           oddsChanges: {},
           subscriptionModalOpen: false,
         });
@@ -265,12 +229,9 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'favoritpro-store',
-      version: 2,
+      version: 3,
       partialize: (state: AppStore) => ({
         betSlip: state.betSlip,
-        favoriteExperts: state.favoriteExperts,
-        favoriteMatches: state.favoriteMatches,
-        favoritePredictions: state.favoritePredictions,
         theme: state.theme,
         subscribedExperts: state.subscribedExperts,
         isLoggedIn: state.isLoggedIn,
@@ -284,37 +245,19 @@ export const useAppStore = create<AppStore>()(
           return val !== undefined ? (val as T) : fallback;
         };
 
-        // v0 -> v2: clear stale data from before versioning was added
-        if (version === 0) {
-          return {
-            betSlip: [],
-            favoriteExperts: [],
-            favoriteMatches: [],
-            favoritePredictions: [],
-            theme: 'dark' as const,
-            subscribedExperts: [],
-            isLoggedIn: false,
-            user: null,
-          };
-        }
-        // v1 -> v2: add login persistence fields
-        if (version === 1) {
+        // v0, v1 -> v3: clear stale data (no login persistence before v2)
+        if (version < 2) {
           return {
             betSlip: get('betSlip', []),
-            favoriteExperts: get('favoriteExperts', []),
-            favoriteMatches: get('favoriteMatches', []),
-            favoritePredictions: get('favoritePredictions', []),
             theme: get('theme', 'dark' as const),
             subscribedExperts: get('subscribedExperts', []),
             isLoggedIn: false,
             user: null,
           };
         }
+        // v2 -> v3: preserve all data, just drop favorites from persist
         return {
           betSlip: get('betSlip', []),
-          favoriteExperts: get('favoriteExperts', []),
-          favoriteMatches: get('favoriteMatches', []),
-          favoritePredictions: get('favoritePredictions', []),
           theme: get('theme', 'dark' as const),
           subscribedExperts: get('subscribedExperts', []),
           isLoggedIn: get('isLoggedIn', false),

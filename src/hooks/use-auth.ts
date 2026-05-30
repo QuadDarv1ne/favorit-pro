@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useSession, signOut as nextAuthSignOut, signIn as nextAuthSignIn } from 'next-auth/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAppStore, UserProfile } from '@/stores/app-store';
 import { createDemoUser } from '@/lib/demo';
 
@@ -34,6 +35,7 @@ function sessionToProfile(session: { user?: { id?: string; name?: string | null;
 export function useAuth() {
   const { data: session, status } = useSession();
   const { login, logout } = useAppStore();
+  const queryClient = useQueryClient();
   const demoModeRef = useRef(false);
 
   useEffect(() => {
@@ -65,6 +67,21 @@ export function useAuth() {
           // Sync server subscription state into store
           if (serverData?.subscribedExperts) {
             useAppStore.setState({ subscribedExperts: serverData.subscribedExperts });
+          }
+
+          // Sync server favorites into store
+          try {
+            const favRes = await fetch('/api/favorites', { signal: abortController.signal });
+            if (!abortController.signal.aborted && favRes.ok) {
+              const favData = await favRes.json();
+              useAppStore.getState().setFavorites(
+                favData.matchIds ?? [],
+                favData.expertIds ?? [],
+                favData.predictionIds ?? [],
+              );
+            }
+          } catch {
+            // Non-critical: favorites will load on next refresh
           }
 
           const currentUser = useAppStore.getState().user;
@@ -118,8 +135,9 @@ export function useAuth() {
   const signOut = useCallback(async () => {
     demoModeRef.current = false;
     await nextAuthSignOut({ redirect: false });
+    queryClient.clear();
     logout();
-  }, [logout]);
+  }, [logout, queryClient]);
 
   return {
     signIn,

@@ -38,7 +38,7 @@ import { KeyboardShortcutsHelp, useKeyboardShortcuts } from '@/components/Keyboa
 import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
 import { ActiveSection } from '@/types/navigation';
-import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
 import { Toaster } from 'sonner';
 
 // Lazy load heavy sections for performance
@@ -78,8 +78,8 @@ export default function Home() {
     return !localStorage.getItem('favoritpro-onboarding-seen');
   });
 
-  const handleMatchClick = (match: Match | FavoriteMatch) => {
-    setSelectedMatch(match as Match);
+  const handleMatchClick = (match: Match) => {
+    setSelectedMatch(match);
     setMatchModalOpen(true);
   };
 
@@ -88,8 +88,8 @@ export default function Home() {
     setExpertModalOpen(true);
   };
 
-  const handlePredictionClick = (prediction: Prediction | FavoritePrediction) => {
-    setSelectedPrediction(prediction as Prediction);
+  const handlePredictionClick = (prediction: Prediction) => {
+    setSelectedPrediction(prediction);
     setPredictionModalOpen(true);
   };
 

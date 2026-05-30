@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useAppStore, FavoriteMatch, FavoritePrediction } from '@/stores/app-store';
-import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions, Match, Expert, Prediction } from '@/lib/data';
+import { useAppStore } from '@/stores/app-store';
+import { useSyncFavorites } from '@/hooks/use-api';
+import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions, Match, Prediction } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,69 +13,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface FavoritesSectionProps {
-  onMatchClick?: (match: Match | FavoriteMatch) => void;
-  onExpertClick?: (expert: Expert) => void;
-  onPredictionClick?: (prediction: Prediction | FavoritePrediction) => void;
+  onMatchClick?: (match: Match) => void;
+  onExpertClick?: (expert: typeof experts[number]) => void;
+  onPredictionClick?: (prediction: Prediction) => void;
 }
 
 const sportEmoji = (sport: string) =>
   sport === 'football' ? '⚽' : sport === 'hockey' ? '🏒' : sport === 'basketball' ? '🏀' : sport === 'tennis' ? '🎾' : '🎮';
 
 export const FavoritesSection = React.memo(function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClick }: FavoritesSectionProps) {
-  const {
-    favoriteMatches, toggleFavoriteMatch,
-    favoriteExperts, toggleFavoriteExpert,
-    favoritePredictions, toggleFavoritePrediction,
-  } = useAppStore();
+  const { favoriteMatchIds, favoriteExpertIds, favoritePredictionIds } = useAppStore();
+  const { toggleExpert, toggleMatch, togglePrediction } = useSyncFavorites();
 
+  // Resolve full match data from IDs
   const resolvedMatches = useMemo(() => {
     const allMatches = [...liveMatches, ...upcomingMatches, ...finishedMatches];
-    return favoriteMatches
-      .map((fav) => {
-        const full = allMatches.find((m) => m.id === fav.id);
-        return full ? { ...full, ...fav } : fav;
-      })
-      .filter(Boolean);
-  }, [favoriteMatches]);
+    return favoriteMatchIds
+      .map((id) => allMatches.find((m) => m.id === id))
+      .filter(Boolean) as Match[];
+  }, [favoriteMatchIds]);
 
   // Resolve full expert data from IDs
   const resolvedExperts = useMemo(() =>
-    favoriteExperts
+    favoriteExpertIds
       .map((id) => experts.find((e) => e.id === id))
       .filter(Boolean) as typeof experts,
-  [favoriteExperts]);
+  [favoriteExpertIds]);
 
   // Resolve full prediction data from IDs
   const resolvedPredictions = useMemo(() =>
-    favoritePredictions
-      .map((fav) => {
-        const full = topPredictions.find((p) => p.id === fav.id);
-        return full ? { ...full, ...fav } : fav;
-      })
-      .filter(Boolean),
-  [favoritePredictions]);
+    favoritePredictionIds
+      .map((id) => topPredictions.find((p) => p.id === id))
+      .filter(Boolean) as Prediction[],
+  [favoritePredictionIds]);
 
   const totalFavorites = resolvedMatches.length + resolvedExperts.length + resolvedPredictions.length;
 
-  const handleRemoveMatch = (match: Match | FavoriteMatch) => {
-    toggleFavoriteMatch({
-      id: match.id, homeTeam: match.homeTeam, awayTeam: match.awayTeam,
-      league: match.league, sport: match.sport, startTime: match.startTime,
-    });
+  const handleRemoveMatch = (match: Match) => {
+    toggleMatch(match.id);
     toast.info('Удалено из избранного', { description: `${match.homeTeam} — ${match.awayTeam}` });
   };
 
   const handleRemoveExpert = (expertId: string) => {
-    toggleFavoriteExpert(expertId);
+    toggleExpert(expertId);
     const expert = experts.find((e) => e.id === expertId);
     toast.info('Удалено из избранного', { description: expert?.name });
   };
 
-  const handleRemovePrediction = (pred: Prediction | FavoritePrediction) => {
-    toggleFavoritePrediction({
-      id: pred.id, matchTitle: pred.matchTitle, prediction: pred.prediction,
-      odds: pred.odds, expertName: pred.expertName,
-    });
+  const handleRemovePrediction = (pred: Prediction) => {
+    togglePrediction(pred.id);
     toast.info('Удалено из избранного', { description: pred.matchTitle });
   };
 

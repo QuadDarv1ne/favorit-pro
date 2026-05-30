@@ -8,7 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Flame, Radio, TrendingUp, Heart, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAppStore, FavoriteMatch } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
+import { useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { AnimatedOdds } from '@/components/AnimatedOdds';
 import { MatchCardSkeleton } from '@/components/Skeletons';
@@ -59,8 +60,8 @@ function mapApiMatch(m: ApiMatch): Match {
 export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: LiveMatchesProps) {
   const addBet = useAppStore((s) => s.addBet);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
-  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const favoriteMatchIds = useAppStore((s) => s.favoriteMatchIds);
+  const { toggleMatch } = useSyncFavorites();
   const storeRef = useRef(useAppStore.getState);
 
   const { data, isLoading, isError, refetch } = useMatches('live');
@@ -295,16 +296,8 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
   const handleFavoriteClick = (e: React.MouseEvent, match: Match) => {
     e.stopPropagation();
-    const favMatch: FavoriteMatch = {
-      id: match.id,
-      homeTeam: match.homeTeam,
-      awayTeam: match.awayTeam,
-      league: match.league,
-      sport: match.sport,
-      startTime: match.startTime,
-    };
-    toggleFavoriteMatch(favMatch);
-    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toggleMatch(match.id);
+    const isFav = !storeRef.current().favoriteMatchIds.includes(match.id);
     toast[isFav ? 'success' : 'info'](isFav ? 'Добавлено в избранное' : 'Удалено из избранного', {
       description: `${match.homeTeam} — ${match.awayTeam}`,
     });
@@ -329,7 +322,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
             homeDirection: null, awayDirection: null, drawDirection: null,
           };
           const currentScore = matchScoresRef.current[match.id] || { home: match.homeScore ?? 0, away: match.awayScore ?? 0 };
-          const isFavorite = favoriteMatches.find((f) => f.id === match.id);
+          const isFavorite = favoriteMatchIds.includes(match.id);
 
           return (
             <motion.div

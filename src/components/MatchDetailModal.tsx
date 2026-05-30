@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Radio, TrendingUp, BarChart3, History, Flame, Heart, Bell, Activity, UserCircle } from 'lucide-react';
 import { MatchTimeline } from '@/components/MatchTimeline';
 import { Progress } from '@/components/ui/progress';
-import { useAppStore, FavoriteMatch } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
+import { useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 
 interface MatchDetailModalProps {
@@ -20,16 +21,16 @@ interface MatchDetailModalProps {
 }
 
 export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps) {
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const favoriteMatchIds = useAppStore((s) => s.favoriteMatchIds);
   const addBet = useAppStore((s) => s.addBet);
-  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
+  const { toggleMatch } = useSyncFavorites();
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
   const storeRef = useRef(useAppStore.getState);
 
   if (!match || !open) return null;
 
   const sportEmoji = match.sport === 'football' ? '⚽' : match.sport === 'hockey' ? '🏒' : match.sport === 'basketball' ? '🏀' : match.sport === 'tennis' ? '🎾' : '🎮';
-  const isFavorite = favoriteMatches.find((f) => f.id === match.id);
+  const isFavorite = favoriteMatchIds.includes(match.id);
 
   const handleOddsClick = (type: '1' | 'X' | '2', odds: number) => {
     const prediction = type === '1' ? `П1: ${match.homeTeam}` : type === 'X' ? 'Ничья' : `П2: ${match.awayTeam}`;
@@ -56,16 +57,8 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
   };
 
   const handleFavorite = () => {
-    const favMatch: FavoriteMatch = {
-      id: match.id,
-      homeTeam: match.homeTeam,
-      awayTeam: match.awayTeam,
-      league: match.league,
-      sport: match.sport,
-      startTime: match.startTime,
-    };
-    toggleFavoriteMatch(favMatch);
-    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toggleMatch(match.id);
+    const isFav = !storeRef.current().favoriteMatchIds.includes(match.id);
     toast[isFav ? 'success' : 'info'](
       isFav ? 'Добавлено в избранное' : 'Удалено из избранного',
       { description: `${match.homeTeam} — ${match.awayTeam}` }

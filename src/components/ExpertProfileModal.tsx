@@ -13,7 +13,7 @@ import {
   BarChart, Bar,
 } from 'recharts';
 import { useAppStore } from '@/stores/app-store';
-import { useSubscribe, useFavorites } from '@/hooks/use-api';
+import { useSubscribe, useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 
 interface ExpertProfileModalProps {
@@ -36,9 +36,9 @@ function generatePerformanceData(expert: Expert) {
 }
 
 export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModalProps) {
-  const { favoriteExperts, toggleFavoriteExpert, subscribedExperts, toggleSubscription } = useAppStore();
+  const { favoriteExpertIds, subscribedExperts, toggleSubscription } = useAppStore();
   const subscribeMutation = useSubscribe();
-  const { favorites, toggleFavorite } = useFavorites();
+  const { toggleExpert } = useSyncFavorites();
 
   const performanceData = useMemo(() => {
     if (!expert) return [];
@@ -48,25 +48,16 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
   if (!expert) return null;
 
   const lastResults = expert.lastResults;
-  const isFavorite = favoriteExperts.includes(expert.id) || favorites.expertIds.includes(expert.id);
+  const isFavorite = favoriteExpertIds.includes(expert.id);
   const isSubscribed = subscribedExperts.includes(expert.id);
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleFavorite(
-      { entityType: 'expert', entityId: expert.id },
-      {
-        onSuccess: (data) => {
-          toggleFavoriteExpert(expert.id);
-          toast[data.favorited ? 'success' : 'info'](
-            data.favorited ? 'Добавлено в избранное' : 'Удалено из избранного',
-            { description: expert.name }
-          );
-        },
-        onError: (error) => {
-          toast.error('Ошибка', { description: error.message });
-        },
-      },
+    toggleExpert(expert.id);
+    const willBeFav = !favoriteExpertIds.includes(expert.id);
+    toast[willBeFav ? 'success' : 'info'](
+      willBeFav ? 'Добавлено в избранное' : 'Удалено из избранного',
+      { description: expert.name }
     );
   };
 

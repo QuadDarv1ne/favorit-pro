@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Flame, TrendingUp, Heart, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAppStore, FavoriteMatch } from '@/stores/app-store';
+import { useAppStore } from '@/stores/app-store';
+import { useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { MatchCardSkeleton } from '@/components/Skeletons';
 
@@ -58,8 +59,8 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
   const { data, isLoading, isError, refetch } = useMatches('upcoming');
   const addBet = useAppStore((s) => s.addBet);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
-  const toggleFavoriteMatch = useAppStore((s) => s.toggleFavoriteMatch);
-  const favoriteMatches = useAppStore((s) => s.favoriteMatches);
+  const favoriteMatchIds = useAppStore((s) => s.favoriteMatchIds);
+  const { toggleMatch } = useSyncFavorites();
   const storeRef = useRef(useAppStore.getState);
 
   const matches = data?.matches?.length
@@ -138,16 +139,8 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
 
   const handleFavorite = (e: React.MouseEvent, match: Match) => {
     e.stopPropagation();
-    const favMatch: FavoriteMatch = {
-      id: match.id,
-      homeTeam: match.homeTeam,
-      awayTeam: match.awayTeam,
-      league: match.league,
-      sport: match.sport,
-      startTime: match.startTime,
-    };
-    toggleFavoriteMatch(favMatch);
-    const isFav = storeRef.current().favoriteMatches.find((f) => f.id === match.id);
+    toggleMatch(match.id);
+    const isFav = !storeRef.current().favoriteMatchIds.includes(match.id);
     toast[isFav ? 'success' : 'info'](isFav ? 'Добавлено в избранное' : 'Удалено из избранного', {
       description: `${match.homeTeam} — ${match.awayTeam}`,
     });
@@ -162,7 +155,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
 
       <div className="space-y-3">
         {matches.map((match, index) => {
-          const isFavorite = favoriteMatches.find((f) => f.id === match.id);
+          const isFavorite = favoriteMatchIds.includes(match.id);
           return (
             <motion.div
               key={match.id}

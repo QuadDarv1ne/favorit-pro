@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAppStore } from '@/stores/app-store';
 
 // API response types (Prisma models with relations)
 interface ApiMatch {
@@ -244,4 +245,29 @@ export function useFavorites() {
     toggleFavorite: toggleMutation.mutate,
     toggleFavoriteAsync: toggleMutation.mutateAsync,
   };
+}
+
+/**
+ * Bridges Zustand favorite ID toggles with the server API.
+ * Zustand updates instantly for UX; API call persists in background.
+ */
+export function useSyncFavorites() {
+  const { toggleFavorite } = useFavorites();
+
+  const toggleExpert = (expertId: string) => {
+    useAppStore.getState().toggleFavoriteExpertId(expertId);
+    toggleFavorite({ entityType: 'expert', entityId: expertId });
+  };
+
+  const toggleMatch = (matchId: string) => {
+    useAppStore.getState().toggleFavoriteMatchId(matchId);
+    toggleFavorite({ entityType: 'match', entityId: matchId });
+  };
+
+  const togglePrediction = (predictionId: string) => {
+    useAppStore.getState().toggleFavoritePredictionId(predictionId);
+    toggleFavorite({ entityType: 'prediction', entityId: predictionId });
+  };
+
+  return { toggleExpert, toggleMatch, togglePrediction };
 }
