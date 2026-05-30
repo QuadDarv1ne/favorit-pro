@@ -208,8 +208,33 @@ export interface FavoritesResponse {
   predictionIds: string[];
 }
 
+export interface FavoritesDetailResponse extends FavoritesResponse {
+  matches: ApiMatch[];
+  experts: ApiExpert[];
+  predictions: ApiPrediction[];
+}
+
+export function useFavoritesDetail() {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['favorites', 'detail'],
+    queryFn: async () => {
+      const res = await fetch('/api/favorites?detail=true');
+      if (!res.ok) throw new Error('Failed to fetch favorites');
+      return res.json() as Promise<FavoritesDetailResponse>;
+    },
+    staleTime: 30_000,
+  });
+
+  return {
+    favorites: data ?? { matchIds: [], expertIds: [], predictionIds: [], matches: [], experts: [], predictions: [] },
+    isLoading,
+    refetch,
+  };
+}
+
 export function useFavorites() {
   const queryClient = useQueryClient();
+  const { isLoggedIn } = useAppStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ['favorites'],
@@ -218,6 +243,7 @@ export function useFavorites() {
       if (!res.ok) throw new Error('Failed to fetch favorites');
       return res.json() as Promise<FavoritesResponse>;
     },
+    enabled: isLoggedIn,
     staleTime: 30_000,
   });
 
@@ -236,6 +262,7 @@ export function useFavorites() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['favorites', 'detail'] });
     },
   });
 

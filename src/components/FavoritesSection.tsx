@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useAppStore } from '@/stores/app-store';
-import { useSyncFavorites } from '@/hooks/use-api';
-import { liveMatches, upcomingMatches, finishedMatches, experts, topPredictions, Match, Prediction } from '@/lib/data';
+import React from 'react';
+import { useFavoritesDetail, useSyncFavorites, ApiMatch, ApiExpert, ApiPrediction } from '@/hooks/use-api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,43 +11,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface FavoritesSectionProps {
-  onMatchClick?: (match: Match) => void;
-  onExpertClick?: (expert: typeof experts[number]) => void;
-  onPredictionClick?: (prediction: Prediction) => void;
+  onMatchClick?: (match: ApiMatch) => void;
+  onExpertClick?: (expert: ApiExpert) => void;
+  onPredictionClick?: (prediction: ApiPrediction) => void;
 }
 
 const sportEmoji = (sport: string) =>
   sport === 'football' ? '⚽' : sport === 'hockey' ? '🏒' : sport === 'basketball' ? '🏀' : sport === 'tennis' ? '🎾' : '🎮';
 
+function formatStartTime(startTime: string): string {
+  try {
+    const date = new Date(startTime);
+    if (isNaN(date.getTime())) return startTime;
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+    const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    if (isToday) return time;
+    if (isTomorrow) return `Завтра ${time}`;
+    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + time;
+  } catch {
+    return startTime;
+  }
+}
+
 export const FavoritesSection = React.memo(function FavoritesSection({ onMatchClick, onExpertClick, onPredictionClick }: FavoritesSectionProps) {
-  const { favoriteMatchIds, favoriteExpertIds, favoritePredictionIds } = useAppStore();
+  const { favorites, isLoading } = useFavoritesDetail();
   const { toggleExpert, toggleMatch, togglePrediction } = useSyncFavorites();
 
-  // Resolve full match data from IDs
-  const resolvedMatches = useMemo(() => {
-    const allMatches = [...liveMatches, ...upcomingMatches, ...finishedMatches];
-    return favoriteMatchIds
-      .map((id) => allMatches.find((m) => m.id === id))
-      .filter(Boolean) as Match[];
-  }, [favoriteMatchIds]);
+  const { matches, experts, predictions } = favorites;
 
-  // Resolve full expert data from IDs
-  const resolvedExperts = useMemo(() =>
-    favoriteExpertIds
-      .map((id) => experts.find((e) => e.id === id))
-      .filter(Boolean) as typeof experts,
-  [favoriteExpertIds]);
-
-  // Resolve full prediction data from IDs
-  const resolvedPredictions = useMemo(() =>
-    favoritePredictionIds
-      .map((id) => topPredictions.find((p) => p.id === id))
-      .filter(Boolean) as Prediction[],
-  [favoritePredictionIds]);
-
-  const totalFavorites = resolvedMatches.length + resolvedExperts.length + resolvedPredictions.length;
-
-  const handleRemoveMatch = (match: Match) => {
+  const handleRemoveMatch = (match: ApiMatch) => {
     toggleMatch(match.id);
     toast.info('Удалено из избранного', { description: `${match.homeTeam} — ${match.awayTeam}` });
   };
@@ -60,10 +54,25 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
     toast.info('Удалено из избранного', { description: expert?.name });
   };
 
-  const handleRemovePrediction = (pred: Prediction) => {
+  const handleRemovePrediction = (pred: ApiPrediction) => {
     togglePrediction(pred.id);
-    toast.info('Удалено из избранного', { description: pred.matchTitle });
+    toast.info('Удалено из избранного', { description: pred.match?.homeTeam ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction });
   };
+
+  if (isLoading) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center">
+          <div className="w-20 h-20 rounded-full bg-gray-800/50 flex items-center justify-center mx-auto mb-6">
+            <Heart className="w-10 h-10 text-gray-600 animate-pulse" />
+          </div>
+          <p className="text-sm text-gray-400">Загрузка избранного...</p>
+        </div>
+      </section>
+    );
+  }
+
+  const totalFavorites = matches.length + experts.length + predictions.length;
 
   if (totalFavorites === 0) {
     return (
@@ -96,34 +105,34 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
           <TabsTrigger value="matches" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 gap-1.5">
             <Radio className="w-3.5 h-3.5" />
             Матчи
-            {resolvedMatches.length > 0 && (
-              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{resolvedMatches.length}</span>
+            {matches.length > 0 && (
+              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{matches.length}</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="experts" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 gap-1.5">
             <Users className="w-3.5 h-3.5" />
             Эксперты
-            {resolvedExperts.length > 0 && (
-              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{resolvedExperts.length}</span>
+            {experts.length > 0 && (
+              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{experts.length}</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="predictions" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 gap-1.5">
             <TrendingUp className="w-3.5 h-3.5" />
             Прогнозы
-            {resolvedPredictions.length > 0 && (
-              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{resolvedPredictions.length}</span>
+            {predictions.length > 0 && (
+              <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full">{predictions.length}</span>
             )}
           </TabsTrigger>
         </TabsList>
 
         {/* Favorite Matches */}
         <TabsContent value="matches">
-          {resolvedMatches.length === 0 ? (
+          {matches.length === 0 ? (
             <EmptyTab icon={<Radio className="w-8 h-8" />} text="Нет матчей в избранном" />
           ) : (
             <div className="space-y-3">
               <AnimatePresence>
-                {resolvedMatches.map((match, index) => (
+                {matches.map((match, index) => (
                   <motion.div
                     key={match.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -139,7 +148,7 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs text-gray-500">{sportEmoji(match.sport)} {match.league}</span>
+                              <span className="text-xs text-gray-500">{sportEmoji(match.sport?.slug ?? '')} {match.league}</span>
                               {match.status === 'live' && (
                                 <span className="flex items-center gap-1 text-[10px] text-red-400 font-medium">
                                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> LIVE
@@ -150,12 +159,7 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                               {match.homeTeam} — {match.awayTeam}
                             </p>
                             <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {match.startTime}</span>
-                              {match.prediction && (
-                                <span className="flex items-center gap-1 text-emerald-400">
-                                  <TrendingUp className="w-3 h-3" /> {match.prediction}
-                                </span>
-                              )}
+                              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {formatStartTime(match.startTime)}</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -190,12 +194,12 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
 
         {/* Favorite Experts */}
         <TabsContent value="experts">
-          {resolvedExperts.length === 0 ? (
+          {experts.length === 0 ? (
             <EmptyTab icon={<Users className="w-8 h-8" />} text="Нет экспертов в избранном" />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence>
-                {resolvedExperts.map((expert, index) => (
+                {experts.map((expert, index) => (
                   <motion.div
                     key={expert.id}
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -215,7 +219,7 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">{expert.name}</p>
-                              <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px] mt-0.5">{expert.specialty}</Badge>
+                              <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px] mt-0.5">{expert.specialty?.name}</Badge>
                             </div>
                           </div>
                           <Button
@@ -252,12 +256,12 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
 
         {/* Favorite Predictions */}
         <TabsContent value="predictions">
-          {resolvedPredictions.length === 0 ? (
+          {predictions.length === 0 ? (
             <EmptyTab icon={<TrendingUp className="w-8 h-8" />} text="Нет прогнозов в избранном" />
           ) : (
             <div className="space-y-3">
               <AnimatePresence>
-                {resolvedPredictions.map((pred, index) => (
+                {predictions.map((pred, index) => (
                   <motion.div
                     key={pred.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -272,12 +276,14 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">{pred.matchTitle}</p>
+                            <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                              {pred.match ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction}
+                            </p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className="text-emerald-400 font-bold">{pred.prediction}</span>
                               <span className="text-gray-400 text-sm">@ {pred.odds?.toFixed(2)}</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">{pred.expertName}</p>
+                            <p className="text-xs text-gray-500 mt-1">{pred.expert?.name}</p>
                           </div>
                           <Button
                             variant="ghost"
