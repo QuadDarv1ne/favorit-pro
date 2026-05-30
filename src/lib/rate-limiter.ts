@@ -1,5 +1,5 @@
 /**
- * Server-side rate limiter for API routes.
+ * Unified rate limiter for API routes and middleware.
  * Uses an in-memory Map with TTL-based cleanup and LRU eviction
  * to prevent memory growth.
  *
@@ -7,73 +7,101 @@
  * are per-instance. For global rate limiting, use Redis or similar.
  */
 
-interface RateLimitEntry {
+export interface RateLimitEntry {
   count: number;
   resetAt: number;
 }
 
-const CLEANUP_INTERVAL = 120_000; // 2 minutes
-const DEFAULT_MAX_STORE_SIZE = 5000;
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+}
+
+export interface RateLimitConfig {
+  /** Maximum requests allowed in the window */
+  maxRequests: number;
+  /** Time window in milliseconds (default: 60_000) */
+  windowMs?: number;
+  /** Maximum store size before evicting old entries (default: 5000) */
+  maxStoreSize?: number;
+  /** Cleanup interval in milliseconds (default: 120_000) */
+  cleanupIntervalMs?: number;
+}
 
 // Shared store for all rate limit buckets
-const store = new Map<string, RateLimitEntry>();
+const rateLimitStore = new Map<string, RateLimitEntry>();
 
+// Track last cleanup time to avoid running it too frequently
 let lastCleanup = Date.now();
 
-function cleanupExpiredEntries() {
+/**
+ * Lazy cleanup of expired entries to prevent memory leaks.
+ * Skips cleanup if we ran recently to avoid O(n) scan on every request.
+ */
+function cleanupExpiredEntries(cleanupIntervalMs: number) {
   const now = Date.now();
-  if (now - lastCleanup < CLEANUP_INTERVAL) return;
+  if (now - lastCleanup < cleanupIntervalMs) return;
   lastCleanup = now;
 
-  for (const [key, entry] of store) {
-    if (now >= entry.resetAt) store.delete(key);
+  for (const [key, entry] of rateLimitStore) {
+    if (now >= entry.resetAt) {
+      rateLimitStore.delete(key);
+    }
   }
 }
 
+/**
+ * Evict oldest entries if store is at capacity.
+ */
 function evictIfNeeded(maxSize: number) {
-  if (store.size >= maxSize) {
-    const firstKey = store.keys().next().value;
-    if (firstKey) store.delete(firstKey);
+  if (rateLimitStore.size >= maxSize) {
+    const firstKey = rateLimitStore.keys().next().value;
+    if (firstKey) rateLimitStore.delete(firstKey);
   }
 }
 
 /**
  * Check if a request is within rate limits.
- * @param key - Unique identifier (usually IP address)
- * @param maxRequests - Maximum requests allowed in the window
- * @param windowMs - Time window in milliseconds (default: 60s)
+ * @param key - Unique identifier (usually IP-based prefix)
+ * @param config - Rate limit configuration
  * @returns { allowed: boolean; remaining: number; resetAt: number }
  */
 export function checkRateLimit(
   key: string,
-  maxRequests: number,
-  windowMs: number = 60_000,
-): { allowed: boolean; remaining: number; resetAt: number } {
+  config: RateLimitConfig,
+): RateLimitResult {
+  const {
+    maxRequests,
+    windowMs = 60_000,
+    maxStoreSize = 5000,
+    cleanupIntervalMs = 120_000,
+  } = config;
+
   const now = Date.now();
-  const maxSize = DEFAULT_MAX_STORE_SIZE;
 
-  cleanupExpiredEntries();
-  evictIfNeeded(maxSize);
+  cleanupExpiredEntries(cleanupIntervalMs);
+  evictIfNeeded(maxStoreSize);
 
-  const entry = store.get(key);
+  const entry = rateLimitStore.get(key);
 
+  // Create or reset entry atomically
   if (!entry || now >= entry.resetAt) {
-    store.set(key, { count: 1, resetAt: now + windowMs });
+    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true, remaining: maxRequests - 1, resetAt: now + windowMs };
   }
 
+  // Atomically increment and check
   entry.count++;
-  const remaining = Math.max(0, maxRequests - entry.count);
-
   if (entry.count > maxRequests) {
     return { allowed: false, remaining: 0, resetAt: entry.resetAt };
   }
 
-  return { allowed: true, remaining, resetAt: entry.resetAt };
+  return { allowed: true, remaining: maxRequests - entry.count, resetAt: entry.resetAt };
 }
 
 /**
- * Extract client IP from request headers.
+ * Extract client IP from NextRequest headers.
  * Prefers x-real-ip (set by reverse proxy) over x-forwarded-for.
  */
 export function getClientIp(headers: Headers): string {
@@ -83,4 +111,18 @@ export function getClientIp(headers: Headers): string {
 
   // Validate IP format (basic IPv4/IPv6 check)
   return /^[0-9a-f.:]+$/i.test(rawIp) ? rawIp : 'unknown';
+}
+
+/**
+ * Build rate limit response headers.
+ */
+export function buildRateLimitHeaders(
+  remaining: number,
+  resetAt: number,
+): Record<string, string> {
+  const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
+  return {
+    'X-RateLimit-Remaining': String(Math.max(0, remaining)),
+    'Retry-After': String(Math.max(0, retryAfter)),
+  };
 }

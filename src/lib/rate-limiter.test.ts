@@ -3,7 +3,7 @@ import { checkRateLimit, getClientIp } from './rate-limiter';
 
 describe('checkRateLimit', () => {
   it('allows first request', () => {
-    const result = checkRateLimit('test-ip-1', 5, 60_000);
+    const result = checkRateLimit('test-ip-1', { maxRequests: 5, windowMs: 60_000 });
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(4);
   });
@@ -12,7 +12,7 @@ describe('checkRateLimit', () => {
     const key = 'test-ip-2';
     const results = [];
     for (let i = 0; i < 3; i++) {
-      results.push(checkRateLimit(key, 5, 60_000));
+      results.push(checkRateLimit(key, { maxRequests: 5, windowMs: 60_000 }));
     }
     expect(results.every((r) => r.allowed)).toBe(true);
     expect(results[2].remaining).toBe(2);
@@ -23,7 +23,7 @@ describe('checkRateLimit', () => {
     const maxRequests = 3;
     const results = [];
     for (let i = 0; i < 5; i++) {
-      results.push(checkRateLimit(key, maxRequests, 60_000));
+      results.push(checkRateLimit(key, { maxRequests, windowMs: 60_000 }));
     }
     expect(results[0].allowed).toBe(true);
     expect(results[1].allowed).toBe(true);
@@ -33,7 +33,7 @@ describe('checkRateLimit', () => {
   });
 
   it('returns resetAt timestamp', () => {
-    const result = checkRateLimit('test-ip-4', 5, 60_000);
+    const result = checkRateLimit('test-ip-4', { maxRequests: 5, windowMs: 60_000 });
     expect(result.resetAt).toBeGreaterThan(Date.now() - 1000);
     expect(result.resetAt).toBeLessThan(Date.now() + 120_000);
   });

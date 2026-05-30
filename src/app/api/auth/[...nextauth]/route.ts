@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { sanitizeString } from '@/lib/api-helpers';
+import { checkRateLimit } from '@/lib/rate-limiter';
 
 // Validate critical environment variables at startup
 if (!process.env.NEXTAUTH_SECRET) {
@@ -12,50 +13,8 @@ if (!process.env.NEXTAUTH_SECRET) {
 }
 
 const SALT_ROUNDS = 10;
-const RATE_LIMIT_TTL = 60_000;
-const LOGIN_RATE_LIMIT = new Map<string, { count: number; resetAt: number }>();
-const MAX_STORE_SIZE = 5000;
 const MAX_NAME_LENGTH = 50;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-let lastCleanup = Date.now();
-function cleanupExpiredEntries() {
-  const now = Date.now();
-  if (now - lastCleanup < RATE_LIMIT_TTL * 2) return;
-  lastCleanup = now;
-
-  for (const [key, entry] of LOGIN_RATE_LIMIT) {
-    if (now >= entry.resetAt) LOGIN_RATE_LIMIT.delete(key);
-  }
-}
-
-// Enforce max size to prevent memory growth
-function evictIfNeeded() {
-  if (LOGIN_RATE_LIMIT.size >= MAX_STORE_SIZE) {
-    const firstKey = LOGIN_RATE_LIMIT.keys().next().value;
-    if (firstKey) LOGIN_RATE_LIMIT.delete(firstKey);
-  }
-}
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-
-  cleanupExpiredEntries();
-  evictIfNeeded();
-
-  const entry = LOGIN_RATE_LIMIT.get(ip);
-
-  // Create or reset entry atomically
-  if (!entry || now >= entry.resetAt) {
-    LOGIN_RATE_LIMIT.set(ip, { count: 1, resetAt: now + RATE_LIMIT_TTL });
-    return true;
-  }
-
-  // Atomically increment and check
-  entry.count++;
-  if (entry.count > 5) return false;
-  return true;
-}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -79,7 +38,8 @@ export const authOptions: NextAuthOptions = {
           ?? 'unknown';
         // Validate IP format (basic IPv4/IPv6 check)
         const ip = /^[0-9a-f.:]+$/i.test(rawIp) ? rawIp : 'unknown';
-        if (!checkRateLimit(ip)) return null;
+        const rateResult = checkRateLimit(`auth:${ip}`, { maxRequests: 5, windowMs: 60_000 });
+        if (!rateResult.allowed) return null;
 
         const email = credentials.email.toLowerCase().trim();
         if (!EMAIL_REGEX.test(email)) return null;

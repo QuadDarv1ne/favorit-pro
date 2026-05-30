@@ -14,7 +14,10 @@ const searchQuerySchema = z.object({
 export async function GET(request: Request) {
   // Rate limit check
   const ip = getClientIp(request.headers);
-  const rateLimit = checkRateLimit(ip, SEARCH_RATE_LIMIT, SEARCH_WINDOW_MS);
+  const rateLimit = checkRateLimit(ip, {
+    maxRequests: SEARCH_RATE_LIMIT,
+    windowMs: SEARCH_WINDOW_MS,
+  });
 
   if (!rateLimit.allowed) {
     const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
