@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import { requireAuth, validateBody, sanitizeString } from '@/lib/api-helpers';
+import { logger } from '@/lib/logger';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name too short').max(50).optional(),
@@ -78,7 +79,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ user: updated, message: 'Profile updated' });
   } catch (error) {
-    console.error('Profile update failed:', error);
+    logger.error('Profile update failed', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to update profile' },

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { requireAuth, validateBody } from '@/lib/api-helpers';
+import { logger } from '@/lib/logger';
 
 const likesSchema = z.object({
   predictionId: z.string().min(1, 'predictionId required'),
@@ -27,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json({ likes });
   } catch (error) {
-    console.error('Error fetching likes:', error);
+    logger.error('Error fetching likes', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch likes' },
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     if (error instanceof Error && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ message: 'Already liked' }, { status: 200 });
     }
-    console.error('Error creating like:', error);
+    logger.error('Error creating like', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to create like' },
@@ -100,7 +101,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ deleted: deleted.count });
   } catch (error) {
-    console.error('Error deleting like:', error);
+    logger.error('Error deleting like', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to delete like' },

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 const matchesQuerySchema = z.object({
   status: z.enum(['live', 'upcoming', 'finished']).optional(),
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ matches });
   } catch (error) {
-    console.error('Failed to fetch matches:', error);
+    logger.error('Failed to fetch matches', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch matches' },

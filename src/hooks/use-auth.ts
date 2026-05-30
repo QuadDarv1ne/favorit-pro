@@ -99,6 +99,7 @@ export function useAuth() {
       name,
       email,
       password,
+      action: 'register',
       redirect: false,
     });
     return result;

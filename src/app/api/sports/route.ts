@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 const querySchema = z.object({
   sportId: z.string().optional(),
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ sports });
   } catch (error) {
-    console.error('Error fetching sports:', error);
+    logger.error('Error fetching sports', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch sports' },

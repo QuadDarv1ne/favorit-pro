@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import { requireAuth, validateBody } from '@/lib/api-helpers';
+import { logger } from '@/lib/logger';
 
 class ApiError extends Error {
   constructor(
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
     if (error instanceof ApiError) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
-    console.error('Tier upgrade failed:', error);
+    logger.error('Tier upgrade failed', { error: (error as Error).message });
     const isDbError = error instanceof Error && error.message.includes('Prisma');
     return NextResponse.json(
       { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to upgrade tier' },
