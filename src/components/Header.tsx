@@ -1,15 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ActiveSection } from '@/types/navigation';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/SearchBar';
 import { NotificationBell } from '@/components/NotificationBell';
 import { BetSlip } from '@/components/BetSlip';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useAppStore } from '@/stores/app-store';
+import { useAppStore, BetSlipItem } from '@/stores/app-store';
 import { useState } from 'react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import {
   Menu, X, TrendingUp, Trophy, BarChart3, Newspaper, CheckCircle, Calculator, Search, User, Heart, Crown, FileText
 } from 'lucide-react';
@@ -36,6 +37,34 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { isLoggedIn, user } = useAppStore();
+
+  const handlePlaceBet = useCallback(async (bets: BetSlipItem[], stake: number, type: 'single' | 'express' | 'system') => {
+    try {
+      const res = await fetch('/api/bets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selections: bets.map(({ prediction, odds, matchTitle, league, sport }) => ({
+            prediction, odds, matchTitle, league, sport,
+          })),
+          stake,
+          type,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Не удалось сделать ставку');
+        return;
+      }
+      const { clearBetSlip } = useAppStore.getState();
+      clearBetSlip();
+      toast.success('Ставка принята', {
+        description: `${bets.length} ${bets.length === 1 ? 'событие' : 'событий'}, ${stake} ₽`,
+      });
+    } catch {
+      toast.error('Ошибка сети. Попробуйте ещё раз');
+    }
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-gray-800">
@@ -86,7 +115,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
 
             <ThemeToggle />
             <NotificationBell />
-            <BetSlip />
+            <BetSlip onPlaceBet={handlePlaceBet} />
 
             {/* Favorites button */}
             <button

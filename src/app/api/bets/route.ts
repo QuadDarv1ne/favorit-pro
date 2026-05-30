@@ -1,0 +1,114 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { z } from 'zod';
+import { requireAuth, validateBody } from '@/lib/api-helpers';
+import { logger } from '@/lib/logger';
+
+const selectionSchema = z.object({
+  prediction: z.string().min(1),
+  odds: z.number().min(1.01),
+  matchTitle: z.string().min(1),
+  league: z.string(),
+  sport: z.string(),
+});
+
+const placeBetSchema = z.object({
+  selections: z.array(selectionSchema).min(1, 'At least one selection required').max(20),
+  stake: z.number().min(1, 'Minimum stake is 1'),
+  type: z.enum(['single', 'express', 'system']),
+});
+
+export async function POST(request: Request) {
+  try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const validation = await validateBody(request, placeBetSchema);
+    if ('error' in validation) return validation.error;
+
+    const { userId } = auth;
+    const { selections, stake, type } = validation.data;
+
+    const totalOdds = type === 'express'
+      ? selections.reduce((acc, s) => acc * s.odds, 1)
+      : selections[0].odds;
+
+    const potentialWin = parseFloat((stake * totalOdds).toFixed(2));
+
+    const result = await db.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { balance: true },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (user.balance < stake) {
+        throw new Error('Недостаточно средств на балансе');
+      }
+
+      const bet = await tx.bet.create({
+        data: {
+          userId,
+          stake,
+          totalOdds,
+          potentialWin,
+          type,
+          selections: {
+            create: selections,
+          },
+        },
+        include: { selections: true },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { balance: user.balance - stake },
+      });
+
+      return bet;
+    });
+
+    return NextResponse.json({ bet: result }, { status: 201 });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'User not found') {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    if (error instanceof Error && error.message === 'Недостаточно средств на балансе') {
+      return NextResponse.json({ error: 'Недостаточно средств на балансе' }, { status: 400 });
+    }
+    logger.error('Place bet failed', { error: (error as Error).message });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to place bet' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
+
+    const { userId } = auth;
+
+    const bets = await db.bet.findMany({
+      where: { userId },
+      include: { selections: true },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+
+    return NextResponse.json({ bets });
+  } catch (error) {
+    logger.error('Fetch bets failed', { error: (error as Error).message });
+    const isDbError = error instanceof Error && error.message.includes('Prisma');
+    return NextResponse.json(
+      { error: isDbError ? 'Database unavailable. Please try again later.' : 'Failed to fetch bets' },
+      { status: 500 }
+    );
+  }
+}

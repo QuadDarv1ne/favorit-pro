@@ -213,8 +213,6 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                     return;
                   }
                   onPlaceBet?.(betSlip, stakeNum, activeTab as 'single' | 'express' | 'system');
-                  toast.success('Ставка принята', { description: `${betSlip.length} ${betSlip.length === 1 ? 'событие' : 'событий'}, ${stakeNum} ₽` });
-                  clearBetSlip();
                 }}
               >
                 <Check className="w-4 h-4 mr-2" />

@@ -101,6 +101,7 @@ model User {
   likes         Like[]
   subscriptions Subscription[]
   favorites     Favorite[]
+  bets          Bet[]
 }
 
 model Like {
@@ -154,4 +155,34 @@ model NewsArticle {
   updatedAt   DateTime @updatedAt
 
   @@index([publishedAt])
+}
+
+model Bet {
+  id            String   @id @default(cuid())
+  userId        String
+  stake         Float
+  totalOdds     Float
+  potentialWin  Float
+  type          String   // "single", "express", "system"
+  status        String   @default("pending") // "pending", "won", "lost"
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  selections    BetSelection[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BetSelection {
+  id         String   @id @default(cuid())
+  betId      String
+  prediction String
+  odds       Float
+  matchTitle String
+  league     String
+  sport      String
+  bet        Bet      @relation(fields: [betId], references: [id], onDelete: Cascade)
+
+  @@index([betId])
 }

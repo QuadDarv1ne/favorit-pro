@@ -62,6 +62,11 @@ export function useAuth() {
             ? { ...profile, tier: serverData.user.tier as UserProfile['tier'], balance: serverData.user.balance }
             : profile;
 
+          // Sync server subscription state into store
+          if (serverData?.subscribedExperts) {
+            useAppStore.setState({ subscribedExperts: serverData.subscribedExperts });
+          }
+
           const currentUser = useAppStore.getState().user;
           const final = currentUser
             ? { ...merged, totalBets: currentUser.totalBets, wonBets: currentUser.wonBets, totalProfit: currentUser.totalProfit }
