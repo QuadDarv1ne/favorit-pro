@@ -157,16 +157,13 @@ export const useAppStore = create<AppStore>()(
           user: null,
           isLoggedIn: false,
           subscribedExperts: [],
-          betSlip: [],
-          betSlipOpen: false,
           favoriteMatchIds: [],
           favoriteExpertIds: [],
           favoritePredictionIds: [],
           oddsChanges: {},
           subscriptionModalOpen: false,
+          // Preserve: theme, betSlip, betSlipOpen
         });
-        // Clear persisted store using Zustand's API to avoid race with persist middleware
-        useAppStore.persist.clearStorage();
       },
 
       updateUser: (updates) => {

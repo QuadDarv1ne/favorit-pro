@@ -27,7 +27,12 @@ const placeBetSchema = z.object({
   selections: z.array(selectionSchema).min(1, 'At least one selection required').max(20),
   stake: z.number().min(1, 'Minimum stake is 1'),
   type: z.enum(['single', 'express', 'system']),
-});
+}).refine((data) => {
+  if (data.type === 'single' && data.selections.length !== 1) {
+    return false;
+  }
+  return true;
+}, { message: 'Single bets require exactly one selection' });
 
 export async function POST(request: Request) {
   try {

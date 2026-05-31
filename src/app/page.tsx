@@ -37,6 +37,7 @@ import { ArticlesSection } from '@/components/ArticlesSection';
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from '@/components/KeyboardShortcuts';
 import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
+import { ApiMatch, ApiExpert, ApiPrediction } from '@/hooks/use-api';
 import { ActiveSection } from '@/types/navigation';
 import { useAppStore } from '@/stores/app-store';
 import { Toaster } from 'sonner';
@@ -80,18 +81,18 @@ export default function Home() {
     return !localStorage.getItem('favoritpro-onboarding-seen');
   });
 
-  const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
+  const handleMatchClick = (match: Match | ApiMatch) => {
+    setSelectedMatch(match as Match);
     setMatchModalOpen(true);
   };
 
-  const handleExpertClick = (expert: Expert) => {
-    setSelectedExpert(expert);
+  const handleExpertClick = (expert: Expert | ApiExpert) => {
+    setSelectedExpert(expert as Expert);
     setExpertModalOpen(true);
   };
 
-  const handlePredictionClick = (prediction: Prediction) => {
-    setSelectedPrediction(prediction);
+  const handlePredictionClick = (prediction: Prediction | ApiPrediction) => {
+    setSelectedPrediction(prediction as Prediction);
     setPredictionModalOpen(true);
   };
 

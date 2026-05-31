@@ -7,10 +7,21 @@ const likesSchema = z.object({
   predictionId: z.string().min(1, 'predictionId required'),
 });
 
-export async function GET() {
+const likesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+export async function GET(request: Request) {
   try {
     const auth = await requireAuth();
     if ('error' in auth) return auth.error;
+
+    const { searchParams } = new URL(request.url);
+    const query = likesQuerySchema.parse({
+      limit: searchParams.get('limit') || '50',
+      offset: searchParams.get('offset') || '0',
+    });
 
     const likes = await db.like.findMany({
       where: { userId: auth.userId },
@@ -23,6 +34,8 @@ export async function GET() {
         },
       },
       orderBy: { createdAt: 'desc' },
+      take: query.limit,
+      skip: query.offset,
     });
 
     return NextResponse.json({ likes });

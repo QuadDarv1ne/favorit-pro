@@ -15,14 +15,17 @@ const API_READ_PREFIXES = [
   '/api/search',
   '/api/news',
   '/api/subscription/status',
+  '/api/favorites',
+  '/api/likes',
 ];
 
 const API_WRITE_PREFIXES = [
   '/api/predictions',
   '/api/subscribe',
-  '/api/likes',
   '/api/profile',
   '/api/subscription/upgrade',
+  '/api/favorites',
+  '/api/likes',
   '/api/bets',
 ];
 

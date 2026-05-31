@@ -10,6 +10,12 @@ const favoriteSchema = z.object({
   entityId: z.string().min(1, 'entityId required'),
 });
 
+const favoritesQuerySchema = z.object({
+  detail: z.coerce.boolean().default(false),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
 export async function GET(request: Request) {
   try {
     const auth = await requireAuth();
@@ -18,12 +24,18 @@ export async function GET(request: Request) {
     const { userId } = auth;
 
     const { searchParams } = new URL(request.url);
-    const includeDetails = searchParams.get('detail') === 'true';
+    const query = favoritesQuerySchema.parse({
+      detail: searchParams.get('detail') || 'false',
+      limit: searchParams.get('limit') || '50',
+      offset: searchParams.get('offset') || '0',
+    });
 
     const favorites = await db.favorite.findMany({
       where: { userId },
       select: { entityType: true, entityId: true, createdAt: true },
       orderBy: { createdAt: 'desc' },
+      take: query.limit,
+      skip: query.offset,
     });
 
     const matchIds = favorites.filter((f) => f.entityType === 'match').map((f) => f.entityId);
@@ -32,7 +44,7 @@ export async function GET(request: Request) {
 
     const result: Record<string, unknown> = { matchIds, expertIds, predictionIds };
 
-    if (includeDetails) {
+    if (query.detail) {
       const [matches, experts, predictions] = await Promise.all([
         matchIds.length > 0
           ? db.match.findMany({
@@ -76,6 +88,7 @@ export async function POST(request: Request) {
     const { entityType, entityId } = validation.data;
     const { userId } = auth;
 
+    // Use a raw query for atomic toggle: check existence, then delete or create
     const result = await db.$transaction(async (tx) => {
       const existing = await tx.favorite.findUnique({
         where: { userId_entityType_entityId: { userId, entityType, entityId } },
@@ -92,9 +105,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result, result.favorited ? { status: 201 } : undefined);
   } catch (error) {
+    // P2002 (unique constraint violation) means a concurrent request created it first
+    // Return the correct state: it IS favorited now
     if (error instanceof Error && 'code' in error && error.code === 'P2002') {
-      return NextResponse.json({ favorited: true, message: 'Already favorited' }, { status: 200 });
+      return NextResponse.json({ favorited: true }, { status: 200 });
     }
-    return handleApiError(error, 'Internal server error');
+    return handleApiError(error, 'Failed to toggle favorite');
   }
 }

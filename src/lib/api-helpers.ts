@@ -49,9 +49,7 @@ export function sanitizeString(input: string, maxLength = 100): string {
   if (!input) return '';
   // Strip control characters (except newlines/tabs which we'll collapse)
   let cleaned = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-  // Strip HTML tags
-  cleaned = cleaned.replace(/<[^>]*>/g, '').trim();
-  // Decode common HTML entities to prevent encoded XSS
+  // Decode common HTML entities first
   cleaned = cleaned
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -59,9 +57,8 @@ export function sanitizeString(input: string, maxLength = 100): string {
     .replace(/&quot;/g, '"')
     .replace(/&#x3C;/g, '<')
     .replace(/&#x3E;/g, '>')
-    .replace(/&#x26;/g, '&')
-    .trim();
-  // Re-strip any tags that may have been revealed after entity decoding
+    .replace(/&#x26;/g, '&');
+  // Strip HTML tags (handles both original tags and any recreated from entity decoding)
   cleaned = cleaned.replace(/<[^>]*>/g, '').trim();
   // Collapse whitespace
   cleaned = cleaned.replace(/\s+/g, ' ');
