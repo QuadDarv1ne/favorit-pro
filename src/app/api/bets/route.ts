@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       }
 
       if (user.balance < stake) {
-        throw new BetError('Недостаточно средств на балансе', BET_ERRORS.INSUFFICIENT_FUNDS);
+        throw new BetError('Insufficient funds', BET_ERRORS.INSUFFICIENT_FUNDS);
       }
 
       const bet = await tx.bet.create({
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
 
       await tx.user.update({
         where: { id: userId },
-        data: { balance: user.balance - stake },
+        data: { balance: { decrement: stake } },
       });
 
       return bet;
