@@ -59,19 +59,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
     }
 
-    const like = await db.like.create({
-      data: {
-        userId: auth.userId,
-        predictionId,
-      },
+    const result = await db.$transaction(async (tx) => {
+      const existing = await tx.like.findUnique({
+        where: { userId_predictionId: { userId: auth.userId, predictionId } },
+      });
+
+      if (existing) {
+        await tx.like.delete({ where: { id: existing.id } });
+        return { liked: false };
+      }
+
+      await tx.like.create({
+        data: { userId: auth.userId, predictionId },
+      });
+
+      return { liked: true };
     });
 
-    return NextResponse.json({ like }, { status: 201 });
+    return NextResponse.json(result, { status: result.liked ? 201 : 200 });
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'P2002') {
-      return NextResponse.json({ message: 'Already liked' }, { status: 200 });
-    }
-    return handleApiError(error, 'Failed to create like');
+    return handleApiError(error, 'Failed to toggle like');
   }
 }
 
@@ -80,14 +87,10 @@ export async function DELETE(request: Request) {
     const auth = await requireAuth();
     if ('error' in auth) return auth.error;
 
-    const validation = await validateBody(request, likesSchema);
-    if ('error' in validation) return validation.error;
-
-    const { predictionId } = validation.data;
-
-    const prediction = await db.prediction.findUnique({ where: { id: predictionId } });
-    if (!prediction) {
-      return NextResponse.json({ error: 'Prediction not found' }, { status: 404 });
+    const { searchParams } = new URL(request.url);
+    const predictionId = searchParams.get('predictionId');
+    if (!predictionId) {
+      return NextResponse.json({ error: 'predictionId required' }, { status: 400 });
     }
 
     const deleted = await db.like.deleteMany({
