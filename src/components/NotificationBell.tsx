@@ -101,7 +101,7 @@ export function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors"
+        className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -118,12 +118,12 @@ export function NotificationBell() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-80 bg-[#151b23] border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b border-gray-700/50">
+            <div className="flex items-center justify-between p-3 border-b border-border">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white">Уведомления</span>
+                <span className="text-sm font-semibold text-foreground">Уведомления</span>
                 {unreadCount > 0 && (
                   <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px] px-1.5 py-0">
                     {unreadCount} новых
@@ -140,7 +140,7 @@ export function NotificationBell() {
             {/* Notifications list */}
             <div className="max-h-80 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-6 text-center text-sm text-gray-500">
+                <div className="p-6 text-center text-sm text-muted-foreground">
                   Нет уведомлений
                 </div>
               ) : (
@@ -149,26 +149,26 @@ export function NotificationBell() {
                   return (
                     <div
                       key={notif.id}
-                      className={`flex items-start gap-3 px-3 py-2.5 hover:bg-gray-800/30 transition-colors relative ${
-                        !notif.read ? 'bg-gray-800/20' : ''
+                      className={`flex items-start gap-3 px-3 py-2.5 hover:bg-muted/30 transition-colors relative ${
+                        !notif.read ? 'bg-muted/20' : ''
                       }`}
                     >
                       <div className={`w-8 h-8 rounded-lg ${config.bg} flex items-center justify-center ${config.color} shrink-0 mt-0.5`}>
                         {config.icon}
                       </div>
                       <div className="flex-1 min-w-0 pr-4">
-                        <p className={`text-xs font-medium ${!notif.read ? 'text-white' : 'text-gray-300'}`}>
+                        <p className={`text-xs font-medium ${!notif.read ? 'text-foreground' : 'text-muted-foreground'}`}>
                           {notif.title}
                         </p>
-                        <p className="text-[11px] text-gray-500 truncate">{notif.description}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{notif.description}</p>
                         <div className="flex items-center gap-1 mt-0.5">
-                          <Clock className="w-2.5 h-2.5 text-gray-600" />
-                          <span className="text-[10px] text-gray-600">{notif.time}</span>
+                          <Clock className="w-2.5 h-2.5 text-muted-foreground" />
+                          <span className="text-[10px] text-muted-foreground">{notif.time}</span>
                         </div>
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); dismiss(notif.id); }}
-                        className="absolute top-2 right-2 text-gray-600 hover:text-gray-400 transition-colors"
+                        className="absolute top-2 right-2 text-muted-foreground hover:text-muted-foreground transition-colors"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -182,8 +182,8 @@ export function NotificationBell() {
             </div>
 
             {/* Footer */}
-            <div className="p-2 border-t border-gray-700/50">
-              <Button variant="ghost" size="sm" className="w-full text-xs text-gray-400 hover:text-white">
+            <div className="p-2 border-t border-border">
+              <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground hover:text-white">
                 Все уведомления
               </Button>
             </div>

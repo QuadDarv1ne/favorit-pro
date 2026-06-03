@@ -22,7 +22,7 @@ const tiers = [
     price: 0,
     period: 'навсегда',
     icon: <Zap className="w-6 h-6" />,
-    color: 'text-gray-400',
+    color: 'text-muted-foreground',
     bg: 'bg-gray-500/20',
     border: 'border-gray-500/30',
     gradient: 'from-gray-800/50 to-gray-800/50',
@@ -159,12 +159,12 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#0d1117] border-gray-700/50 text-gray-100 max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center mb-2">
-          <DialogTitle className="text-2xl font-bold text-white">
+          <DialogTitle className="text-2xl font-bold text-foreground">
             Выберите тариф
           </DialogTitle>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Получите доступ к лучшим прогнозам и аналитике
           </p>
         </DialogHeader>
@@ -216,21 +216,21 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
                       {tier.icon}
                     </div>
                     <h3 className={`text-lg font-bold ${tier.color}`}>{tier.name}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{tier.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{tier.description}</p>
                   </div>
 
                   {/* Price */}
                   <div className="text-center mb-5">
                     <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-3xl font-bold text-white">
+                      <span className="text-3xl font-bold text-foreground">
                         {tier.price === 0 ? 'Бесплатно' : tier.price.toLocaleString()}
                       </span>
                       {tier.price > 0 && (
-                        <span className="text-sm text-gray-500">₽/{tier.period}</span>
+                        <span className="text-sm text-muted-foreground">₽/{tier.period}</span>
                       )}
                     </div>
                     {tier.price > 0 && (
-                      <p className="text-[10px] text-gray-600 mt-1">
+                      <p className="text-[10px] text-muted-foreground mt-1">
                         ≈ {Math.round(tier.price / 30)} ₽/день
                       </p>
                     )}
@@ -245,9 +245,9 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
                         {feature.included ? (
                           <Check className={`w-4 h-4 ${tier.color} shrink-0 mt-0.5`} />
                         ) : (
-                          <X className="w-4 h-4 text-gray-600 shrink-0 mt-0.5" />
+                          <X className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                         )}
-                        <span className={`text-xs ${feature.included ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <span className={`text-xs ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
                           {feature.text}
                         </span>
                       </div>
@@ -263,7 +263,7 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
                         ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
                         : tier.id === 'vip'
                         ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-white shadow-lg shadow-yellow-500/20'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-700 text-muted-foreground hover:bg-gray-600'
                     } font-medium`}
                     onClick={() => handleSelect(tier.id, tier.price)}
                     disabled={isProcessing || isCurrentTier}
@@ -287,30 +287,30 @@ export function SubscriptionTiers({ open, onClose }: SubscriptionTiersProps) {
 
         {/* Bottom info */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 bg-gray-800/30 rounded-lg p-3 border border-gray-700/30">
+          <div className="flex items-center gap-3 bg-muted/30 rounded-lg p-3 border border-border">
             <Shield className="w-5 h-5 text-emerald-400 shrink-0" />
             <div>
-              <p className="text-xs font-medium text-white">Гарантия возврата</p>
-              <p className="text-[10px] text-gray-500">14 дней на возврат средств</p>
+              <p className="text-xs font-medium text-foreground">Гарантия возврата</p>
+              <p className="text-[10px] text-muted-foreground">14 дней на возврат средств</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-gray-800/30 rounded-lg p-3 border border-gray-700/30">
+          <div className="flex items-center gap-3 bg-muted/30 rounded-lg p-3 border border-border">
             <TrendingUp className="w-5 h-5 text-teal-400 shrink-0" />
             <div>
-              <p className="text-xs font-medium text-white">Отмена в любое время</p>
-              <p className="text-[10px] text-gray-500">Без скрытых платежей</p>
+              <p className="text-xs font-medium text-foreground">Отмена в любое время</p>
+              <p className="text-[10px] text-muted-foreground">Без скрытых платежей</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-gray-800/30 rounded-lg p-3 border border-gray-700/30">
+          <div className="flex items-center gap-3 bg-muted/30 rounded-lg p-3 border border-border">
             <BarChart3 className="w-5 h-5 text-purple-400 shrink-0" />
             <div>
-              <p className="text-xs font-medium text-white">Средний ROI +17.3%</p>
-              <p className="text-[10px] text-gray-500">Подтверждённая статистика</p>
+              <p className="text-xs font-medium text-foreground">Средний ROI +17.3%</p>
+              <p className="text-[10px] text-muted-foreground">Подтверждённая статистика</p>
             </div>
           </div>
         </div>
 
-        <p className="text-[10px] text-gray-600 text-center mt-4">
+        <p className="text-[10px] text-muted-foreground text-center mt-4">
           18+ Ответственная игра. Подписка не гарантирует выигрыш. Играйте осознанно.
         </p>
       </DialogContent>

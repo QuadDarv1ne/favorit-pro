@@ -51,7 +51,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Newspaper className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Медиа</h2>
+          <h2 className="text-xl font-bold text-foreground">Медиа</h2>
         </div>
         <div className={`grid gap-4 ${detailed ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-3'}`}>
           {Array.from({ length: 3 }).map((_, i) => (
@@ -67,21 +67,21 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Newspaper className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Медиа</h2>
+          <h2 className="text-xl font-bold text-foreground">Медиа</h2>
         </div>
         <div className="flex flex-col items-center justify-center py-12 px-4">
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
             <Newspaper className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
-          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+          <h3 className="text-base font-semibold text-foreground mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
             Не удалось загрузить новости. Проверьте подключение к интернету.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -96,10 +96,10 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Newspaper className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Медиа</h2>
+          <h2 className="text-xl font-bold text-foreground">Медиа</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
             Все новости <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -113,7 +113,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <Card className="bg-gray-800/50 border-gray-700/50 hover:border-teal-500/30 transition-all duration-300 cursor-pointer group h-full">
+            <Card className="bg-muted/50 border-border hover:border-teal-500/30 transition-all duration-300 cursor-pointer group h-full">
               <CardContent className="p-5 flex flex-col h-full">
                 {/* Image placeholder */}
                 <div className="w-full h-40 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 mb-4 flex items-center justify-center overflow-hidden">
@@ -122,19 +122,19 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
                   </span>
                 </div>
 
-                <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs w-fit mb-2">
+                <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs w-fit mb-2">
                   {news.category}
                 </Badge>
 
-                <h3 className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors mb-2 line-clamp-2 leading-snug">
+                <h3 className="text-sm font-semibold text-foreground group-hover:text-teal-300 transition-colors mb-2 line-clamp-2 leading-snug">
                   {news.title}
                 </h3>
 
-                <p className="text-xs text-gray-400 line-clamp-2 mb-3 flex-1">
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3 flex-1">
                   {news.excerpt}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     <span>{news.publishedAt}</span>
@@ -149,7 +149,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
 
       {detailed && (
         <div className="mt-6 flex justify-center">
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-white">
             Загрузить ещё
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

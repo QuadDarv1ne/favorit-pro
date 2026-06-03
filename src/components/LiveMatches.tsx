@@ -225,7 +225,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-red-400 animate-pulse" />
-            <h2 className="text-xl font-bold text-white">Живые матчи</h2>
+            <h2 className="text-xl font-bold text-foreground">Живые матчи</h2>
           </div>
           <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
             LIVE
@@ -246,7 +246,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-red-400 animate-pulse" />
-            <h2 className="text-xl font-bold text-white">Живые матчи</h2>
+            <h2 className="text-xl font-bold text-foreground">Живые матчи</h2>
           </div>
           <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
             LIVE
@@ -256,15 +256,15 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
             <Radio className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
-          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+          <h3 className="text-base font-semibold text-foreground mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
             Не удалось загрузить живые матчи. Проверьте подключение к интернету.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -316,7 +316,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       <div className="flex items-center gap-3 mb-6">
         <div className="flex items-center gap-2">
           <Radio className="w-5 h-5 text-red-400 animate-pulse" />
-          <h2 className="text-xl font-bold text-white">Живые матчи</h2>
+          <h2 className="text-xl font-bold text-foreground">Живые матчи</h2>
         </div>
         <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
           LIVE
@@ -341,7 +341,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
               className="min-w-[300px] lg:min-w-0 snap-start"
             >
               <Card
-                className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer group relative overflow-hidden"
+                className="bg-muted/40 backdrop-blur-md border-border hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer group relative overflow-hidden"
                 onClick={() => onMatchClick?.(match)}
               >
                 <CardContent className="p-4 relative">
@@ -350,7 +350,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                   {/* Header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{match.league}</span>
+                      <span className="text-xs text-muted-foreground">{match.league}</span>
                       {match.isHot && (
                         <Flame className="w-3.5 h-3.5 text-orange-400" />
                       )}
@@ -358,7 +358,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => handleFavoriteClick(e, match)}
-                        className={`p-1 rounded transition-colors ${isFavorite ? 'text-red-400' : 'text-gray-600 hover:text-red-400'}`}
+                        className={`p-1 rounded transition-colors ${isFavorite ? 'text-red-400' : 'text-muted-foreground hover:text-red-400'}`}
                       >
                         <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
                       </button>
@@ -368,7 +368,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                           <span className="text-xs text-red-400 font-medium">LIVE</span>
                         </div>
                       ) : (
-                        <span className="text-xs text-gray-400 tabular-nums">{match.startTime}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{match.startTime}</span>
                       )}
                     </div>
                   </div>
@@ -376,7 +376,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                   {/* Teams & Score */}
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                      <span className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                         {match.homeTeam}
                       </span>
                       <motion.span
@@ -384,13 +384,13 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                         initial={{ scale: 1.3, color: '#10b981' }}
                         animate={{ scale: 1, color: '#ffffff' }}
                         transition={{ duration: 0.5 }}
-                        className="text-lg font-bold text-white tabular-nums"
+                        className="text-lg font-bold text-foreground tabular-nums"
                       >
                         {currentScore.home}
                       </motion.span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                      <span className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                         {match.awayTeam}
                       </span>
                       <motion.span
@@ -398,7 +398,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
                         initial={{ scale: 1.3, color: '#10b981' }}
                         animate={{ scale: 1, color: '#ffffff' }}
                         transition={{ duration: 0.5 }}
-                        className="text-lg font-bold text-white tabular-nums"
+                        className="text-lg font-bold text-foreground tabular-nums"
                       >
                         {currentScore.away}
                       </motion.span>

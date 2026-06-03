@@ -94,12 +94,12 @@ export function KeyboardShortcutsHelp() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setIsOpen(false)}>
       <div
-        className="bg-[#151b23] border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/50 max-w-md w-full mx-4 overflow-hidden"
+        className="bg-card border border-border rounded-2xl shadow-2xl shadow-black/50 max-w-md w-full mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-5 py-4 border-b border-gray-700/50">
-          <h3 className="text-lg font-bold text-white">Клавиатурные шорткаты</h3>
-          <p className="text-xs text-gray-500 mt-0.5">Используйте Alt + клавиша для быстрой навигации</p>
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-lg font-bold text-foreground">Клавиатурные шорткаты</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Используйте Alt + клавиша для быстрой навигации</p>
         </div>
 
         <div className="px-5 py-3 space-y-1 max-h-80 overflow-y-auto">
@@ -107,48 +107,48 @@ export function KeyboardShortcutsHelp() {
             <div key={key} className="flex items-center justify-between py-1.5">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{icon}</span>
-                <span className="text-sm text-gray-300">{label}</span>
+                <span className="text-sm text-muted-foreground">{label}</span>
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">Alt</kbd>
-                <span className="text-gray-600 text-xs">+</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">{key}</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">Alt</kbd>
+                <span className="text-muted-foreground text-xs">+</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">{key}</kbd>
               </div>
             </div>
           ))}
 
-          <div className="border-t border-gray-700/30 my-2 pt-2">
+          <div className="border-t border-border my-2 pt-2">
             <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-gray-300">🔍 Поиск</span>
+              <span className="text-sm text-muted-foreground">🔍 Поиск</span>
               <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">Alt</kbd>
-                <span className="text-gray-600 text-xs">+</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">S</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">Alt</kbd>
+                <span className="text-muted-foreground text-xs">+</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">S</kbd>
               </div>
             </div>
             <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-gray-300">🔑 Войти</span>
+              <span className="text-sm text-muted-foreground">🔑 Войти</span>
               <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">Alt</kbd>
-                <span className="text-gray-600 text-xs">+</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">L</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">Alt</kbd>
+                <span className="text-muted-foreground text-xs">+</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">L</kbd>
               </div>
             </div>
             <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-gray-300">⌨️ Эта подсказка</span>
+              <span className="text-sm text-muted-foreground">⌨️ Эта подсказка</span>
               <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">Alt</kbd>
-                <span className="text-gray-600 text-xs">+</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-[10px] text-gray-400 border border-gray-600/50 font-mono">K</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">Alt</kbd>
+                <span className="text-muted-foreground text-xs">+</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground border border-border font-mono">K</kbd>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="px-5 py-3 border-t border-gray-700/50 bg-gray-800/20">
+        <div className="px-5 py-3 border-t border-border bg-muted/20">
           <button
             onClick={() => setIsOpen(false)}
-            className="w-full text-xs text-gray-400 hover:text-white transition-colors text-center"
+            className="w-full text-xs text-muted-foreground hover:text-white transition-colors text-center"
           >
             Нажмите Esc или Alt+K чтобы закрыть
           </button>

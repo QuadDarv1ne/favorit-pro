@@ -72,7 +72,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Calendar className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Ближайшие матчи</h2>
+          <h2 className="text-xl font-bold text-foreground">Ближайшие матчи</h2>
         </div>
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -88,21 +88,21 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Calendar className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Ближайшие матчи</h2>
+          <h2 className="text-xl font-bold text-foreground">Ближайшие матчи</h2>
         </div>
         <div className="flex flex-col items-center justify-center py-12 px-4">
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
             <Calendar className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
-          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+          <h3 className="text-base font-semibold text-foreground mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
             Не удалось загрузить расписание матчей. Проверьте подключение к интернету.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -150,7 +150,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-2 mb-6">
         <Calendar className="w-5 h-5 text-teal-400" />
-        <h2 className="text-xl font-bold text-white">Ближайшие матчи</h2>
+        <h2 className="text-xl font-bold text-foreground">Ближайшие матчи</h2>
       </div>
 
       <div className="space-y-3">
@@ -164,29 +164,29 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               <Card
-                className="bg-gray-800/50 border-gray-700/50 hover:border-emerald-500/30 transition-all duration-300 cursor-pointer group"
+                className="bg-muted/50 border-border hover:border-emerald-500/30 transition-all duration-300 cursor-pointer group"
                 onClick={() => onMatchClick?.(match)}
               >
                 <CardContent className="p-4">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                     {/* League & Time */}
                     <div className="flex sm:flex-col items-center sm:items-start gap-2 sm:gap-0 sm:w-28 shrink-0">
-                      <span className="text-xs text-gray-500">{match.league}</span>
-                      <span className="text-xs text-gray-400 font-medium">{match.startTime}</span>
+                      <span className="text-xs text-muted-foreground">{match.league}</span>
+                      <span className="text-xs text-muted-foreground font-medium">{match.startTime}</span>
                     </div>
 
                     {/* Teams */}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                          <span className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                             {match.homeTeam}
                           </span>
                           {match.isHot && <Flame className="w-3.5 h-3.5 text-orange-400" />}
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                        <span className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                           {match.awayTeam}
                         </span>
                       </div>
@@ -198,7 +198,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
                         onClick={(e) => handleOddsClick(e, match, '1', match.homeOdds)}
                         className="bg-gray-700/50 hover:bg-emerald-500/20 rounded-lg px-3 py-1.5 text-center min-w-[52px] transition-colors cursor-pointer"
                       >
-                        <span className="text-[10px] text-gray-500 block">1</span>
+                        <span className="text-[10px] text-muted-foreground block">1</span>
                         <span className="text-sm font-semibold text-emerald-400">{match.homeOdds.toFixed(2)}</span>
                       </div>
                       {match.drawOdds != null && (
@@ -206,15 +206,15 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
                           onClick={(e) => { const draw = match.drawOdds; if (draw != null) handleOddsClick(e, match, 'X', draw); }}
                           className="bg-gray-700/50 hover:bg-gray-600/50 rounded-lg px-3 py-1.5 text-center min-w-[52px] transition-colors cursor-pointer"
                         >
-                          <span className="text-[10px] text-gray-500 block">X</span>
-                          <span className="text-sm font-semibold text-gray-300">{match.drawOdds.toFixed(2)}</span>
+                          <span className="text-[10px] text-muted-foreground block">X</span>
+                          <span className="text-sm font-semibold text-muted-foreground">{match.drawOdds.toFixed(2)}</span>
                         </div>
                       )}
                       <div
                         onClick={(e) => handleOddsClick(e, match, '2', match.awayOdds)}
                         className="bg-gray-700/50 hover:bg-emerald-500/20 rounded-lg px-3 py-1.5 text-center min-w-[52px] transition-colors cursor-pointer"
                       >
-                        <span className="text-[10px] text-gray-500 block">2</span>
+                        <span className="text-[10px] text-muted-foreground block">2</span>
                         <span className="text-sm font-semibold text-emerald-400">{match.awayOdds.toFixed(2)}</span>
                       </div>
                     </div>
@@ -229,7 +229,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
                       )}
                       <button
                         onClick={(e) => handleFavorite(e, match)}
-                        className={`p-1.5 rounded-lg transition-colors ${isFavorite ? 'text-red-400 bg-red-500/10' : 'text-gray-600 hover:text-red-400 hover:bg-gray-700/50'}`}
+                        className={`p-1.5 rounded-lg transition-colors ${isFavorite ? 'text-red-400 bg-red-500/10' : 'text-muted-foreground hover:text-red-400 hover:bg-gray-700/50'}`}
                       >
                         <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
                       </button>

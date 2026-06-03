@@ -65,7 +65,7 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
           <h2 className="text-xl font-bold text-white">Статьи</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
             Все статьи <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -80,7 +80,7 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
             transition={{ duration: 0.3, delay: index * 0.08 }}
           >
             <Card
-              className="bg-gray-800/50 border-gray-700/50 hover:border-teal-500/30 transition-all duration-300 cursor-pointer group h-full overflow-hidden"
+              className="bg-muted/50 border-border hover:border-teal-500/30 transition-all duration-300 cursor-pointer group h-full overflow-hidden"
               onClick={() => handleArticleClick(article)}
             >
               <CardContent className="p-5 flex flex-col h-full">
@@ -92,19 +92,19 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
                   </span>
                 </div>
 
-                <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs w-fit mb-2">
+                <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs w-fit mb-2">
                   {sportEmoji(article.category)} {article.category}
                 </Badge>
 
-                <h3 className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors mb-2 line-clamp-2 leading-snug">
+                <h3 className="text-sm font-semibold text-foreground group-hover:text-teal-300 transition-colors mb-2 line-clamp-2 leading-snug">
                   {article.title}
                 </h3>
 
-                <p className="text-xs text-gray-400 line-clamp-2 mb-3 flex-1">
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3 flex-1">
                   {article.excerpt}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     <span>{article.publishedAt}</span>
@@ -119,7 +119,7 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
 
       {detailed && (
         <div className="mt-6 flex justify-center">
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-white">
             Загрузить ещё
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

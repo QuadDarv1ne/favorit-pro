@@ -45,8 +45,8 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 shadow-xl">
-        <p className="text-xs text-gray-400">{label}</p>
+      <div className="bg-muted border border-border rounded-lg px-3 py-2 shadow-xl">
+        <p className="text-xs text-muted-foreground">{label}</p>
         <p className="text-sm font-bold text-emerald-400">{payload[0].value.toLocaleString('ru-RU')} ₽</p>
       </div>
     );
@@ -61,9 +61,9 @@ export function BankrollTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="bg-gray-800/40 backdrop-blur-md border-gray-700/30">
+      <Card className="bg-muted/40 backdrop-blur-md border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base text-white flex items-center gap-2">
+          <CardTitle className="text-base text-foreground flex items-center gap-2">
             <Wallet className="w-4 h-4 text-emerald-400" />
             Динамика банкролла
           </CardTitle>
@@ -71,24 +71,24 @@ export function BankrollTracker() {
         <CardContent>
           {/* Summary stats */}
           <div className="grid grid-cols-3 gap-3 mb-5">
-            <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/30 text-center">
+            <div className="bg-card/50 rounded-lg p-3 border border-border text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
                 <ArrowUp className="w-3 h-3 text-emerald-400" />
-                <span className="text-[10px] text-gray-500">Макс. баланс</span>
+                <span className="text-[10px] text-muted-foreground">Макс. баланс</span>
               </div>
               <p className="text-sm font-bold text-emerald-400 tabular-nums">{maxBalance.toLocaleString('ru-RU')} ₽</p>
             </div>
-            <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/30 text-center">
+            <div className="bg-card/50 rounded-lg p-3 border border-border text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
                 <ArrowDown className="w-3 h-3 text-red-400" />
-                <span className="text-[10px] text-gray-500">Мин. баланс</span>
+                <span className="text-[10px] text-muted-foreground">Мин. баланс</span>
               </div>
               <p className="text-sm font-bold text-red-400 tabular-nums">{minBalance.toLocaleString('ru-RU')} ₽</p>
             </div>
-            <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/30 text-center">
+            <div className="bg-card/50 rounded-lg p-3 border border-border text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
                 <TrendingUp className="w-3 h-3 text-emerald-400" />
-                <span className="text-[10px] text-gray-500">Прирост</span>
+                <span className="text-[10px] text-muted-foreground">Прирост</span>
               </div>
               <p className="text-sm font-bold text-emerald-400">+{growthPercent}%</p>
             </div>

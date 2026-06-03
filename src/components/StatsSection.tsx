@@ -15,43 +15,43 @@ export function StatsSection() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-2 mb-6">
         <BarChart3 className="w-5 h-5 text-emerald-400" />
-        <h2 className="text-xl font-bold text-white">Статистика и аналитика</h2>
+        <h2 className="text-xl font-bold text-foreground">Статистика и аналитика</h2>
       </div>
 
       {/* Overview cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-2">
               <Target className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-gray-400">Всего прогнозов</span>
+              <span className="text-sm text-muted-foreground">Всего прогнозов</span>
             </div>
-            <p className="text-2xl font-bold text-white">{statsData.totalPredictions.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-foreground">{statsData.totalPredictions.toLocaleString()}</p>
           </CardContent>
         </Card>
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-2">
               <Percent className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-gray-400">Проходимость</span>
+              <span className="text-sm text-muted-foreground">Проходимость</span>
             </div>
             <p className="text-2xl font-bold text-emerald-400">{statsData.winRate}%</p>
           </CardContent>
         </Card>
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-2">
               <BarChart3 className="w-4 h-4 text-teal-400" />
-              <span className="text-sm text-gray-400">Средний коэфф.</span>
+              <span className="text-sm text-muted-foreground">Средний коэфф.</span>
             </div>
-            <p className="text-2xl font-bold text-white">{statsData.avgOdds}</p>
+            <p className="text-2xl font-bold text-foreground">{statsData.avgOdds}</p>
           </CardContent>
         </Card>
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-gray-400">ROI</span>
+              <span className="text-sm text-muted-foreground">ROI</span>
             </div>
             <p className="text-2xl font-bold text-emerald-400">+{statsData.roi}%</p>
           </CardContent>
@@ -60,9 +60,9 @@ export function StatsSection() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Monthly Performance */}
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-white">Результаты по месяцам</CardTitle>
+            <CardTitle className="text-base text-foreground">Результаты по месяцам</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
@@ -88,9 +88,9 @@ export function StatsSection() {
         </Card>
 
         {/* Profit Trend */}
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-white">Прибыль по месяцам (%)</CardTitle>
+            <CardTitle className="text-base text-foreground">Прибыль по месяцам (%)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
@@ -122,9 +122,9 @@ export function StatsSection() {
         </Card>
 
         {/* Sport Distribution */}
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-white">Проходимость по видам спорта</CardTitle>
+            <CardTitle className="text-base text-foreground">Проходимость по видам спорта</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
@@ -158,9 +158,9 @@ export function StatsSection() {
         </Card>
 
         {/* Sport Win Rates */}
-        <Card className="bg-gray-800/50 border-gray-700/50">
+        <Card className="bg-muted/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-white">Детализация по видам спорта</CardTitle>
+            <CardTitle className="text-base text-foreground">Детализация по видам спорта</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -172,10 +172,10 @@ export function StatsSection() {
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: COLORS[index % COLORS.length] }}
                       />
-                      <span className="text-sm text-gray-300">{stat.sport}</span>
+                      <span className="text-sm text-muted-foreground">{stat.sport}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                      <span className="text-gray-400">{stat.predictions} прогнозов</span>
+                      <span className="text-muted-foreground">{stat.predictions} прогнозов</span>
                       <span className="text-emerald-400 font-medium">{stat.winRate}%</span>
                     </div>
                   </div>

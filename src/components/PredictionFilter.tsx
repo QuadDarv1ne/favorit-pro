@@ -54,7 +54,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-emerald-400" />
-          <h2 className="text-xl font-bold text-white">Прогнозы</h2>
+          <h2 className="text-xl font-bold text-foreground">Прогнозы</h2>
           <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
             {filteredPredictions.length}
           </Badge>
@@ -63,7 +63,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
           variant="outline"
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className={`border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 gap-1.5 ${
+          className={`border-border text-muted-foreground hover:text-white hover:bg-accent gap-1.5 ${
             showFilters ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : ''
           }`}
         >
@@ -83,10 +83,10 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="bg-gray-800/40 rounded-xl border border-gray-700/30 p-4 mb-4 space-y-3">
+            <div className="bg-muted/40 rounded-xl border border-border p-4 mb-4 space-y-3">
               {/* Sport filter */}
               <div>
-                <label className="text-xs text-gray-400 mb-2 block">Вид спорта</label>
+                <label className="text-xs text-muted-foreground mb-2 block">Вид спорта</label>
                 <div className="flex flex-wrap gap-1.5">
                   {(Object.keys(sportLabels) as FilterSport[]).map((sport) => (
                     <button
@@ -95,7 +95,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                         filterSport === sport
                           ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-gray-700/50 text-gray-400 border border-gray-700/30 hover:text-gray-200 hover:bg-gray-700'
+                          : 'bg-gray-700/50 text-muted-foreground border border-border hover:text-foreground hover:bg-gray-700'
                       }`}
                     >
                       {sportLabels[sport]}
@@ -106,7 +106,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
 
               {/* Sort */}
               <div>
-                <label className="text-xs text-gray-400 mb-2 block">Сортировка</label>
+                <label className="text-xs text-muted-foreground mb-2 block">Сортировка</label>
                 <div className="flex gap-1.5">
                   {(Object.keys(sortLabels) as SortKey[]).map((key) => (
                     <button
@@ -115,7 +115,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                         sortKey === key
                           ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-gray-700/50 text-gray-400 border border-gray-700/30 hover:text-gray-200 hover:bg-gray-700'
+                          : 'bg-gray-700/50 text-muted-foreground border border-border hover:text-foreground hover:bg-gray-700'
                       }`}
                     >
                       <ArrowUpDown className="w-3 h-3" />
@@ -127,7 +127,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
 
               {/* Confidence slider */}
               <div>
-                <label className="text-xs text-gray-400 mb-2 block">
+                <label className="text-xs text-muted-foreground mb-2 block">
                   Минимальная уверенность: <span className="text-emerald-400 font-medium">{minConfidence}%</span>
                 </label>
                 <input
@@ -139,7 +139,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
                   onChange={(e) => setMinConfidence(Number(e.target.value))}
                   className="w-full h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer accent-emerald-500"
                 />
-                <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
                   <span>0%</span>
                   <span>50%</span>
                   <span>100%</span>
@@ -153,11 +153,11 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
       {/* Results */}
       {filteredPredictions.length === 0 ? (
         <div className="text-center py-12">
-          <div className="w-14 h-14 rounded-full bg-gray-800/50 flex items-center justify-center mx-auto mb-3">
-            <TrendingUp className="w-7 h-7 text-gray-600" />
+          <div className="w-14 h-14 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+            <TrendingUp className="w-7 h-7 text-muted-foreground" />
           </div>
-          <p className="text-sm text-gray-500">Прогнозы не найдены</p>
-          <p className="text-xs text-gray-600 mt-1">Попробуйте изменить фильтры</p>
+          <p className="text-sm text-muted-foreground">Прогнозы не найдены</p>
+          <p className="text-xs text-muted-foreground mt-1">Попробуйте изменить фильтры</p>
           <Button
             variant="ghost"
             size="sm"
@@ -178,17 +178,17 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               <Card
-                className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer group h-full"
+                className="bg-muted/40 backdrop-blur-md border-border hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer group h-full"
                 onClick={() => onPredictionClick?.(prediction)}
               >
                 <CardHeader className="pb-2 px-4 pt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+                      <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs">
                         {prediction.sport === 'football' ? '⚽' : prediction.sport === 'hockey' ? '🏒' : prediction.sport === 'basketball' ? '🏀' : prediction.sport === 'tennis' ? '🎾' : '🎮'}{' '}
                         {prediction.sport === 'football' ? 'Футбол' : prediction.sport === 'hockey' ? 'Хоккей' : prediction.sport === 'basketball' ? 'Баскетбол' : prediction.sport === 'tennis' ? 'Теннис' : 'Киберспорт'}
                       </Badge>
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
                         {prediction.createdAt}
                       </div>
@@ -197,19 +197,19 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
                   </div>
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
-                  <h3 className="text-sm font-semibold text-white mb-1 group-hover:text-emerald-300 transition-colors">
+                  <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-emerald-300 transition-colors">
                     {prediction.matchTitle}
                   </h3>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-emerald-400 font-bold">{prediction.prediction}</span>
-                    <span className="text-gray-400 text-sm">@ {prediction.odds.toFixed(2)}</span>
+                    <span className="text-muted-foreground text-sm">@ {prediction.odds.toFixed(2)}</span>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{prediction.analysis}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{prediction.analysis}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="w-5 h-5 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-[8px] font-bold text-white">
                       {prediction.expertName.split(' ').map((n) => n[0]).join('')}
                     </div>
-                    <span className="text-xs text-gray-400">{prediction.expertName}</span>
+                    <span className="text-xs text-muted-foreground">{prediction.expertName}</span>
                   </div>
                 </CardContent>
               </Card>

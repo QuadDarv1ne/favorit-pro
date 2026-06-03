@@ -21,28 +21,28 @@ export function ArticleDetailModal({ article, open, onClose }: ArticleDetailModa
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#151b23] border-gray-700/50 text-gray-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           {/* Category & Meta */}
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+            <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs">
               {sportEmoji(article.category)} {article.category}
             </Badge>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="w-3 h-3" />
               {article.publishedAt}
             </div>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="w-3 h-3" />
               {article.readTime} мин
             </div>
           </div>
 
-          <DialogTitle className="text-xl font-bold text-white leading-tight">
+          <DialogTitle className="text-xl font-bold text-foreground leading-tight">
             {article.title}
           </DialogTitle>
 
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {article.excerpt}
           </p>
         </DialogHeader>
@@ -62,8 +62,8 @@ export function ArticleDetailModal({ article, open, onClose }: ArticleDetailModa
           prose-headings:text-white prose-headings:font-semibold
           prose-h2:text-lg prose-h2:mt-4 prose-h2:mb-2
           prose-h3:text-base prose-h3:mt-3 prose-h3:mb-1
-          prose-p:text-gray-300 prose-p:leading-relaxed prose-p:my-2
-          prose-li:text-gray-300
+          prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:my-2
+          prose-li:text-muted-foreground
           prose-strong:text-white
           prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
           prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-500/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r
@@ -77,7 +77,7 @@ export function ArticleDetailModal({ article, open, onClose }: ArticleDetailModa
         <Separator className="bg-gray-700/50 my-4" />
 
         {/* Footer */}
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <FileText className="w-3.5 h-3.5" />
           <span>Статья опубликована {article.publishedAt}</span>
         </div>

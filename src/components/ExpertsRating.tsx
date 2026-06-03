@@ -45,7 +45,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Trophy className="w-5 h-5 text-yellow-400" />
-          <h2 className="text-xl font-bold text-white">Рейтинг экспертов</h2>
+          <h2 className="text-xl font-bold text-foreground">Рейтинг экспертов</h2>
         </div>
         <div className={`grid gap-4 ${detailed ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
           {Array.from({ length: 4 }).map((_, i) => (
@@ -61,21 +61,21 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Trophy className="w-5 h-5 text-yellow-400" />
-          <h2 className="text-xl font-bold text-white">Рейтинг экспертов</h2>
+          <h2 className="text-xl font-bold text-foreground">Рейтинг экспертов</h2>
         </div>
         <div className="flex flex-col items-center justify-center py-12 px-4">
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
             <Trophy className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
-          <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+          <h3 className="text-base font-semibold text-foreground mb-1">Ошибка загрузки</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
             Не удалось загрузить рейтинг экспертов. Проверьте подключение к интернету.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -90,10 +90,10 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-yellow-400" />
-          <h2 className="text-xl font-bold text-white">Рейтинг экспертов</h2>
+          <h2 className="text-xl font-bold text-foreground">Рейтинг экспертов</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
             Все эксперты <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -108,7 +108,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
             <Card
-              className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-yellow-500/40 hover:shadow-lg hover:shadow-yellow-500/5 transition-all duration-300 cursor-pointer group h-full relative overflow-hidden"
+              className="bg-muted/40 backdrop-blur-md border-border hover:border-yellow-500/40 hover:shadow-lg hover:shadow-yellow-500/5 transition-all duration-300 cursor-pointer group h-full relative overflow-hidden"
               onClick={() => onExpertClick?.(expert)}
             >
               <CardContent className="p-5 relative">
@@ -119,14 +119,14 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-white group-hover:text-yellow-300 transition-colors truncate">
+                      <h3 className="text-sm font-semibold text-foreground group-hover:text-yellow-300 transition-colors truncate">
                         {expert.name}
                       </h3>
                       {index < 3 && (
                         <span className="text-yellow-400 text-xs">🏆 #{index + 1}</span>
                       )}
                     </div>
-                    <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs mt-1">
+                    <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs mt-1">
                       {expert.specialty}
                     </Badge>
                   </div>
@@ -136,15 +136,15 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
                 <div className="grid grid-cols-3 gap-3 mb-4">
                   <div className="text-center">
                     <p className="text-lg font-bold text-emerald-400">{expert.winRate}%</p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">Проход</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Проход</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg font-bold text-white">{expert.totalPredictions}</p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">Прогнозов</p>
+                    <p className="text-lg font-bold text-foreground">{expert.totalPredictions}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Прогнозов</p>
                   </div>
                   <div className="text-center">
                     <p className="text-lg font-bold text-emerald-400">+{expert.roi}%</p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">ROI</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">ROI</p>
                   </div>
                 </div>
 
@@ -164,7 +164,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
                       </span>
                     ))}
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
                     <span>{expert.streak} подряд</span>
                   </div>
@@ -174,7 +174,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full mt-4 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-yellow-500/50"
+                    className="w-full mt-4 border-border text-muted-foreground hover:bg-accent hover:text-white hover:border-yellow-500/50"
                     onClick={(e) => { e.stopPropagation(); }}
                   >
                     <Users className="w-3.5 h-3.5 mr-1.5" />

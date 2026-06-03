@@ -47,11 +47,11 @@ export function RecentWinsFeed() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <div className="flex items-center gap-2 mb-4">
         <CheckCircle className="w-5 h-5 text-emerald-400" />
-        <h2 className="text-lg font-bold text-white">Недавние победы</h2>
-        <span className="text-xs text-gray-500 ml-2">8 побед за последний час</span>
+        <h2 className="text-lg font-bold text-foreground">Недавние победы</h2>
+        <span className="text-xs text-muted-foreground ml-2">8 побед за последний час</span>
       </div>
 
-      <div className="relative overflow-hidden rounded-xl bg-gray-800/30 backdrop-blur-md border border-emerald-500/20 py-4">
+      <div className="relative overflow-hidden rounded-xl bg-muted/30 backdrop-blur-md border border-emerald-500/20 py-4">
         {/* Gradient fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0d1117] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0d1117] to-transparent z-10 pointer-events-none" />
@@ -69,13 +69,13 @@ export function RecentWinsFeed() {
 
               {/* Content */}
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-xs font-medium text-white">{win.user}</span>
-                <span className="text-[10px] text-gray-500">{sportEmojis[win.sport] || '🏅'}</span>
-                <span className="text-xs text-gray-400">{win.match}</span>
+                <span className="text-xs font-medium text-foreground">{win.user}</span>
+                <span className="text-[10px] text-muted-foreground">{sportEmojis[win.sport] || '🏅'}</span>
+                <span className="text-xs text-muted-foreground">{win.match}</span>
                 <span className="text-xs text-emerald-400 font-medium">{win.prediction}</span>
-                <span className="text-[10px] text-gray-500">@ {win.odds.toFixed(2)}</span>
+                <span className="text-[10px] text-muted-foreground">@ {win.odds.toFixed(2)}</span>
                 <span className="text-xs text-emerald-400 font-bold">{win.profit}</span>
-                <span className="text-[10px] text-gray-600">{win.time}</span>
+                <span className="text-[10px] text-muted-foreground">{win.time}</span>
                 <CheckCircle className="w-3 h-3 text-emerald-500 shrink-0" />
               </div>
             </div>

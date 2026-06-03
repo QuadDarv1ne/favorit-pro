@@ -24,7 +24,7 @@ export const HotStreaks = React.memo(function HotStreaks() {
       <div className="flex items-center gap-3 mb-5">
         <div className="flex items-center gap-2">
           <Flame className="w-5 h-5 text-orange-400" />
-          <h2 className="text-xl font-bold text-white">Горячие серии</h2>
+          <h2 className="text-xl font-bold text-foreground">Горячие серии</h2>
         </div>
         <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">
           🔥 {hotExperts.length} экспертов
@@ -61,10 +61,10 @@ export const HotStreaks = React.memo(function HotStreaks() {
                         .join('')}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors truncate">
+                      <h3 className="text-sm font-semibold text-foreground group-hover:text-orange-300 transition-colors truncate">
                         {expert.name}
                       </h3>
-                      <Badge variant="secondary" className="bg-gray-700/50 text-gray-300 text-[10px] mt-0.5">
+                      <Badge variant="secondary" className="bg-gray-700/50 text-muted-foreground text-[10px] mt-0.5">
                         {expert.specialty}
                       </Badge>
                     </div>
@@ -76,13 +76,13 @@ export const HotStreaks = React.memo(function HotStreaks() {
 
                   {/* Stats row */}
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="text-center bg-gray-900/30 rounded-lg py-2 px-1">
+                    <div className="text-center bg-card/30 rounded-lg py-2 px-1">
                       <p className="text-sm font-bold text-emerald-400">{expert.winRate}%</p>
-                      <p className="text-[9px] text-gray-500 uppercase tracking-wider">Проход</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Проход</p>
                     </div>
-                    <div className="text-center bg-gray-900/30 rounded-lg py-2 px-1">
+                    <div className="text-center bg-card/30 rounded-lg py-2 px-1">
                       <p className="text-sm font-bold text-orange-400">+{expert.roi}%</p>
-                      <p className="text-[9px] text-gray-500 uppercase tracking-wider">ROI</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">ROI</p>
                     </div>
                   </div>
 
@@ -102,7 +102,7 @@ export const HotStreaks = React.memo(function HotStreaks() {
                         </span>
                       ))}
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <TrendingUp className="w-3 h-3 text-orange-400" />
                       <span>{winRateInStreak}%</span>
                     </div>

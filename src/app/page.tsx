@@ -73,6 +73,7 @@ export default function Home() {
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [sportFilter, setSportFilter] = useState<string | null>(null);
   const isLoggedIn = useAppStore((s) => s.isLoggedIn);
+  const theme = useAppStore((s) => s.theme);
   const subscriptionModalOpen = useAppStore((s) => s.subscriptionModalOpen);
   const setSubscriptionModalOpen = useAppStore((s) => s.setSubscriptionModalOpen);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -140,7 +141,7 @@ export default function Home() {
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white">Все события</h2>
+                <h2 className="text-xl font-bold text-foreground">Все события</h2>
               </div>
               <ErrorBoundary resetKey={`sports-filter-${activeSection}`}><SportFilter activeFilter={sportFilter} onFilterChange={setSportFilter} /></ErrorBoundary>
             </div>
@@ -188,13 +189,13 @@ export default function Home() {
           <UserCabinet />
         ) : (
           <div className="max-w-md mx-auto px-4 py-20 text-center">
-            <div className="w-20 h-20 rounded-full bg-gray-800/50 flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Войдите в аккаунт</h2>
-            <p className="text-sm text-gray-400 mb-6">Чтобы видеть свой профиль, подписки и избранное</p>
+            <h2 className="text-xl font-bold text-foreground mb-2">Войдите в аккаунт</h2>
+            <p className="text-sm text-muted-foreground mb-6">Чтобы видеть свой профиль, подписки и избранное</p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => handleAuthClick('login')}
@@ -217,7 +218,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0d1117] text-gray-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <ErrorBoundary resetKey={`page-${activeSection}`}>
         <Header
           activeSection={activeSection}
@@ -248,7 +249,7 @@ export default function Home() {
 
         {/* Search overlay */}
         {searchOpen && (
-          <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
+          <div className="fixed inset-0 z-[90] bg-background/80 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
             <div className="max-w-2xl mx-auto pt-20 px-4" onClick={(e) => e.stopPropagation()}>
               <SearchBar autoFocus />
             </div>
@@ -293,11 +294,12 @@ export default function Home() {
         />
         <Toaster
           position="top-right"
+          theme={theme}
           toastOptions={{
             style: {
-              background: '#1f2937',
-              border: '1px solid #374151',
-              color: '#f3f4f6',
+              background: 'var(--popover)',
+              border: '1px solid var(--border)',
+              color: 'var(--popover-foreground)',
             },
           }}
         />

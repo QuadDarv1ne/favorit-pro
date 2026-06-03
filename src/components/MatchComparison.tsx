@@ -81,17 +81,17 @@ export const MatchComparison = React.memo(function MatchComparison() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-5">
         <GitCompareArrows className="w-5 h-5 text-emerald-400" />
-        <h2 className="text-xl font-bold text-white">Сравнение команд</h2>
+        <h2 className="text-xl font-bold text-foreground">Сравнение команд</h2>
       </div>
 
       <div className="glass-card rounded-xl p-4 sm:p-6">
         {/* Match selector */}
         <div className="mb-6">
-          <label className="text-xs text-gray-400 uppercase tracking-wider mb-2 block">Выберите матч</label>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Выберите матч</label>
           <select
             value={selectedMatchId}
             onChange={(e) => setSelectedMatchId(e.target.value)}
-            className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-colors"
+            className="w-full bg-card/50 border border-border text-sm text-foreground focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-colors"
           >
             {allMatches.map((m) => (
               <option key={m.id} value={m.id}>
@@ -114,8 +114,8 @@ export const MatchComparison = React.memo(function MatchComparison() {
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-sm font-bold text-white mx-auto mb-2">
                   {teamA.slice(0, 2).toUpperCase()}
                 </div>
-                <h3 className="text-sm font-semibold text-white truncate">{teamA}</h3>
-                <Badge variant="secondary" className="bg-gray-700/50 text-gray-300 text-[10px] mt-1">
+                <h3 className="text-sm font-semibold text-foreground truncate">{teamA}</h3>
+                <Badge variant="secondary" className="bg-gray-700/50 text-muted-foreground text-[10px] mt-1">
                   #{statsA.leaguePosition} из {statsA.totalTeams}
                 </Badge>
               </div>
@@ -130,8 +130,8 @@ export const MatchComparison = React.memo(function MatchComparison() {
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-sm font-bold text-white mx-auto mb-2">
                   {teamB.slice(0, 2).toUpperCase()}
                 </div>
-                <h3 className="text-sm font-semibold text-white truncate">{teamB}</h3>
-                <Badge variant="secondary" className="bg-gray-700/50 text-gray-300 text-[10px] mt-1">
+                <h3 className="text-sm font-semibold text-foreground truncate">{teamB}</h3>
+                <Badge variant="secondary" className="bg-gray-700/50 text-muted-foreground text-[10px] mt-1">
                   #{statsB.leaguePosition} из {statsB.totalTeams}
                 </Badge>
               </div>
@@ -144,7 +144,7 @@ export const MatchComparison = React.memo(function MatchComparison() {
                 <div className="text-right">
                   <span className="text-sm font-bold text-emerald-400">{statsA.winRate}%</span>
                 </div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">Проход</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">Проход</span>
                 <div className="text-left">
                   <span className="text-sm font-bold text-emerald-400">{statsB.winRate}%</span>
                 </div>
@@ -158,7 +158,7 @@ export const MatchComparison = React.memo(function MatchComparison() {
                     <div className="text-right">
                       <span className="text-sm font-bold text-teal-400">{statsA.avgGoals.toFixed(1)}</span>
                     </div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">Ср. гол/очк</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">Ср. гол/очк</span>
                     <div className="text-left">
                       <span className="text-sm font-bold text-teal-400">{statsB.avgGoals.toFixed(1)}</span>
                     </div>
@@ -172,7 +172,7 @@ export const MatchComparison = React.memo(function MatchComparison() {
                 <div className="text-right">
                   <span className="text-sm font-bold text-yellow-400">#{statsA.leaguePosition}</span>
                 </div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">Позиция</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">Позиция</span>
                 <div className="text-left">
                   <span className="text-sm font-bold text-yellow-400">#{statsB.leaguePosition}</span>
                 </div>
@@ -198,7 +198,7 @@ export const MatchComparison = React.memo(function MatchComparison() {
                     </span>
                   ))}
                 </div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">Форма</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">Форма</span>
                 <div className="flex justify-start gap-1">
                   {statsB.lastResults.map((r, i) => (
                     <span
@@ -216,15 +216,15 @@ export const MatchComparison = React.memo(function MatchComparison() {
               {/* Form Indicator */}
               <div className="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 items-center mt-4">
                 <div className="flex justify-end items-center gap-1.5">
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {statsA.form === 'up' ? 'Рост' : statsA.form === 'down' ? 'Спад' : 'Стабильно'}
                   </span>
                   <FormIcon form={statsA.form} />
                 </div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">Тренд</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">Тренд</span>
                 <div className="flex justify-start items-center gap-1.5">
                   <FormIcon form={statsB.form} />
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {statsB.form === 'up' ? 'Рост' : statsB.form === 'down' ? 'Спад' : 'Стабильно'}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ export const MatchComparison = React.memo(function MatchComparison() {
             </div>
           </motion.div>
         ) : (
-          <div className="text-center py-8 text-gray-500 text-sm">
+          <div className="text-center py-8 text-muted-foreground text-sm">
             Выберите матч для сравнения команд
           </div>
         )}

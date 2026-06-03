@@ -62,7 +62,7 @@ export function LiveTicker() {
                 {item.minute && (
                   <span className="text-emerald-400 text-xs">{item.minute}</span>
                 )}
-                <span className="text-gray-500 text-xs">• {item.league}</span>
+                <span className="text-muted-foreground text-xs">• {item.league}</span>
               </motion.div>
             )}
           </AnimatePresence>

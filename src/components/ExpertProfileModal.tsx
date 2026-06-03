@@ -87,20 +87,20 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#151b23] border-gray-700/50 text-gray-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-yellow-500/20">
               {expert.avatar}
             </div>
             <div>
-              <DialogTitle className="text-xl font-bold text-white">{expert.name}</DialogTitle>
+              <DialogTitle className="text-xl font-bold text-foreground">{expert.name}</DialogTitle>
               <div className="flex items-center gap-2 mt-1">
                 <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
                   <Trophy className="w-3 h-3 mr-1" />
                   Топ-эксперт
                 </Badge>
-                <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+                <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs">
                   {expert.specialty}
                 </Badge>
                 {isSubscribed && (
@@ -115,37 +115,37 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
         </DialogHeader>
 
         {/* Bio */}
-        <p className="text-sm text-gray-400 leading-relaxed">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {expert.bio || `Профессиональный каппер с многолетним опытом в сфере ${expert.specialty}. Специализируется на прогнозах высшей категории уверенности.`}
         </p>
 
         {/* Key Stats */}
         <div className="grid grid-cols-4 gap-3">
-          <div className="bg-gray-800/50 rounded-xl p-3 text-center border border-gray-700/30">
+          <div className="bg-muted/50 rounded-xl p-3 text-center border border-border">
             <Target className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
             <p className="text-lg font-bold text-emerald-400">{expert.winRate}%</p>
-            <p className="text-[10px] text-gray-500 uppercase">Проход</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Проход</p>
           </div>
-          <div className="bg-gray-800/50 rounded-xl p-3 text-center border border-gray-700/30">
+          <div className="bg-muted/50 rounded-xl p-3 text-center border border-border">
             <TrendingUp className="w-4 h-4 text-teal-400 mx-auto mb-1" />
             <p className="text-lg font-bold text-teal-400">+{expert.roi}%</p>
-            <p className="text-[10px] text-gray-500 uppercase">ROI</p>
+            <p className="text-[10px] text-muted-foreground uppercase">ROI</p>
           </div>
-          <div className="bg-gray-800/50 rounded-xl p-3 text-center border border-gray-700/30">
+          <div className="bg-muted/50 rounded-xl p-3 text-center border border-border">
             <Calendar className="w-4 h-4 text-purple-400 mx-auto mb-1" />
-            <p className="text-lg font-bold text-white">{expert.totalPredictions}</p>
-            <p className="text-[10px] text-gray-500 uppercase">Прогнозов</p>
+            <p className="text-lg font-bold text-foreground">{expert.totalPredictions}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Прогнозов</p>
           </div>
-          <div className="bg-gray-800/50 rounded-xl p-3 text-center border border-gray-700/30">
+          <div className="bg-muted/50 rounded-xl p-3 text-center border border-border">
             <Star className="w-4 h-4 text-yellow-400 mx-auto mb-1" />
             <p className="text-lg font-bold text-yellow-400">{expert.streak}</p>
-            <p className="text-[10px] text-gray-500 uppercase">Серия</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Серия</p>
           </div>
         </div>
 
         {/* Last results */}
         <div>
-          <h4 className="text-sm font-medium text-gray-300 mb-2">Последние результаты</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Последние результаты</h4>
           <div className="flex gap-1.5">
             {lastResults.map((result, i) => (
               <div
@@ -161,8 +161,8 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
             ))}
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-[10px] text-gray-600">Старые</span>
-            <span className="text-[10px] text-gray-600">Новые</span>
+            <span className="text-[10px] text-muted-foreground">Старые</span>
+            <span className="text-[10px] text-muted-foreground">Новые</span>
           </div>
         </div>
 
@@ -170,7 +170,7 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
         {/* Performance chart */}
         <div>
-          <h4 className="text-sm font-medium text-gray-300 mb-3">Динамика проходимости</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-3">Динамика проходимости</h4>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={performanceData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -199,7 +199,7 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
         {/* Monthly volume */}
         <div>
-          <h4 className="text-sm font-medium text-gray-300 mb-3">Объём прогнозов по месяцам</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-3">Объём прогнозов по месяцам</h4>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={performanceData} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -222,7 +222,7 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
 
         {/* Win rate progress */}
         <div>
-          <h4 className="text-sm font-medium text-gray-300 mb-2">Общая проходимость</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Общая проходимость</h4>
           <div className="flex items-center gap-3">
             <Progress value={expert.winRate} className="flex-1 h-3 bg-gray-700 [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-teal-500" />
             <span className="text-sm font-bold text-emerald-400 min-w-[40px] text-right">{expert.winRate}%</span>
@@ -246,8 +246,8 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
           </Button>
           <Button
             variant="outline"
-            className={`flex-1 border-gray-700 hover:bg-gray-800 hover:text-white ${
-              isFavorite ? 'text-red-400 border-red-500/30 hover:bg-red-500/10' : 'text-gray-300'
+            className={`flex-1 border-border hover:bg-accent hover:text-white ${
+              isFavorite ? 'text-red-400 border-red-500/30 hover:bg-red-500/10' : 'text-muted-foreground'
             }`}
             onClick={handleFavorite}
           >

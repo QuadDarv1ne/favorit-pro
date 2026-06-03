@@ -67,10 +67,10 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#151b23] border-gray-700/50 text-gray-100 max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+            <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-xs">
               {sportEmoji} {match.league}
             </Badge>
             {match.status === 'live' && (
@@ -86,22 +86,22 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
               </Badge>
             )}
           </div>
-          <DialogTitle className="text-xl font-bold text-white">
+          <DialogTitle className="text-xl font-bold text-foreground">
             {match.homeTeam} vs {match.awayTeam}
           </DialogTitle>
         </DialogHeader>
 
         {/* Score */}
         {match.status !== 'upcoming' && (
-          <div className="flex items-center justify-center gap-6 py-4 bg-gray-800/50 rounded-xl">
+          <div className="flex items-center justify-center gap-6 py-4 bg-muted/50 rounded-xl">
             <div className="text-center">
-              <p className="text-sm text-gray-400 mb-1">{match.homeTeam}</p>
-              <p className="text-3xl font-bold text-white">{match.homeScore ?? '-'}</p>
+              <p className="text-sm text-muted-foreground mb-1">{match.homeTeam}</p>
+              <p className="text-3xl font-bold text-foreground">{match.homeScore ?? '-'}</p>
             </div>
-            <div className="text-xs text-gray-500">VS</div>
+            <div className="text-xs text-muted-foreground">VS</div>
             <div className="text-center">
-              <p className="text-sm text-gray-400 mb-1">{match.awayTeam}</p>
-              <p className="text-3xl font-bold text-white">{match.awayScore ?? '-'}</p>
+              <p className="text-sm text-muted-foreground mb-1">{match.awayTeam}</p>
+              <p className="text-3xl font-bold text-foreground">{match.awayScore ?? '-'}</p>
             </div>
           </div>
         )}
@@ -110,31 +110,31 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => handleOddsClick('1', match.homeOdds)}
-            className="bg-gray-800/50 hover:bg-emerald-500/20 rounded-xl p-3 text-center transition-colors"
+            className="bg-muted/50 hover:bg-emerald-500/20 rounded-xl p-3 text-center transition-colors"
           >
-            <span className="text-xs text-gray-400 block mb-1">1</span>
+            <span className="text-xs text-muted-foreground block mb-1">1</span>
             <span className="text-lg font-bold text-emerald-400">{match.homeOdds.toFixed(2)}</span>
           </button>
           {match.drawOdds && (
             <button
               onClick={() => { const draw = match.drawOdds; if (draw != null) handleOddsClick('X', draw); }}
-              className="bg-gray-800/50 hover:bg-gray-600/50 rounded-xl p-3 text-center transition-colors"
+              className="bg-muted/50 hover:bg-gray-600/50 rounded-xl p-3 text-center transition-colors"
             >
-              <span className="text-xs text-gray-400 block mb-1">X</span>
-              <span className="text-lg font-bold text-gray-300">{match.drawOdds.toFixed(2)}</span>
+              <span className="text-xs text-muted-foreground block mb-1">X</span>
+              <span className="text-lg font-bold text-muted-foreground">{match.drawOdds.toFixed(2)}</span>
             </button>
           )}
           <button
             onClick={() => handleOddsClick('2', match.awayOdds)}
-            className="bg-gray-800/50 hover:bg-emerald-500/20 rounded-xl p-3 text-center transition-colors"
+            className="bg-muted/50 hover:bg-emerald-500/20 rounded-xl p-3 text-center transition-colors"
           >
-            <span className="text-xs text-gray-400 block mb-1">2</span>
+            <span className="text-xs text-muted-foreground block mb-1">2</span>
             <span className="text-lg font-bold text-emerald-400">{match.awayOdds.toFixed(2)}</span>
           </button>
         </div>
 
         <Tabs defaultValue="analysis" className="mt-2">
-          <TabsList className="bg-gray-800/50 border-gray-700/50 w-full">
+          <TabsList className="bg-muted/50 border-border w-full">
             <TabsTrigger value="analysis" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
               <TrendingUp className="w-3.5 h-3.5 mr-1" />
               Анализ
@@ -172,10 +172,10 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
                   </div>
                   <Progress value={match.confidence} className="h-2 bg-gray-700 [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-teal-500" />
                 </div>
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   На основе анализа последних 10 матчей обеих команд, текущей формы, травм и дисквалификаций,
                   наш эксперт рекомендует ставку <span className="text-emerald-400 font-medium">{match.prediction}</span> с коэффициентом{' '}
-                  <span className="text-white font-medium">
+                  <span className="text-foreground font-medium">
                     {match.prediction === 'П1' ? match.homeOdds.toFixed(2) :
                      match.prediction === 'X' && match.drawOdds ? match.drawOdds.toFixed(2) :
                      match.prediction === 'П2' ? match.awayOdds.toFixed(2) :
@@ -185,14 +185,14 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-gray-500 text-center py-4">Прогноз пока не добавлен</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Прогноз пока не добавлен</p>
             )}
           </TabsContent>
 
           <TabsContent value="stats" className="mt-3">
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">Форма (последние 5)</span>
+                <span className="text-muted-foreground">Форма (последние 5)</span>
                 <div className="flex gap-1">
                   {['W', 'W', 'L', 'W', 'W'].map((r, i) => (
                     <span key={i} className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold ${r === 'W' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
@@ -203,19 +203,19 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
               </div>
               <Separator className="bg-gray-700/50" />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">{match.homeTeam} — победы дома</span>
+                <span className="text-muted-foreground">{match.homeTeam} — победы дома</span>
                 <span className="text-emerald-400 font-medium">72%</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">{match.awayTeam} — победы на выезде</span>
+                <span className="text-muted-foreground">{match.awayTeam} — победы на выезде</span>
                 <span className="text-yellow-400 font-medium">45%</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">Среднее голов за матч</span>
-                <span className="text-white font-medium">2.8</span>
+                <span className="text-muted-foreground">Среднее голов за матч</span>
+                <span className="text-foreground font-medium">2.8</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">Тотал больше 2.5</span>
+                <span className="text-muted-foreground">Тотал больше 2.5</span>
                 <span className="text-emerald-400 font-medium">64%</span>
               </div>
             </div>
@@ -223,28 +223,28 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
 
           <TabsContent value="h2h" className="mt-3">
             <div className="space-y-3">
-              <div className="flex items-center justify-center gap-8 bg-gray-800/50 rounded-xl p-4">
+              <div className="flex items-center justify-center gap-8 bg-muted/50 rounded-xl p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-emerald-400">5</p>
-                  <p className="text-xs text-gray-400">{match.homeTeam}</p>
+                  <p className="text-xs text-muted-foreground">{match.homeTeam}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg text-gray-500">Ничьи: 2</p>
+                  <p className="text-lg text-muted-foreground">Ничьи: 2</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-400">3</p>
-                  <p className="text-xs text-gray-400">{match.awayTeam}</p>
+                  <p className="text-xs text-muted-foreground">{match.awayTeam}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 text-center">Последние 10 личных встреч</p>
+              <p className="text-xs text-muted-foreground text-center">Последние 10 личных встреч</p>
               {[
                 { date: '15.03.2026', home: 2, away: 1 },
                 { date: '28.11.2025', home: 1, away: 1 },
                 { date: '05.09.2025', home: 0, away: 2 },
               ].map((game, i) => (
-                <div key={i} className="flex items-center justify-between text-xs text-gray-400 bg-gray-800/30 rounded-lg px-3 py-2">
+                <div key={i} className="flex items-center justify-between text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
                   <span>{game.date}</span>
-                  <span className="font-medium text-white">{game.home} : {game.away}</span>
+                  <span className="font-medium text-foreground">{game.home} : {game.away}</span>
                 </div>
               ))}
             </div>
@@ -269,13 +269,13 @@ export function MatchDetailModal({ match, open, onClose }: MatchDetailModalProps
           </Button>
           <Button
             variant="outline"
-            className={`flex-1 border-gray-700 text-gray-300 hover:bg-gray-800 ${isFavorite ? 'text-red-400 border-red-500/30' : ''}`}
+            className={`flex-1 border-border text-muted-foreground hover:bg-accent ${isFavorite ? 'text-red-400 border-red-500/30' : ''}`}
             onClick={handleFavorite}
           >
             <Heart className={`w-4 h-4 mr-1.5 ${isFavorite ? 'fill-current' : ''}`} />
             {isFavorite ? 'В избранном' : 'В избранное'}
           </Button>
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent">
             <Radio className="w-4 h-4" />
           </Button>
         </div>
@@ -334,18 +334,18 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
   if (isRacketSport) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-center gap-6 bg-gray-800/50 rounded-xl p-4">
+        <div className="flex items-center justify-center gap-6 bg-muted/50 rounded-xl p-4">
           {[homeLineup, awayLineup].map((lineup, i) => (
             <div key={i} className="text-center">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-lg font-bold text-white mb-2">
                 {lineup.players[0].name[0]}
               </div>
-              <p className="text-sm font-semibold text-white">{lineup.players[0].name}</p>
-              <p className="text-xs text-gray-500 mt-1">Рейтинг: <span className="text-emerald-400">{lineup.players[0].rating}</span></p>
+              <p className="text-sm font-semibold text-foreground">{lineup.players[0].name}</p>
+              <p className="text-xs text-muted-foreground mt-1">Рейтинг: <span className="text-emerald-400">{lineup.players[0].rating}</span></p>
             </div>
           ))}
         </div>
-        <p className="text-xs text-gray-500 text-center">Индивидуальный спорт — составы не применяются</p>
+        <p className="text-xs text-muted-foreground text-center">Индивидуальный спорт — составы не применяются</p>
       </div>
     );
   }
@@ -355,9 +355,9 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
       {/* Home team */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-semibold text-white">{homeTeam}</h4>
+          <h4 className="text-sm font-semibold text-foreground">{homeTeam}</h4>
           {homeLineup.formation && (
-            <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px]">
+            <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-[10px]">
               {homeLineup.formation}
             </Badge>
           )}
@@ -367,21 +367,21 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
             <div
               key={i}
               className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-xs ${
-                i === 0 ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-gray-800/30'
+                i === 0 ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-muted/30'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${
-                  i === 0 ? 'bg-yellow-500/30 text-yellow-400' : 'bg-gray-700 text-gray-400'
+                  i === 0 ? 'bg-yellow-500/30 text-yellow-400' : 'bg-gray-700 text-muted-foreground'
                 }`}>
                   {player.number}
                 </span>
-                <span className="text-gray-300 font-medium">{player.name}</span>
-                <span className="text-gray-600">{player.position}</span>
+                <span className="text-muted-foreground font-medium">{player.name}</span>
+                <span className="text-muted-foreground">{player.position}</span>
               </div>
               <span className={`font-medium ${
                 parseFloat(player.rating) >= 8 ? 'text-emerald-400' :
-                parseFloat(player.rating) >= 7 ? 'text-teal-400' : 'text-gray-500'
+                parseFloat(player.rating) >= 7 ? 'text-teal-400' : 'text-muted-foreground'
               }`}>
                 {player.rating}
               </span>
@@ -395,9 +395,9 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
       {/* Away team */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-semibold text-white">{awayTeam}</h4>
+          <h4 className="text-sm font-semibold text-foreground">{awayTeam}</h4>
           {awayLineup.formation && (
-            <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px]">
+            <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-[10px]">
               {awayLineup.formation}
             </Badge>
           )}
@@ -407,21 +407,21 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
             <div
               key={i}
               className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-xs ${
-                i === 0 ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-gray-800/30'
+                i === 0 ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-muted/30'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${
-                  i === 0 ? 'bg-yellow-500/30 text-yellow-400' : 'bg-gray-700 text-gray-400'
+                  i === 0 ? 'bg-yellow-500/30 text-yellow-400' : 'bg-gray-700 text-muted-foreground'
                 }`}>
                   {player.number}
                 </span>
-                <span className="text-gray-300 font-medium">{player.name}</span>
-                <span className="text-gray-600">{player.position}</span>
+                <span className="text-muted-foreground font-medium">{player.name}</span>
+                <span className="text-muted-foreground">{player.position}</span>
               </div>
               <span className={`font-medium ${
                 parseFloat(player.rating) >= 8 ? 'text-emerald-400' :
-                parseFloat(player.rating) >= 7 ? 'text-teal-400' : 'text-gray-500'
+                parseFloat(player.rating) >= 7 ? 'text-teal-400' : 'text-muted-foreground'
               }`}>
                 {player.rating}
               </span>
@@ -430,7 +430,7 @@ function LineupsTab({ homeTeam, awayTeam, sport }: { homeTeam: string; awayTeam:
         </div>
       </div>
 
-      <p className="text-[10px] text-gray-600 text-center mt-2">Составы предварительные и могут измениться</p>
+      <p className="text-[10px] text-muted-foreground text-center mt-2">Составы предварительные и могут измениться</p>
     </div>
   );
 }

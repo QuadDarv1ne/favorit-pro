@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export function MatchCardSkeleton() {
   return (
-    <Card className="bg-gray-800/50 border-gray-700/50">
+    <Card className="bg-muted/50 border-border">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-3">
           <Skeleton className="h-3 w-20 bg-gray-700/50" />
@@ -34,7 +34,7 @@ export function MatchCardSkeleton() {
 
 export function PredictionCardSkeleton() {
   return (
-    <Card className="bg-gray-800/50 border-gray-700/50">
+    <Card className="bg-muted/50 border-border">
       <CardHeader className="pb-2 px-4 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export function PredictionCardSkeleton() {
 
 export function ExpertCardSkeleton() {
   return (
-    <Card className="bg-gray-800/50 border-gray-700/50">
+    <Card className="bg-muted/50 border-border">
       <CardContent className="p-5">
         <div className="flex items-start gap-3 mb-4">
           <Skeleton className="h-12 w-12 bg-gray-700/50 rounded-full" />
@@ -103,7 +103,7 @@ export function StatsSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="bg-gray-800/50 border-gray-700/50">
+          <Card key={i} className="bg-muted/50 border-border">
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Skeleton className="h-4 w-4 bg-gray-700/50 rounded" />
@@ -116,7 +116,7 @@ export function StatsSkeleton() {
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="bg-gray-800/50 border-gray-700/50">
+          <Card key={i} className="bg-muted/50 border-border">
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-36 bg-gray-700/50" />
             </CardHeader>

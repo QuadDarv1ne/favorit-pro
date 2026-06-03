@@ -13,7 +13,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 h-8 w-8"
+      className="text-muted-foreground hover:text-foreground hover:bg-accent h-8 w-8"
     >
       {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </Button>

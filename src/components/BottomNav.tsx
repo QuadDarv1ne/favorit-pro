@@ -24,7 +24,7 @@ export const BottomNav = React.memo(function BottomNav({ activeSection, onSectio
   const isLoggedIn = useAppStore((s) => s.isLoggedIn);
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-t border-gray-800 safe-area-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border safe-area-bottom">
       <div className="flex items-center justify-around h-14 px-1">
         {bottomNavItems.map((item) => (
           <button
@@ -33,7 +33,7 @@ export const BottomNav = React.memo(function BottomNav({ activeSection, onSectio
             className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${
               activeSection === item.id
                 ? 'text-emerald-400'
-                : 'text-gray-500 active:text-gray-300'
+                : 'text-muted-foreground active:text-muted-foreground'
             }`}
           >
             {item.icon}
@@ -53,7 +53,7 @@ export const BottomNav = React.memo(function BottomNav({ activeSection, onSectio
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full relative transition-colors ${
             activeSection === 'profile'
               ? 'text-emerald-400'
-              : 'text-gray-500 active:text-gray-300'
+              : 'text-muted-foreground active:text-muted-foreground'
           }`}
         >
           <div className="relative">

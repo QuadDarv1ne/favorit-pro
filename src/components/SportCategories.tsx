@@ -13,7 +13,7 @@ interface SportCategoriesProps {
 export const SportCategories = React.memo(function SportCategories({ detailed = false }: SportCategoriesProps) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <h2 className="text-xl font-bold text-white mb-6">Виды спорта</h2>
+      <h2 className="text-xl font-bold text-foreground mb-6">Виды спорта</h2>
       <div className={`grid gap-4 ${detailed ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'}`}>
         {sportCategories.map((category, index) => (
           <motion.div
@@ -22,7 +22,7 @@ export const SportCategories = React.memo(function SportCategories({ detailed = 
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
           >
-            <Card className="bg-gray-800/50 border-gray-700/50 hover:border-gray-600 transition-all duration-300 cursor-pointer group overflow-hidden">
+            <Card className="bg-muted/50 border-border hover:border-border transition-all duration-300 cursor-pointer group overflow-hidden">
               <CardContent className={`${detailed ? 'p-5' : 'p-4'}`}>
                 {detailed ? (
                   <>
@@ -30,12 +30,12 @@ export const SportCategories = React.memo(function SportCategories({ detailed = 
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center text-2xl shadow-lg`}>
                         {category.icon}
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-emerald-400 transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors" />
                     </div>
-                    <h3 className="text-base font-semibold text-white group-hover:text-emerald-300 transition-colors mb-1">
+                    <h3 className="text-base font-semibold text-foreground group-hover:text-emerald-300 transition-colors mb-1">
                       {category.name}
                     </h3>
-                    <p className="text-sm text-gray-400">{category.matchCount} событий</p>
+                    <p className="text-sm text-muted-foreground">{category.matchCount} событий</p>
                     <div className="mt-3 w-full bg-gray-700/50 rounded-full h-1.5">
                       <div
                         className={`h-1.5 rounded-full bg-gradient-to-r ${category.color} transition-all`}
@@ -48,10 +48,10 @@ export const SportCategories = React.memo(function SportCategories({ detailed = 
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform`}>
                       {category.icon}
                     </div>
-                    <span className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                    <span className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                       {category.name}
                     </span>
-                    <span className="text-xs text-gray-500">{category.matchCount}</span>
+                    <span className="text-xs text-muted-foreground">{category.matchCount}</span>
                   </div>
                 )}
               </CardContent>

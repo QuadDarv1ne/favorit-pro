@@ -120,7 +120,7 @@ export const DailyTips = React.memo(function DailyTips() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <div className="flex items-center gap-3 mb-5">
         <Lightbulb className="w-5 h-5 text-yellow-400" />
-        <h2 className="text-xl font-bold text-white">Советы дня</h2>
+        <h2 className="text-xl font-bold text-foreground">Советы дня</h2>
         <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
           {tips.length} советов
         </Badge>
@@ -147,7 +147,7 @@ export const DailyTips = React.memo(function DailyTips() {
                 {tip.category}
               </Badge>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed">{tip.text}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{tip.text}</p>
           </motion.div>
         ))}
       </div>

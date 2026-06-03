@@ -79,7 +79,7 @@ export function HeroSection() {
               </span>
             </h1>
 
-            <p className="text-gray-400 text-lg mb-8 max-w-md">
+            <p className="text-muted-foreground text-lg mb-8 max-w-md">
               Профессиональная аналитика, экспертные прогнозы и статистика для осознанных ставок.
               Проходимость 68.5% за последний месяц.
             </p>
@@ -95,7 +95,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="border-border text-muted-foreground hover:bg-accent hover:text-white"
               >
                 Стать экспертом
               </Button>
@@ -109,36 +109,36 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="grid grid-cols-2 gap-4"
           >
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border border-gray-700/50">
+            <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-5 border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5 text-emerald-400" />
-                <span className="text-sm text-gray-400">Прогнозов</span>
+                <span className="text-sm text-muted-foreground">Прогнозов</span>
               </div>
-              <p className="text-2xl font-bold text-white">{countPredictions.toLocaleString('ru-RU')}</p>
+              <p className="text-2xl font-bold text-foreground">{countPredictions.toLocaleString('ru-RU')}</p>
               <p className="text-xs text-emerald-400 mt-1">+245 за месяц</p>
             </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border border-gray-700/50">
+            <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-5 border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <Flame className="w-5 h-5 text-orange-400" />
-                <span className="text-sm text-gray-400">Проходимость</span>
+                <span className="text-sm text-muted-foreground">Проходимость</span>
               </div>
-              <p className="text-2xl font-bold text-white">{(countWinRate / 10).toFixed(1)}%</p>
+              <p className="text-2xl font-bold text-foreground">{(countWinRate / 10).toFixed(1)}%</p>
               <p className="text-xs text-emerald-400 mt-1">+3.2% к пред. месяцу</p>
             </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border border-gray-700/50">
+            <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-5 border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="w-5 h-5 text-teal-400" />
-                <span className="text-sm text-gray-400">ROI</span>
+                <span className="text-sm text-muted-foreground">ROI</span>
               </div>
-              <p className="text-2xl font-bold text-white">+{(countRoi / 10).toFixed(1)}%</p>
+              <p className="text-2xl font-bold text-foreground">+{(countRoi / 10).toFixed(1)}%</p>
               <p className="text-xs text-emerald-400 mt-1">Средний коэфф. 1.82</p>
             </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border border-gray-700/50">
+            <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-5 border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5 text-purple-400" />
-                <span className="text-sm text-gray-400">Экспертов</span>
+                <span className="text-sm text-muted-foreground">Экспертов</span>
               </div>
-              <p className="text-2xl font-bold text-white">{countExperts}</p>
+              <p className="text-2xl font-bold text-foreground">{countExperts}</p>
               <p className="text-xs text-emerald-400 mt-1">6 в топ-рейтинге</p>
             </div>
           </motion.div>

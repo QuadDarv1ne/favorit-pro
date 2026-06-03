@@ -49,7 +49,7 @@ function ValueGauge({ value, size = 56 }: { value: number; size?: number }) {
         />
       </svg>
       <div className="absolute text-center">
-        <span className="text-white font-bold text-xs tabular-nums">{value}%</span>
+        <span className="text-foreground font-bold text-xs tabular-nums">{value}%</span>
       </div>
     </div>
   );
@@ -82,18 +82,18 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-white">ValueBet Сканер</h2>
+              <h2 className="text-xl font-bold text-foreground">ValueBet Сканер</h2>
               <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] px-2">
                 Поиск ценности
               </Badge>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5">Ставки с перевесом над линией букмекера</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Ставки с перевесом над линией букмекера</p>
           </div>
         </div>
         <Button
           variant="ghost"
           size="sm"
-          className="text-gray-400 hover:text-white"
+          className="text-muted-foreground hover:text-white"
           onClick={() => setSortBy(sortBy === 'value' ? 'confidence' : 'value')}
         >
           <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
@@ -110,7 +110,7 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
             transition={{ duration: 0.35, delay: index * 0.08 }}
           >
             <Card
-              className={`bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer group`}
+              className={`bg-muted/40 backdrop-blur-md border-border hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer group`}
               style={{ borderLeftWidth: '3px', borderLeftColor: bet.value > 10 ? '#10b981' : '#eab308' }}
             >
               <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
@@ -121,11 +121,11 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <SportIcon sport={bet.sport} />
-                      <Badge variant="secondary" className="bg-gray-700/50 text-gray-400 text-[10px] px-1.5 py-0">
+                      <Badge variant="secondary" className="bg-gray-700/50 text-muted-foreground text-[10px] px-1.5 py-0">
                         {bet.league}
                       </Badge>
                     </div>
-                    <h3 className="text-sm font-semibold text-white truncate group-hover:text-emerald-300 transition-colors">
+                    <h3 className="text-sm font-semibold text-foreground truncate group-hover:text-emerald-300 transition-colors">
                       {bet.match}
                     </h3>
                     <div className="flex items-center gap-1.5 mt-1">
@@ -138,13 +138,13 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
 
                 {/* Odds comparison */}
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-gray-900/50 rounded-lg p-2.5 text-center border border-gray-700/30">
-                    <p className="text-[10px] text-gray-500 mb-0.5">Коэфф. БК</p>
-                    <p className="text-white font-bold tabular-nums">{bet.bookmakerOdds.toFixed(2)}</p>
+                  <div className="bg-card/50 rounded-lg p-2.5 text-center border border-border">
+                    <p className="text-[10px] text-muted-foreground mb-0.5">Коэфф. БК</p>
+                    <p className="text-foreground font-bold tabular-nums">{bet.bookmakerOdds.toFixed(2)}</p>
                   </div>
-                  <div className="bg-gray-900/50 rounded-lg p-2.5 text-center border border-gray-700/30">
-                    <p className="text-[10px] text-gray-500 mb-0.5">Справедл. коэфф.</p>
-                    <p className="text-gray-400 font-bold tabular-nums">{bet.fairOdds.toFixed(2)}</p>
+                  <div className="bg-card/50 rounded-lg p-2.5 text-center border border-border">
+                    <p className="text-[10px] text-muted-foreground mb-0.5">Справедл. коэфф.</p>
+                    <p className="text-muted-foreground font-bold tabular-nums">{bet.fairOdds.toFixed(2)}</p>
                   </div>
                 </div>
 
@@ -170,7 +170,7 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
                         transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
                       />
                     </div>
-                    <span className="text-[10px] text-gray-500 tabular-nums min-w-[28px] text-right">{bet.confidence}%</span>
+                    <span className="text-[10px] text-muted-foreground tabular-nums min-w-[28px] text-right">{bet.confidence}%</span>
                   </div>
                 </div>
               </CardContent>
@@ -180,7 +180,7 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
       </div>
 
       <div className="flex justify-center mt-5">
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
           Все value-ставки <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </div>

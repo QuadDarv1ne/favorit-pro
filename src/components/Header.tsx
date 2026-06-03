@@ -68,7 +68,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-gray-800">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
@@ -91,7 +91,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeSection === item.id
                     ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }`}
               >
                 {item.icon}
@@ -108,7 +108,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
             </div>
             <button
               aria-label={searchOpen ? 'Закрыть поиск' : 'Открыть поиск'}
-              className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors"
+              className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               onClick={() => setSearchOpen(!searchOpen)}
             >
               <Search className="w-4 h-4" />
@@ -125,7 +125,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
               className={`p-2 rounded-lg transition-colors ${
                 activeSection === 'favorites'
                   ? 'text-red-400 bg-red-500/10'
-                  : 'text-gray-400 hover:text-red-400 hover:bg-gray-800/50'
+                  : 'text-muted-foreground hover:text-red-400 hover:bg-accent'
               }`}
               title="Избранное"
             >
@@ -139,7 +139,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
                 className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeSection === 'profile'
                     ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }`}
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-[10px] font-bold text-white">
@@ -173,7 +173,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
             <button
               aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={mobileMenuOpen}
-              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+              className="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -190,7 +190,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-gray-800 mt-2 pt-3">
+          <div className="lg:hidden pb-4 border-t border-border mt-2 pt-3">
             <nav className="flex flex-col gap-1">
               {navItems.map((item) => (
                 <button
@@ -202,7 +202,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     activeSection === item.id
                       ? 'bg-emerald-500/20 text-emerald-400'
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
                   {item.icon}
@@ -223,7 +223,7 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
                 className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   activeSection === 'profile'
                     ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }`}
               >
                 <User className="w-4 h-4" />

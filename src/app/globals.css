@@ -121,7 +121,7 @@
   }
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -132,11 +132,19 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: oklch(0.55 0 0);
   border-radius: 3px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
 ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.45 0 0);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background: #4b5563;
 }
 
@@ -152,6 +160,11 @@ html {
 
 /* Selection color */
 ::selection {
+  background-color: rgba(16, 185, 129, 0.3);
+  color: inherit;
+}
+
+.dark ::selection {
   background-color: rgba(16, 185, 129, 0.3);
   color: white;
 }
@@ -202,9 +215,14 @@ main {
 
 /* Glassmorphism utility */
 .glass-card {
-  background: rgba(31, 41, 55, 0.4);
+  background: rgba(243, 244, 246, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(209, 213, 219, 0.5);
+}
+
+.dark .glass-card {
+  background: rgba(31, 41, 55, 0.4);
   border: 1px solid rgba(75, 85, 99, 0.3);
 }
 
@@ -215,7 +233,13 @@ main {
 }
 
 .shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background: linear-gradient(90deg, transparent, oklch(0 0 0 / 5%), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 5%), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -241,8 +265,12 @@ main {
 }
 
 .snap-carousel::-webkit-scrollbar-track {
-  background: rgba(55, 65, 81, 0.3);
+  background: rgba(156, 163, 175, 0.3);
   border-radius: 2px;
+}
+
+.dark .snap-carousel::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3);
 }
 
 .snap-carousel::-webkit-scrollbar-thumb {

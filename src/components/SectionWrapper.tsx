@@ -22,7 +22,7 @@ function GenericSkeleton({ count = 3 }: { count?: number }) {
     <div className="space-y-3">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="animate-pulse">
-          <div className="h-32 bg-gray-800/40 rounded-xl border border-gray-700/20" />
+          <div className="h-32 bg-muted/40 rounded-xl border border-border" />
         </div>
       ))}
     </div>
@@ -50,8 +50,8 @@ export function SectionWrapper({
         <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
-        <h3 className="text-base font-semibold text-white mb-1">Ошибка загрузки</h3>
-        <p className="text-sm text-gray-400 text-center max-w-sm mb-4">
+        <h3 className="text-base font-semibold text-foreground mb-1">Ошибка загрузки</h3>
+        <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
           {error?.message || 'Не удалось загрузить данные. Проверьте подключение к интернету.'}
         </p>
         {onRetry && (
@@ -59,7 +59,7 @@ export function SectionWrapper({
             variant="outline"
             size="sm"
             onClick={onRetry}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -73,7 +73,7 @@ export function SectionWrapper({
     <div className={className}>
       {title && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+          <h2 className="text-xl font-bold text-foreground">{title}</h2>
         </div>
       )}
       {children}

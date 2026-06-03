@@ -68,7 +68,7 @@ export function MatchTimeline({ matchId }: MatchTimelineProps) {
 
   if (events.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 text-sm">
+      <div className="text-center py-8 text-muted-foreground text-sm">
         Событий пока нет
       </div>
     );
@@ -93,7 +93,7 @@ export function MatchTimeline({ matchId }: MatchTimelineProps) {
             >
               {/* Minute */}
               <div className="w-9 shrink-0 text-right pt-0.5">
-                <span className="text-xs font-bold text-gray-400 tabular-nums">{event.minute}&apos;</span>
+                <span className="text-xs font-bold text-muted-foreground tabular-nums">{event.minute}&apos;</span>
               </div>
 
               {/* Dot */}
@@ -110,10 +110,10 @@ export function MatchTimeline({ matchId }: MatchTimelineProps) {
                   }`}>
                     {event.team === 'home' ? 'Хозяева' : 'Гости'}
                   </span>
-                  <span className="text-xs text-gray-500">{config.label}</span>
+                  <span className="text-xs text-muted-foreground">{config.label}</span>
                 </div>
-                <p className="text-sm font-medium text-white">{event.player}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{event.description}</p>
+                <p className="text-sm font-medium text-foreground">{event.player}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{event.description}</p>
               </div>
             </motion.div>
           );

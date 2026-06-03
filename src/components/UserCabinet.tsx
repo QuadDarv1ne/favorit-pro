@@ -35,7 +35,7 @@ const LazyPredictionDetailModal = lazy(() =>
 );
 
 const tierConfig = {
-  free: { label: 'Бесплатный', color: 'text-gray-400', bg: 'bg-gray-500/20', border: 'border-gray-500/30', icon: <Zap className="w-4 h-4" /> },
+  free: { label: 'Бесплатный', color: 'text-muted-foreground', bg: 'bg-gray-500/20', border: 'border-gray-500/30', icon: <Zap className="w-4 h-4" /> },
   pro: { label: 'Pro', color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', icon: <Crown className="w-4 h-4" /> },
   vip: { label: 'VIP', color: 'text-yellow-400', bg: 'bg-yellow-500/20', border: 'border-yellow-500/30', icon: <Gem className="w-4 h-4" /> },
 };
@@ -203,43 +203,43 @@ export const UserCabinet = memo(function UserCabinet() {
         transition={{ duration: 0.4 }}
         className="mb-8"
       >
-        <Card className="bg-gradient-to-br from-gray-800/80 via-gray-800/50 to-emerald-900/20 border-gray-700/50 overflow-hidden relative">
+        <Card className="bg-gradient-to-br from-gray-800/80 via-gray-800/50 to-emerald-900/20 border-border overflow-hidden relative">
           <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
           <CardContent className="p-6 relative">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-emerald-500/20 shrink-0">
+               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-emerald-500/20 shrink-0">
                 {currentUser.avatar}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
-                  <h2 className="text-xl font-bold text-white">{currentUser.name}</h2>
+                  <h2 className="text-xl font-bold text-foreground">{currentUser.name}</h2>
                   <Badge className={`${tier.bg} ${tier.color} ${tier.border} border text-xs`}>
                     {tier.icon}
                     <span className="ml-1">{tier.label}</span>
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-400 mb-3">{currentUser.email}</p>
+                <p className="text-sm text-muted-foreground mb-3">{currentUser.email}</p>
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                    <span className="text-gray-400">С {currentUser.joinedAt}</span>
+                    <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-muted-foreground">С {currentUser.joinedAt}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Star className="w-3.5 h-3.5 text-yellow-400" />
-                    <span className="text-gray-400">{subscribedExperts.length} подписок</span>
+                    <span className="text-muted-foreground">{subscribedExperts.length} подписок</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 text-red-400" />
-                    <span className="text-gray-400">{favorites.matchIds.length + favorites.expertIds.length + favorites.predictionIds.length} избранного</span>
+                    <span className="text-muted-foreground">{favorites.matchIds.length + favorites.expertIds.length + favorites.predictionIds.length} избранного</span>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col items-end gap-3 shrink-0 w-full sm:w-auto">
                 <div className="text-right">
-                  <p className="text-xs text-gray-500 mb-0.5">Баланс</p>
-                  <p className="text-2xl font-bold text-white">{currentUser.balance.toLocaleString()} ₽</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">Баланс</p>
+                  <p className="text-2xl font-bold text-foreground">{currentUser.balance.toLocaleString()} ₽</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <Button
@@ -280,14 +280,14 @@ export const UserCabinet = memo(function UserCabinet() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
           >
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   {stat.icon}
-                  <span className="text-sm text-gray-400">{stat.label}</span>
+                  <span className="text-sm text-muted-foreground">{stat.label}</span>
                 </div>
-                <p className="text-xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-gray-500">{stat.sub}</p>
+                <p className="text-xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-xs text-muted-foreground">{stat.sub}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -297,7 +297,7 @@ export const UserCabinet = memo(function UserCabinet() {
       <AchievementBadges />
 
       <Tabs defaultValue="activity" className="space-y-6">
-        <TabsList className="bg-gray-800/50 border-gray-700/50">
+        <TabsList className="bg-muted/50 border-border">
           <TabsTrigger value="activity" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
             <BarChart3 className="w-3.5 h-3.5 mr-1" />
             Активность
@@ -318,16 +318,16 @@ export const UserCabinet = memo(function UserCabinet() {
 
         {/* Activity tab */}
         <TabsContent value="activity">
-          <Card className="bg-gray-800/50 border-gray-700/50">
+          <Card className="bg-muted/50 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-white">Последние действия</CardTitle>
+              <CardTitle className="text-base text-foreground">Последние действия</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {recentActivity.map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30"
+                    className="flex items-center justify-between bg-card/50 rounded-lg px-4 py-3 border border-border"
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
@@ -339,8 +339,8 @@ export const UserCabinet = memo(function UserCabinet() {
                         {activity.type === 'win' ? '✓' : activity.type === 'loss' ? '✗' : activity.type === 'deposit' ? '+' : '★'}
                       </div>
                       <div>
-                        <p className="text-sm text-white">{activity.text}</p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
+                        <p className="text-sm text-foreground">{activity.text}</p>
+                        <p className="text-xs text-muted-foreground">{activity.time}</p>
                       </div>
                     </div>
                     <span className={`text-sm font-semibold ${
@@ -354,23 +354,23 @@ export const UserCabinet = memo(function UserCabinet() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700/50 mt-6">
+          <Card className="bg-muted/50 border-border mt-6">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-white">Статистика ставок</CardTitle>
+              <CardTitle className="text-base text-foreground">Статистика ставок</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-emerald-400">{currentUser.wonBets}</p>
-                  <p className="text-xs text-gray-500">Победы</p>
+                  <p className="text-xs text-muted-foreground">Победы</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-400">{currentUser.totalBets - currentUser.wonBets}</p>
-                  <p className="text-xs text-gray-500">Поражения</p>
+                  <p className="text-xs text-muted-foreground">Поражения</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white">{currentUser.totalBets}</p>
-                  <p className="text-xs text-gray-500">Всего</p>
+                  <p className="text-2xl font-bold text-foreground">{currentUser.totalBets}</p>
+                  <p className="text-xs text-muted-foreground">Всего</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -388,9 +388,9 @@ export const UserCabinet = memo(function UserCabinet() {
         {/* Favorites tab */}
         <TabsContent value="favorites">
           <div className="space-y-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base text-white flex items-center gap-2">
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
                   Избранные эксперты ({favorites.experts.length})
                 </CardTitle>
@@ -399,19 +399,19 @@ export const UserCabinet = memo(function UserCabinet() {
                 {favorites.experts.length === 0 ? (
                   <div className="text-center py-8">
                     <Star className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                    <p className="text-gray-400 mb-1">Нет избранных экспертов</p>
-                    <p className="text-xs text-gray-600">Нажмите звёздочку на эксперте, чтобы добавить</p>
+                    <p className="text-muted-foreground mb-1">Нет избранных экспертов</p>
+                    <p className="text-xs text-muted-foreground">Нажмите звёздочку на эксперте, чтобы добавить</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {favorites.experts.map(expert => (
-                      <div key={expert.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                      <div key={expert.id} className="flex items-center gap-3 bg-card/50 rounded-lg px-4 py-3 border border-border">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-xs font-bold text-white">
                           {expert.avatar}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{expert.name}</p>
-                          <p className="text-xs text-gray-500">{expert.specialty?.name} • {expert.winRate}% проходимость</p>
+                          <p className="text-sm font-medium text-foreground">{expert.name}</p>
+                          <p className="text-xs text-muted-foreground">{expert.specialty?.name} • {expert.winRate}% проходимость</p>
                         </div>
                         <span className="text-sm font-bold text-emerald-400">+{expert.roi}%</span>
                       </div>
@@ -421,9 +421,9 @@ export const UserCabinet = memo(function UserCabinet() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base text-white flex items-center gap-2">
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
                   <Heart className="w-4 h-4 text-red-400" />
                   Избранные матчи ({favorites.matches.length})
                 </CardTitle>
@@ -432,19 +432,19 @@ export const UserCabinet = memo(function UserCabinet() {
                 {favorites.matches.length === 0 ? (
                   <div className="text-center py-8">
                     <Heart className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                    <p className="text-gray-400 mb-1">Нет избранных матчей</p>
-                    <p className="text-xs text-gray-600">Добавляйте матчи в избранное для отслеживания</p>
+                    <p className="text-muted-foreground mb-1">Нет избранных матчей</p>
+                    <p className="text-xs text-muted-foreground">Добавляйте матчи в избранное для отслеживания</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {favorites.matches.map(match => (
-                      <div key={match.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                      <div key={match.id} className="flex items-center gap-3 bg-card/50 rounded-lg px-4 py-3 border border-border">
                         <span className="text-lg">
                           {match.sport?.slug === 'football' ? '⚽' : match.sport?.slug === 'hockey' ? '🏒' : match.sport?.slug === 'basketball' ? '🏀' : match.sport?.slug === 'tennis' ? '🎾' : '🎮'}
                         </span>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{match.homeTeam} — {match.awayTeam}</p>
-                          <p className="text-xs text-gray-500">{match.league}</p>
+                          <p className="text-sm font-medium text-foreground">{match.homeTeam} — {match.awayTeam}</p>
+                          <p className="text-xs text-muted-foreground">{match.league}</p>
                         </div>
                       </div>
                     ))}
@@ -453,9 +453,9 @@ export const UserCabinet = memo(function UserCabinet() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base text-white flex items-center gap-2">
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
                   Сохранённые прогнозы ({favorites.predictions.length})
                 </CardTitle>
@@ -464,20 +464,20 @@ export const UserCabinet = memo(function UserCabinet() {
                 {favorites.predictions.length === 0 ? (
                   <div className="text-center py-8">
                     <TrendingUp className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                    <p className="text-gray-400 mb-1">Нет сохранённых прогнозов</p>
-                    <p className="text-xs text-gray-600">Сохраняйте прогнозы, чтобы не потерять</p>
+                    <p className="text-muted-foreground mb-1">Нет сохранённых прогнозов</p>
+                    <p className="text-xs text-muted-foreground">Сохраняйте прогнозы, чтобы не потерять</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {favorites.predictions.map(pred => (
                       <div
                         key={pred.id}
-                        className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30 cursor-pointer hover:bg-gray-900/70 transition-colors"
+                        className="flex items-center gap-3 bg-card/50 rounded-lg px-4 py-3 border border-border cursor-pointer hover:bg-card/70 transition-colors"
                         onClick={() => { setSelectedPrediction({ id: pred.id, matchTitle: pred.match ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction, prediction: pred.prediction, odds: pred.odds, expertName: pred.expert?.name ?? '' }); setPredictionModalOpen(true); }}
                       >
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{pred.match ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction}</p>
-                          <p className="text-xs text-gray-500">{pred.expert?.name}: {pred.prediction}</p>
+                          <p className="text-sm font-medium text-foreground">{pred.match ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction}</p>
+                          <p className="text-xs text-muted-foreground">{pred.expert?.name}: {pred.prediction}</p>
                         </div>
                         <span className="text-sm font-bold text-emerald-400">@ {pred.odds.toFixed(2)}</span>
                       </div>
@@ -491,10 +491,10 @@ export const UserCabinet = memo(function UserCabinet() {
 
         {/* Subscriptions tab */}
         <TabsContent value="subscriptions">
-          <Card className="bg-gray-800/50 border-gray-700/50">
+          <Card className="bg-muted/50 border-border">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base text-white flex items-center gap-2">
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
                   <Users className="w-4 h-4 text-emerald-400" />
                   Мои подписки ({subscribedExperts.length})
                 </CardTitle>
@@ -512,24 +512,24 @@ export const UserCabinet = memo(function UserCabinet() {
               {subscribedExperts.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-gray-400 mb-1">Нет подписок на экспертов</p>
-                  <p className="text-xs text-gray-600">Подпишитесь на экспертов, чтобы получать их прогнозы</p>
+                  <p className="text-muted-foreground mb-1">Нет подписок на экспертов</p>
+                  <p className="text-xs text-muted-foreground">Подпишитесь на экспертов, чтобы получать их прогнозы</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {experts.filter(e => subscribedExperts.includes(e.id)).map(expert => (
-                    <div key={expert.id} className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                    <div key={expert.id} className="flex items-center gap-3 bg-card/50 rounded-lg px-4 py-3 border border-border">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-xs font-bold text-white">
                         {expert.avatar}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">{expert.name}</p>
-                        <p className="text-xs text-gray-500">{expert.specialty} • {expert.totalPredictions} прогнозов</p>
+                        <p className="text-sm font-medium text-foreground">{expert.name}</p>
+                        <p className="text-xs text-muted-foreground">{expert.specialty} • {expert.totalPredictions} прогнозов</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
                           <p className="text-sm font-bold text-emerald-400">{expert.winRate}%</p>
-                          <p className="text-[10px] text-gray-500">проходимость</p>
+                          <p className="text-[10px] text-muted-foreground">проходимость</p>
                         </div>
                       </div>
                     </div>
@@ -539,7 +539,7 @@ export const UserCabinet = memo(function UserCabinet() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-gray-800/80 via-gray-800/50 to-emerald-900/10 border-gray-700/50 mt-6">
+          <Card className="bg-gradient-to-br from-gray-800/80 via-gray-800/50 to-emerald-900/10 border-border mt-6">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -547,8 +547,8 @@ export const UserCabinet = memo(function UserCabinet() {
                     {tier.icon}
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white">Текущий тариф: {tier.label}</h3>
-                    <p className="text-xs text-gray-500">
+                    <h3 className="text-sm font-semibold text-foreground">Текущий тариф: {tier.label}</h3>
+                    <p className="text-xs text-muted-foreground">
                       {currentUser.tier === 'free' && 'Базовый доступ к прогнозам'}
                       {currentUser.tier === 'pro' && 'Расширенная аналитика и прогнозы'}
                       {currentUser.tier === 'vip' && 'Полный доступ ко всем функциям'}
@@ -568,16 +568,16 @@ export const UserCabinet = memo(function UserCabinet() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className={`rounded-lg p-2.5 text-center border ${currentUser.tier === 'free' ? 'bg-gray-700/30 border-gray-600/30' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-                  <span className="text-[10px] text-gray-400 block">Прогнозов/день</span>
-                  <span className="text-sm font-bold text-white">{currentUser.tier === 'free' ? '3' : '∞'}</span>
+                  <span className="text-[10px] text-muted-foreground block">Прогнозов/день</span>
+                  <span className="text-sm font-bold text-foreground">{currentUser.tier === 'free' ? '3' : '∞'}</span>
                 </div>
                 <div className={`rounded-lg p-2.5 text-center border ${currentUser.tier === 'free' ? 'bg-gray-700/30 border-gray-600/30' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-                  <span className="text-[10px] text-gray-400 block">Эксперты</span>
-                  <span className="text-sm font-bold text-white">{currentUser.tier === 'free' ? 'Базовые' : 'Все'}</span>
+                  <span className="text-[10px] text-muted-foreground block">Эксперты</span>
+                  <span className="text-sm font-bold text-foreground">{currentUser.tier === 'free' ? 'Базовые' : 'Все'}</span>
                 </div>
                 <div className={`rounded-lg p-2.5 text-center border ${currentUser.tier === 'free' ? 'bg-gray-700/30 border-gray-600/30' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-                  <span className="text-[10px] text-gray-400 block">Аналитика</span>
-                  <span className="text-sm font-bold text-white">{currentUser.tier === 'vip' ? 'Полная' : currentUser.tier === 'pro' ? 'Расширенная' : 'Базовая'}</span>
+                  <span className="text-[10px] text-muted-foreground block">Аналитика</span>
+                  <span className="text-sm font-bold text-foreground">{currentUser.tier === 'vip' ? 'Полная' : currentUser.tier === 'pro' ? 'Расширенная' : 'Базовая'}</span>
                 </div>
               </div>
             </CardContent>
@@ -587,39 +587,39 @@ export const UserCabinet = memo(function UserCabinet() {
         {/* Settings tab */}
         <TabsContent value="settings">
           <div className="space-y-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base text-white flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-400" />
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
+                  <User className="w-4 h-4 text-muted-foreground" />
                   Профиль
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Name */}
-                <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                <div className="flex items-center justify-between bg-card/50 rounded-lg px-4 py-3 border border-border">
                   <div>
-                    <p className="text-sm text-white">Имя</p>
-                    <p className="text-xs text-gray-500">{currentUser.name}</p>
+                    <p className="text-sm text-foreground">Имя</p>
+                    <p className="text-xs text-muted-foreground">{currentUser.name}</p>
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('name')}>
                     Изменить
                   </Button>
                 </div>
                 {/* Email */}
-                <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                <div className="flex items-center justify-between bg-card/50 rounded-lg px-4 py-3 border border-border">
                   <div>
-                    <p className="text-sm text-white">Email</p>
-                    <p className="text-xs text-gray-500">{currentUser.email}</p>
+                    <p className="text-sm text-foreground">Email</p>
+                    <p className="text-xs text-muted-foreground">{currentUser.email}</p>
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('email')}>
                     Изменить
                   </Button>
                 </div>
                 {/* Password */}
-                <div className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                <div className="flex items-center justify-between bg-card/50 rounded-lg px-4 py-3 border border-border">
                   <div>
-                    <p className="text-sm text-white">Пароль</p>
-                    <p className="text-xs text-gray-500">Установите надёжный пароль</p>
+                    <p className="text-sm text-foreground">Пароль</p>
+                    <p className="text-xs text-muted-foreground">Установите надёжный пароль</p>
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs text-emerald-400 hover:text-emerald-300" onClick={() => handleEditProfile('password')}>
                     Сменить
@@ -629,19 +629,19 @@ export const UserCabinet = memo(function UserCabinet() {
             </Card>
 
             {/* Notifications */}
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base text-white flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-gray-400" />
+                <CardTitle className="text-base text-foreground flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-muted-foreground" />
                   Уведомления
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {notifications.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30">
+                  <div key={item.id} className="flex items-center justify-between bg-card/50 rounded-lg px-4 py-3 border border-border">
                     <div>
-                      <p className="text-sm text-white">{item.label}</p>
-                      <p className="text-xs text-gray-500">{item.desc}</p>
+                      <p className="text-sm text-foreground">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
                     </div>
                     <Switch
                       checked={item.enabled}
@@ -653,12 +653,12 @@ export const UserCabinet = memo(function UserCabinet() {
             </Card>
 
             {/* Logout */}
-            <Card className="bg-gray-800/50 border-gray-700/50">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-white">Выйти из аккаунта</h3>
-                    <p className="text-xs text-gray-500">Вы будете перенаправлены на главную страницу</p>
+                    <h3 className="text-sm font-medium text-foreground">Выйти из аккаунта</h3>
+                    <p className="text-xs text-muted-foreground">Вы будете перенаправлены на главную страницу</p>
                   </div>
                   <Button
                     variant="outline"
@@ -673,7 +673,7 @@ export const UserCabinet = memo(function UserCabinet() {
               </CardContent>
             </Card>
 
-            <p className="text-center text-xs text-gray-600">
+            <p className="text-center text-xs text-muted-foreground">
               Версия 2.0 • ФаворитПро © 2026
             </p>
           </div>
@@ -682,15 +682,15 @@ export const UserCabinet = memo(function UserCabinet() {
 
       {/* Logout confirmation dialog */}
       <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
-        <DialogContent className="bg-[#151b23] border-gray-700/50">
+        <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-white">Подтверждение выхода</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-foreground">Подтверждение выхода</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Вы уверены, что хотите выйти из аккаунта? Для повторного входа потребуется авторизация.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setLogoutDialogOpen(false)} className="border-gray-600 text-gray-300">
+            <Button variant="outline" size="sm" onClick={() => setLogoutDialogOpen(false)} className="border-border text-muted-foreground">
               <X className="w-3.5 h-3.5 mr-1" />
               Отмена
             </Button>
@@ -704,14 +704,14 @@ export const UserCabinet = memo(function UserCabinet() {
 
       {/* Edit profile dialog */}
       <Dialog open={editingField !== null} onOpenChange={(open) => { if (!open) { setEditingField(null); setEditValue(''); setCurrentPassword(''); setConfirmPassword(''); } }}>
-        <DialogContent className="bg-[#151b23] border-gray-700/50">
+        <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-white">
+            <DialogTitle className="text-foreground">
               {editingField === 'name' && 'Изменить имя'}
               {editingField === 'email' && 'Изменить email'}
               {editingField === 'password' && 'Сменить пароль'}
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-muted-foreground">
               {editingField === 'name' && 'Введите новое имя'}
               {editingField === 'email' && 'Введите новый email'}
               {editingField === 'password' && 'Введите текущий и новый пароль (мин. 8 символов)'}
@@ -725,7 +725,7 @@ export const UserCabinet = memo(function UserCabinet() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-muted border-border text-foreground text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   placeholder="Текущий пароль"
                   autoFocus
                 />
@@ -734,7 +734,7 @@ export const UserCabinet = memo(function UserCabinet() {
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-muted border-border text-foreground text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   placeholder="Новый пароль"
                 />
                 <input
@@ -742,7 +742,7 @@ export const UserCabinet = memo(function UserCabinet() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-muted border-border text-foreground text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   placeholder="Подтвердите пароль"
                 />
               </>
@@ -752,7 +752,7 @@ export const UserCabinet = memo(function UserCabinet() {
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSaveProfile()}
-                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="w-full px-3 py-2 rounded-lg bg-muted border-border text-foreground text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 placeholder={
                   editingField === 'name' ? 'Ваше имя' : 'email@example.com'
                 }
@@ -761,7 +761,7 @@ export const UserCabinet = memo(function UserCabinet() {
             )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setEditingField(null)} className="border-gray-600 text-gray-300">
+            <Button variant="outline" size="sm" onClick={() => setEditingField(null)} className="border-border text-muted-foreground">
               Отмена
             </Button>
             <Button size="sm" onClick={handleSaveProfile} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">

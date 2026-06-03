@@ -67,12 +67,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-8 h-8 text-red-400" />
             </div>
-            <h2 className="text-lg font-bold text-white mb-2">Что-то пошло не так</h2>
-            <p className="text-sm text-gray-400 mb-2">
+            <h2 className="text-lg font-bold text-foreground mb-2">Что-то пошло не так</h2>
+            <p className="text-sm text-muted-foreground mb-2">
               Произошла непредвиденная ошибка при отображении страницы.
             </p>
             {process.env.NODE_ENV !== 'production' && this.state.error && (
-              <p className="text-xs text-gray-500 bg-gray-900/50 rounded-lg p-3 mb-4 font-mono break-all">
+              <p className="text-xs text-muted-foreground bg-card/50 rounded-lg p-3 mb-4 font-mono break-all">
                 {this.state.error.message}
               </p>
             )}

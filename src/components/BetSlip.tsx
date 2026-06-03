@@ -39,7 +39,7 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
   return (
     <Sheet open={betSlipOpen} onOpenChange={setBetSlipOpen}>
       <SheetTrigger asChild>
-        <button className="relative p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+        <button className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
           <ShoppingCart className="w-5 h-5" />
           {betSlip.length > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] bg-emerald-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
@@ -49,10 +49,10 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
         </button>
       </SheetTrigger>
 
-      <SheetContent className="bg-[#0d1117] border-gray-800 text-gray-100 w-full sm:max-w-md p-0 flex flex-col">
-        <SheetHeader className="p-4 border-b border-gray-800">
+      <SheetContent className="bg-background border-border text-foreground w-full sm:max-w-md p-0 flex flex-col">
+        <SheetHeader className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-2 text-white">
+            <SheetTitle className="flex items-center gap-2 text-foreground">
               <ShoppingCart className="w-5 h-5 text-emerald-400" />
               Купон ставок
               {betSlip.length > 0 && (
@@ -75,18 +75,18 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
 
         {betSlip.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-800/50 flex items-center justify-center mb-4">
-              <ShoppingCart className="w-8 h-8 text-gray-600" />
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+              <ShoppingCart className="w-8 h-8 text-muted-foreground" />
             </div>
-            <p className="text-gray-400 mb-1">Купон пуст</p>
-            <p className="text-xs text-gray-600">Нажмите на коэффициент, чтобы добавить ставку</p>
+            <p className="text-muted-foreground mb-1">Купон пуст</p>
+            <p className="text-xs text-muted-foreground">Нажмите на коэффициент, чтобы добавить ставку</p>
           </div>
         ) : (
           <>
             {/* Bet type tabs */}
             <div className="px-4 pt-3">
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-gray-800/50 border-gray-700/50 w-full">
+                <TabsList className="bg-muted border-border w-full">
                   <TabsTrigger value="single" className="flex-1 text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
                     Одиночная
                   </TabsTrigger>
@@ -110,16 +110,16 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                 {betSlip.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/30"
+                    className="bg-muted/50 rounded-lg p-3 border border-border"
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-500">{item.league}</p>
-                        <p className="text-sm font-medium text-white truncate">{item.matchTitle}</p>
+                        <p className="text-xs text-muted-foreground">{item.league}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{item.matchTitle}</p>
                       </div>
                       <button
                         onClick={() => removeBet(item.id)}
-                        className="text-gray-500 hover:text-red-400 shrink-0 p-0.5"
+                        className="text-muted-foreground hover:text-red-400 shrink-0 p-0.5"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -137,16 +137,16 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
             </ScrollArea>
 
             {/* Bet summary */}
-            <div className="border-t border-gray-800 p-4 space-y-3">
+            <div className="border-t border-border p-4 space-y-3">
               {/* Stake input */}
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Сумма ставки (₽)</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Сумма ставки (₽)</label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
                     value={stake}
                     onChange={(e) => setStake(e.target.value)}
-                    className="bg-gray-900 border-gray-700 text-white font-semibold"
+                    className="bg-card border-border text-foreground font-semibold"
                   />
                   <div className="flex gap-1">
                     {[100, 500, 1000].map((amount) => (
@@ -155,7 +155,7 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                         variant="outline"
                         size="sm"
                         onClick={() => setStake(String(amount))}
-                        className="border-gray-700 text-gray-400 hover:text-white text-[10px] px-2 h-8"
+                        className="border-border text-muted-foreground hover:text-white text-[10px] px-2 h-8"
                       >
                         {amount}
                       </Button>
@@ -171,27 +171,27 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                       const singleWin = stakeNum * item.odds;
                       const singleProfit = singleWin - stakeNum;
                       return (
-                        <div key={item.id} className="bg-gray-800/50 rounded-lg p-2 text-center">
-                          <p className="text-[10px] text-gray-500 truncate">{item.prediction}</p>
+                        <div key={item.id} className="bg-muted/50 rounded-lg p-2 text-center">
+                          <p className="text-[10px] text-muted-foreground truncate">{item.prediction}</p>
                           <p className="text-sm font-bold text-emerald-400">{item.odds.toFixed(2)}</p>
-                          <p className="text-[10px] text-white">+{singleProfit.toFixed(0)} ₽</p>
+                          <p className="text-[10px] text-foreground">+{singleProfit.toFixed(0)} ₽</p>
                         </div>
                       );
                     })
                   : (
                     <>
-                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                        <p className="text-[10px] text-gray-500">Коэфф.</p>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-muted-foreground">Коэфф.</p>
                         <p className="text-sm font-bold text-emerald-400">
                           {activeTab === 'single' ? betSlip[0]?.odds.toFixed(2) : totalOdds.toFixed(2)}
                         </p>
                       </div>
-                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                        <p className="text-[10px] text-gray-500">Выплата</p>
-                        <p className="text-sm font-bold text-white">{potentialWin.toFixed(0)} ₽</p>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-muted-foreground">Выплата</p>
+                        <p className="text-sm font-bold text-foreground">{potentialWin.toFixed(0)} ₽</p>
                       </div>
-                      <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-                        <p className="text-[10px] text-gray-500">Прибыль</p>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <p className="text-[10px] text-muted-foreground">Прибыль</p>
                         <p className="text-sm font-bold text-emerald-400">+{potentialProfit.toFixed(0)} ₽</p>
                       </div>
                     </>

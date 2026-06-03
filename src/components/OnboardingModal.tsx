@@ -69,7 +69,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="bg-[#0d1117] border-gray-700/50 text-white max-w-md p-0 overflow-hidden">
+      <DialogContent className="bg-card border-border text-foreground max-w-md p-0 overflow-hidden">
         <DialogTitle className="sr-only">Добро пожаловать в Favorit Pro</DialogTitle>
         <div className="relative">
           {/* Background glow */}
@@ -96,8 +96,8 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
                   <Icon className="w-10 h-10 text-white" />
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed max-w-xs">{step.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">{step.description}</p>
               </motion.div>
             </AnimatePresence>
 
@@ -118,7 +118,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
             <div className="flex items-center justify-between">
               <button
                 onClick={handleSkip}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
               >
                 Пропустить
               </button>

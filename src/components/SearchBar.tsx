@@ -105,7 +105,7 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
   return (
     <div ref={containerRef} className="relative w-full max-w-md">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Поиск матчей, экспертов, прогнозов..."
@@ -119,14 +119,14 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             // Re-show dropdown on focus if it was dismissed
             if (dismissedQuery) setDismissedQuery('');
           }}
-          className="bg-gray-800/50 border-gray-700/50 text-white pl-10 pr-8 placeholder:text-gray-500 focus:border-emerald-500/50"
+          className="bg-muted/50 border-border text-foreground pl-10 pr-8 placeholder:text-muted-foreground focus:border-emerald-500/50"
           autoFocus={autoFocus}
         />
         {query && (
           <button
             aria-label="Очистить поиск"
             onClick={() => { setQuery(''); setDebouncedQuery(''); setDismissedQuery(''); }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
           >
             <X className="w-4 h-4" />
           </button>
@@ -144,14 +144,14 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-[#151b23] border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 z-50 max-h-[400px] overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl shadow-black/50 z-50 max-h-[400px] overflow-y-auto"
           >
             {/* Matches */}
             {results && results.matches.length > 0 && (
               <div className="p-3">
                 <div className="flex items-center gap-1.5 mb-2">
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Матчи</span>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Матчи</span>
                 </div>
                 {results.matches.map((match) => (
                   <button
@@ -160,13 +160,13 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
                       onMatchClick?.(match);
                       setDismissedQuery(query);
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors text-left"
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-accent transition-colors text-left"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-sm">{match.sport.icon}</span>
-                      <span className="text-sm text-white">{match.homeTeam} — {match.awayTeam}</span>
+                      <span className="text-sm text-foreground">{match.homeTeam} — {match.awayTeam}</span>
                     </div>
-                    <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px]">
+                    <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-[10px]">
                       {match.league}
                     </Badge>
                   </button>
@@ -176,21 +176,21 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
 
             {/* Experts */}
             {results && results.experts.length > 0 && (
-              <div className="p-3 border-t border-gray-700/50">
+              <div className="p-3 border-t border-border">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Trophy className="w-3.5 h-3.5 text-yellow-400" />
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Эксперты</span>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Эксперты</span>
                 </div>
                 {results.experts.map((expert) => (
                   <div
                     key={expert.id}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-accent transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-[10px] font-bold text-white">
                         {expert.avatar}
                       </div>
-                      <span className="text-sm text-white">{expert.name}</span>
+                      <span className="text-sm text-foreground">{expert.name}</span>
                     </div>
                     <span className="text-xs text-emerald-400">{expert.winRate}%</span>
                   </div>
@@ -200,28 +200,28 @@ export function SearchBar({ onMatchClick, autoFocus }: SearchBarProps) {
 
             {/* Predictions */}
             {results && results.predictions.length > 0 && (
-              <div className="p-3 border-t border-gray-700/50">
+              <div className="p-3 border-t border-border">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Newspaper className="w-3.5 h-3.5 text-teal-400" />
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Прогнозы</span>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Прогнозы</span>
                 </div>
                 {results.predictions.map((pred) => (
                   <div
                     key={pred.id}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-accent transition-colors"
                   >
                     <div>
                       <span className="text-sm text-emerald-400 font-medium">{pred.prediction}</span>
-                      <span className="text-xs text-gray-500 ml-2">{pred.match.homeTeam} — {pred.match.awayTeam}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{pred.match.homeTeam} — {pred.match.awayTeam}</span>
                     </div>
-                    <span className="text-xs text-gray-400">{pred.odds}</span>
+                    <span className="text-xs text-muted-foreground">{pred.odds}</span>
                   </div>
                 ))}
               </div>
             )}
 
             {!hasResults && query.length >= 2 && (
-              <div className="p-6 text-center text-sm text-gray-500">
+              <div className="p-6 text-center text-sm text-muted-foreground">
                 Ничего не найдено по запросу «{query}»
               </div>
             )}

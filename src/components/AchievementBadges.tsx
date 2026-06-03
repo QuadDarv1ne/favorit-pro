@@ -91,7 +91,7 @@ const achievements: Achievement[] = [
     id: 'legend',
     name: 'Легенда',
     icon: '👑',
-    color: 'text-gray-500',
+    color: 'text-muted-foreground',
     gradient: 'from-gray-600 to-gray-800',
     unlocked: false,
   },
@@ -99,7 +99,7 @@ const achievements: Achievement[] = [
     id: 'millionaire',
     name: 'Миллионер',
     icon: '💰',
-    color: 'text-gray-500',
+    color: 'text-muted-foreground',
     gradient: 'from-gray-600 to-gray-800',
     unlocked: false,
   },
@@ -110,7 +110,7 @@ export function AchievementBadges() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <div className="flex items-center gap-3 mb-5">
         <Trophy className="w-5 h-5 text-yellow-400" />
-        <h2 className="text-xl font-bold text-white">Достижения</h2>
+        <h2 className="text-xl font-bold text-foreground">Достижения</h2>
         <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
           {achievements.filter(a => a.unlocked).length}/{achievements.length}
         </Badge>
@@ -137,27 +137,27 @@ export function AchievementBadges() {
                     !achievement.unlocked ? 'grayscale' : ''
                   }`}
                 >
-                  {achievement.unlocked ? achievement.icon : <Lock className="w-6 h-6 text-gray-400" />}
+                  {achievement.unlocked ? achievement.icon : <Lock className="w-6 h-6 text-muted-foreground" />}
                 </div>
                 {!achievement.unlocked && (
                   <div className="absolute -bottom-1 -right-1 left-1/2 -translate-x-1/2 translate-x-3">
-                    <Lock className="w-3.5 h-3.5 text-gray-500" />
+                    <Lock className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
                 )}
               </div>
 
               {/* Name */}
-              <h3 className={`text-xs font-semibold mb-1 ${achievement.unlocked ? 'text-white' : 'text-gray-500'}`}>
+              <h3 className={`text-xs font-semibold mb-1 ${achievement.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {achievement.name}
               </h3>
 
               {/* Date */}
               {achievement.unlocked ? (
-                <p className="text-[10px] text-gray-500">
+                <p className="text-[10px] text-muted-foreground">
                   Получено {achievement.date}
                 </p>
               ) : (
-                <p className="text-[10px] text-gray-600">
+                <p className="text-[10px] text-muted-foreground">
                   Заблокировано
                 </p>
               )}

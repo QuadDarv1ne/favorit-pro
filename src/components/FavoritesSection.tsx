@@ -63,10 +63,10 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
     return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-800/50 flex items-center justify-center mx-auto mb-6">
-            <Heart className="w-10 h-10 text-gray-600 animate-pulse" />
+          <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+            <Heart className="w-10 h-10 text-muted-foreground animate-pulse" />
           </div>
-          <p className="text-sm text-gray-400">Загрузка избранного...</p>
+          <p className="text-sm text-muted-foreground">Загрузка избранного...</p>
         </div>
       </section>
     );
@@ -78,11 +78,11 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
     return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-800/50 flex items-center justify-center mx-auto mb-6">
-            <Heart className="w-10 h-10 text-gray-600" />
+          <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+            <Heart className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Нет избранного</h2>
-          <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">
+          <h2 className="text-xl font-bold text-foreground mb-2">Нет избранного</h2>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
             Нажмите <Heart className="w-3.5 h-3.5 inline text-red-400" /> на матче, эксперте или прогнозе, чтобы сохранить его в избранное
           </p>
         </div>
@@ -94,14 +94,14 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-6">
         <Heart className="w-5 h-5 text-red-400 fill-current" />
-        <h2 className="text-xl font-bold text-white">Избранное</h2>
+        <h2 className="text-xl font-bold text-foreground">Избранное</h2>
         <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">
           {totalFavorites}
         </Badge>
       </div>
 
       <Tabs defaultValue="matches" className="w-full">
-        <TabsList className="bg-gray-800/50 border-gray-700/50 mb-4">
+        <TabsList className="bg-muted/50 border-border mb-4">
           <TabsTrigger value="matches" className="text-xs data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 gap-1.5">
             <Radio className="w-3.5 h-3.5" />
             Матчи
@@ -141,34 +141,34 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <Card
-                      className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-emerald-500/40 transition-all cursor-pointer group"
+                      className="bg-muted/40 backdrop-blur-md border-border hover:border-emerald-500/40 transition-all cursor-pointer group"
                       onClick={() => onMatchClick?.(match)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs text-gray-500">{sportEmoji(match.sport?.slug ?? '')} {match.league}</span>
+                              <span className="text-xs text-muted-foreground">{sportEmoji(match.sport?.slug ?? '')} {match.league}</span>
                               {match.status === 'live' && (
                                 <span className="flex items-center gap-1 text-[10px] text-red-400 font-medium">
                                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> LIVE
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm font-medium text-white group-hover:text-emerald-300 transition-colors">
+                            <p className="text-sm font-medium text-foreground group-hover:text-emerald-300 transition-colors">
                               {match.homeTeam} — {match.awayTeam}
                             </p>
-                            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {formatStartTime(match.startTime)}</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="text-right text-sm">
-                              <span className="text-gray-400">1</span>{' '}
+                              <span className="text-muted-foreground">1</span>{' '}
                               <span className="text-emerald-400 font-medium">{match.homeOdds?.toFixed(2)}</span>
                               {match.awayOdds && (
                                 <>
-                                  {' '}<span className="text-gray-400">2</span>{' '}
+                                  {' '}<span className="text-muted-foreground">2</span>{' '}
                                   <span className="text-emerald-400 font-medium">{match.awayOdds.toFixed(2)}</span>
                                 </>
                               )}
@@ -208,7 +208,7 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <Card
-                      className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-emerald-500/40 transition-all cursor-pointer group"
+                      className="bg-muted/40 backdrop-blur-md border-border hover:border-emerald-500/40 transition-all cursor-pointer group"
                       onClick={() => onExpertClick?.(expert)}
                     >
                       <CardContent className="p-4">
@@ -218,8 +218,8 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                               {expert.avatar}
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">{expert.name}</p>
-                              <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-[10px] mt-0.5">{expert.specialty?.name}</Badge>
+                              <p className="text-sm font-semibold text-foreground group-hover:text-emerald-300 transition-colors">{expert.name}</p>
+                              <Badge variant="secondary" className="bg-gray-700 text-muted-foreground text-[10px] mt-0.5">{expert.specialty?.name}</Badge>
                             </div>
                           </div>
                           <Button
@@ -233,15 +233,15 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-3">
                           <div className="bg-gray-700/30 rounded-lg p-2 text-center">
-                            <p className="text-xs text-gray-500">Проход</p>
+                            <p className="text-xs text-muted-foreground">Проход</p>
                             <p className="text-sm font-bold text-emerald-400">{expert.winRate}%</p>
                           </div>
                           <div className="bg-gray-700/30 rounded-lg p-2 text-center">
-                            <p className="text-xs text-gray-500">ROI</p>
+                            <p className="text-xs text-muted-foreground">ROI</p>
                             <p className="text-sm font-bold text-teal-400">+{expert.roi}%</p>
                           </div>
                           <div className="bg-gray-700/30 rounded-lg p-2 text-center">
-                            <p className="text-xs text-gray-500">Серия</p>
+                            <p className="text-xs text-muted-foreground">Серия</p>
                             <p className="text-sm font-bold text-yellow-400">{expert.streak}W</p>
                           </div>
                         </div>
@@ -270,20 +270,20 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <Card
-                      className="bg-gray-800/40 backdrop-blur-md border-gray-700/30 hover:border-emerald-500/40 transition-all cursor-pointer group"
+                      className="bg-muted/40 backdrop-blur-md border-border hover:border-emerald-500/40 transition-all cursor-pointer group"
                       onClick={() => onPredictionClick?.(pred)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                            <p className="text-sm font-semibold text-foreground group-hover:text-emerald-300 transition-colors">
                               {pred.match ? `${pred.match.homeTeam} — ${pred.match.awayTeam}` : pred.prediction}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className="text-emerald-400 font-bold">{pred.prediction}</span>
-                              <span className="text-gray-400 text-sm">@ {pred.odds?.toFixed(2)}</span>
+                              <span className="text-muted-foreground text-sm">@ {pred.odds?.toFixed(2)}</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">{pred.expert?.name}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{pred.expert?.name}</p>
                           </div>
                           <Button
                             variant="ghost"
@@ -310,10 +310,10 @@ export const FavoritesSection = React.memo(function FavoritesSection({ onMatchCl
 function EmptyTab({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="w-14 h-14 rounded-full bg-gray-800/50 flex items-center justify-center text-gray-600 mb-3">
+      <div className="w-14 h-14 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground mb-3">
         {icon}
       </div>
-      <p className="text-sm text-gray-500">{text}</p>
+      <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );
 }

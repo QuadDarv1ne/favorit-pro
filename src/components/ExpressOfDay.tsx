@@ -63,8 +63,8 @@ export function ExpressOfDay() {
                   <Flame className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-white">Экспресс дня</CardTitle>
-                  <p className="text-xs text-gray-400">Подборка от наших экспертов</p>
+                  <CardTitle className="text-lg font-bold text-foreground">Экспресс дня</CardTitle>
+                  <p className="text-xs text-muted-foreground">Подборка от наших экспертов</p>
                 </div>
               </div>
               <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-sm font-bold px-3">
@@ -79,12 +79,12 @@ export function ExpressOfDay() {
               {legs.map((leg, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-700/30 hover:border-emerald-500/20 transition-colors"
+                  className="flex items-center gap-3 bg-card/50 rounded-lg px-4 py-3 border border-border hover:border-emerald-500/20 transition-colors"
                 >
                   <span className="text-lg">{leg.sport}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{leg.match}</p>
-                    <p className="text-xs text-gray-500">{leg.league}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{leg.match}</p>
+                    <p className="text-xs text-muted-foreground">{leg.league}</p>
                   </div>
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-xs shrink-0">
                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -99,17 +99,17 @@ export function ExpressOfDay() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/20">
               <div className="flex items-center gap-6">
                 <div>
-                  <p className="text-xs text-gray-400">Общий коэфф.</p>
+                  <p className="text-xs text-muted-foreground">Общий коэфф.</p>
                   <p className="text-xl font-bold text-emerald-400">{totalOdds.toFixed(2)}</p>
                 </div>
                 <div className="w-px h-8 bg-gray-700" />
                 <div>
-                  <p className="text-xs text-gray-400">Ставка</p>
-                  <p className="text-xl font-bold text-white">{stake} ₽</p>
+                  <p className="text-xs text-muted-foreground">Ставка</p>
+                  <p className="text-xl font-bold text-foreground">{stake} ₽</p>
                 </div>
                 <div className="w-px h-8 bg-gray-700" />
                 <div>
-                  <p className="text-xs text-gray-400">Выигрыш</p>
+                  <p className="text-xs text-muted-foreground">Выигрыш</p>
                   <p className="text-xl font-bold text-emerald-400">{potentialWin} ₽</p>
                 </div>
               </div>
@@ -124,7 +124,7 @@ export function ExpressOfDay() {
                   variant="outline"
                   size="icon"
                   onClick={handleCopy}
-                  className="border-gray-700 text-gray-400 hover:text-white shrink-0"
+                  className="border-border text-muted-foreground hover:text-white shrink-0"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                 </Button>

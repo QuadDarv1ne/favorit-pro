@@ -123,7 +123,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-      <DialogContent className="bg-[#151b23] border-gray-700/50 text-gray-100 max-w-md">
+      <DialogContent className="bg-card border-border text-foreground max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
@@ -131,7 +131,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 ФП
               </div>
             </div>
-            <span className="text-lg font-bold text-white">Добро пожаловать</span>
+            <span className="text-lg font-bold text-foreground">Добро пожаловать</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -143,7 +143,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
         )}
 
         <Tabs defaultValue={defaultTab} onValueChange={() => setServerError(null)}>
-          <TabsList className="bg-gray-800/50 border-gray-700/50 w-full mb-4">
+          <TabsList className="bg-muted/50 border-border w-full mb-4">
             <TabsTrigger value="login" className="flex-1 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
               Вход
             </TabsTrigger>
@@ -155,14 +155,14 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
           <TabsContent value="login">
             <form onSubmit={handleLoginSubmit} className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Email</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="email"
                     placeholder="your@email.com"
                     {...loginForm.register('email')}
-                    className={`bg-gray-900 border-gray-700 text-white pl-10 focus:border-emerald-500/50 ${
+                    className={`bg-card border-border text-foreground pl-10 focus:border-emerald-500/50 ${
                       loginForm.formState.errors.email ? 'border-red-500/50 focus:border-red-500/50' : ''
                     }`}
                   />
@@ -172,21 +172,21 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 )}
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Пароль</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Пароль</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type={showLoginPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     {...loginForm.register('password')}
-                    className={`bg-gray-900 border-gray-700 text-white pl-10 pr-10 focus:border-emerald-500/50 ${
+                    className={`bg-card border-border text-foreground pl-10 pr-10 focus:border-emerald-500/50 ${
                       loginForm.formState.errors.password ? 'border-red-500/50 focus:border-red-500/50' : ''
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                   >
                     {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -198,7 +198,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="accent-emerald-500 w-3.5 h-3.5" />
-                  <span className="text-xs text-gray-400">Запомнить</span>
+                  <span className="text-xs text-muted-foreground">Запомнить</span>
                 </label>
                 <button type="button" className="text-xs text-emerald-400 hover:text-emerald-300">
                   Забыли пароль?
@@ -225,14 +225,14 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
               {/* Quick login */}
               <div className="relative my-3">
                 <Separator className="bg-gray-700/50" />
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#151b23] px-2 text-[10px] text-gray-600">
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-[10px] text-muted-foreground">
                   или быстро
                 </span>
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white text-xs"
+                className="w-full border-border text-muted-foreground hover:bg-accent hover:text-white text-xs"
                 onClick={handleDemoLogin}
                 disabled={isLoading}
               >
@@ -251,14 +251,14 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
               </div>
 
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Имя</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Имя</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder="Ваше имя"
                     {...registerForm.register('name')}
-                    className={`bg-gray-900 border-gray-700 text-white pl-10 focus:border-emerald-500/50 ${
+                    className={`bg-card border-border text-foreground pl-10 focus:border-emerald-500/50 ${
                       registerForm.formState.errors.name ? 'border-red-500/50 focus:border-red-500/50' : ''
                     }`}
                   />
@@ -268,14 +268,14 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 )}
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Email</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="email"
                     placeholder="your@email.com"
                     {...registerForm.register('email')}
-                    className={`bg-gray-900 border-gray-700 text-white pl-10 focus:border-emerald-500/50 ${
+                    className={`bg-card border-border text-foreground pl-10 focus:border-emerald-500/50 ${
                       registerForm.formState.errors.email ? 'border-red-500/50 focus:border-red-500/50' : ''
                     }`}
                   />
@@ -285,21 +285,21 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                 )}
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1.5 block">Пароль</label>
+                <label className="text-xs text-muted-foreground mb-1.5 block">Пароль</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type={showRegisterPassword ? 'text' : 'password'}
                     placeholder="Минимум 8 символов"
                     {...registerForm.register('password')}
-                    className={`bg-gray-900 border-gray-700 text-white pl-10 pr-10 focus:border-emerald-500/50 ${
+                    className={`bg-card border-border text-foreground pl-10 pr-10 focus:border-emerald-500/50 ${
                       registerForm.formState.errors.password ? 'border-red-500/50 focus:border-red-500/50' : ''
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowRegisterPassword(!showRegisterPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                   >
                     {showRegisterPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -322,20 +322,20 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                         />
                       ))}
                     </div>
-                    <span className="text-[10px] text-gray-500">{strength.label}</span>
+                    <span className="text-[10px] text-muted-foreground">{strength.label}</span>
                     {/* Password requirements */}
                     <div className="mt-1.5 space-y-0.5">
                       <div className="flex items-center gap-1.5">
                         <div className={`w-1.5 h-1.5 rounded-full ${watchedPassword.length >= 8 ? 'bg-emerald-400' : 'bg-gray-600'}`} />
-                        <span className={`text-[9px] ${watchedPassword.length >= 8 ? 'text-emerald-400' : 'text-gray-600'}`}>8+ символов</span>
+                        <span className={`text-[9px] ${watchedPassword.length >= 8 ? 'text-emerald-400' : 'text-muted-foreground'}`}>8+ символов</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className={`w-1.5 h-1.5 rounded-full ${/[A-ZА-Я]/.test(watchedPassword) ? 'bg-emerald-400' : 'bg-gray-600'}`} />
-                        <span className={`text-[9px] ${/[A-ZА-Я]/.test(watchedPassword) ? 'text-emerald-400' : 'text-gray-600'}`}>Заглавная буква</span>
+                        <span className={`text-[9px] ${/[A-ZА-Я]/.test(watchedPassword) ? 'text-emerald-400' : 'text-muted-foreground'}`}>Заглавная буква</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className={`w-1.5 h-1.5 rounded-full ${/[0-9]/.test(watchedPassword) ? 'bg-emerald-400' : 'bg-gray-600'}`} />
-                        <span className={`text-[9px] ${/[0-9]/.test(watchedPassword) ? 'text-emerald-400' : 'text-gray-600'}`}>Цифра</span>
+                        <span className={`text-[9px] ${/[0-9]/.test(watchedPassword) ? 'text-emerald-400' : 'text-muted-foreground'}`}>Цифра</span>
                       </div>
                     </div>
                   </div>
@@ -348,7 +348,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
                   {...registerForm.register('terms')}
                 />
                 <div>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     Мне исполнилось 18 лет. Я соглашаюсь с{' '}
                     <a href="#" className="text-emerald-400 hover:text-emerald-300">правилами</a> и{' '}
                     <a href="#" className="text-emerald-400 hover:text-emerald-300">политикой конфиденциальности</a>
@@ -381,7 +381,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
 
         <Separator className="bg-gray-700/50 my-2" />
 
-        <p className="text-[10px] text-gray-600 text-center">
+        <p className="text-[10px] text-muted-foreground text-center">
           18+ Ответственная игра. Играйте осознанно.
         </p>
       </DialogContent>
