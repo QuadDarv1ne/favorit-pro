@@ -55,21 +55,21 @@ export function ArticleDetailModal({ article, open, onClose }: ArticleDetailModa
           </span>
         </div>
 
-        <Separator className="bg-gray-700/50" />
+        <Separator className="bg-border" />
 
         {/* Article content rendered as markdown */}
-        <div className="prose prose-invert prose-sm max-w-none
-          prose-headings:text-white prose-headings:font-semibold
+        <div className="prose dark:prose-invert prose-sm max-w-none
+          prose-headings:font-semibold prose-headings:text-foreground
           prose-h2:text-lg prose-h2:mt-4 prose-h2:mb-2
           prose-h3:text-base prose-h3:mt-3 prose-h3:mb-1
           prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:my-2
           prose-li:text-muted-foreground
-          prose-strong:text-white
+          prose-strong:text-foreground
           prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
           prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-500/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r
-          prose-table:border-collapse prose-td:border prose-td:border-gray-700 prose-td:px-2 prose-td:py-1 prose-th:border prose-th:border-gray-700 prose-th:px-2 prose-th:py-1 prose-th:bg-gray-800
-          prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
-          prose-pre:bg-gray-800/50 prose-pre:border prose-pre:border-gray-700
+          prose-table:border-collapse prose-td:border prose-td:border-border prose-td:px-2 prose-td:py-1 prose-th:border prose-th:border-border prose-th:px-2 prose-th:py-1 prose-th:bg-muted
+          prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+          prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border
         ">
           <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>

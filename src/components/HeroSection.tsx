@@ -95,7 +95,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-border text-muted-foreground hover:bg-accent hover:text-white"
+                className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
               >
                 Стать экспертом
               </Button>

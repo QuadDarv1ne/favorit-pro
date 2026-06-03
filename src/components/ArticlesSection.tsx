@@ -62,10 +62,10 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <FileText className="w-5 h-5 text-teal-400" />
-          <h2 className="text-xl font-bold text-white">Статьи</h2>
+          <h2 className="text-xl font-bold text-foreground">Статьи</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             Все статьи <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -119,7 +119,7 @@ export function ArticlesSection({ detailed = false }: ArticlesSectionProps) {
 
       {detailed && (
         <div className="mt-6 flex justify-center">
-          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-white">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-foreground">
             Загрузить ещё
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

@@ -124,7 +124,7 @@ export function ExpressOfDay() {
                   variant="outline"
                   size="icon"
                   onClick={handleCopy}
-                  className="border-border text-muted-foreground hover:text-white shrink-0"
+                  className="border-border text-muted-foreground hover:text-foreground shrink-0"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                 </Button>

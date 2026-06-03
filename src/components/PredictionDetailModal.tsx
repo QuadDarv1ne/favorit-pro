@@ -156,7 +156,7 @@ export function PredictionDetailModal({ prediction, open, onClose }: PredictionD
             </div>
             <span className="text-xs text-muted-foreground">Автор прогноза</span>
           </div>
-          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:text-white text-xs h-7">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:text-foreground text-xs h-7">
             Профиль
           </Button>
         </div>
@@ -172,12 +172,12 @@ export function PredictionDetailModal({ prediction, open, onClose }: PredictionD
           </Button>
           <Button
             variant="outline"
-            className={`border-border ${isFavorite ? 'text-red-400 border-red-500/30' : 'text-muted-foreground hover:text-white'}`}
+            className={`border-border ${isFavorite ? 'text-red-400 border-red-500/30' : 'text-muted-foreground hover:text-foreground'}`}
             onClick={handleFavorite}
           >
             <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
           </Button>
-          <Button variant="outline" className="border-border text-muted-foreground hover:text-white">
+          <Button variant="outline" className="border-border text-muted-foreground hover:text-foreground">
             <Share2 className="w-4 h-4" />
           </Button>
         </div>

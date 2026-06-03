@@ -59,7 +59,7 @@ export function PromotionsBanner() {
               <CardContent className="p-5">
                 <div className="flex items-start gap-3 mb-3">
                   {promo.icon}
-                  <h3 className="text-sm font-bold text-white leading-tight">{promo.title}</h3>
+                  <h3 className="text-sm font-bold text-foreground leading-tight">{promo.title}</h3>
                 </div>
                 <p className="text-xs text-muted-foreground mb-4 leading-relaxed">{promo.description}</p>
                 <Button

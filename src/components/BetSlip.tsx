@@ -155,7 +155,7 @@ export const BetSlip = React.memo(function BetSlip({ onPlaceBet }: { onPlaceBet?
                         variant="outline"
                         size="sm"
                         onClick={() => setStake(String(amount))}
-                        className="border-border text-muted-foreground hover:text-white text-[10px] px-2 h-8"
+                        className="border-border text-muted-foreground hover:text-foreground text-[10px] px-2 h-8"
                       >
                         {amount}
                       </Button>

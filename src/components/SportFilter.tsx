@@ -19,7 +19,7 @@ export function SportFilter({ activeFilter, onFilterChange }: SportFilterProps) 
         className={`shrink-0 text-xs h-8 ${
           activeFilter === null
             ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
-            : 'border-border text-muted-foreground hover:text-white hover:bg-accent'
+            : 'border-border text-muted-foreground hover:text-foreground hover:bg-accent'
         }`}
       >
         Все
@@ -33,7 +33,7 @@ export function SportFilter({ activeFilter, onFilterChange }: SportFilterProps) 
           className={`shrink-0 text-xs h-8 ${
             activeFilter === sport.id
               ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
-              : 'border-border text-muted-foreground hover:text-white hover:bg-accent'
+              : 'border-border text-muted-foreground hover:text-foreground hover:bg-accent'
           }`}
         >
           <span className="mr-1">{sport.icon}</span>
@@ -43,7 +43,7 @@ export function SportFilter({ activeFilter, onFilterChange }: SportFilterProps) 
       {activeFilter && (
         <button
           onClick={() => onFilterChange(null)}
-          className="shrink-0 p-1 rounded-full bg-muted text-muted-foreground hover:text-white"
+          className="shrink-0 p-1 rounded-full bg-muted text-muted-foreground hover:text-foreground"
         >
           <X className="w-3.5 h-3.5" />
         </button>

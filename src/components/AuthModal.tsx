@@ -232,7 +232,7 @@ export function AuthModal({ open, onClose, defaultTab = 'login', onLogin }: Auth
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-border text-muted-foreground hover:bg-accent hover:text-white text-xs"
+                className="w-full border-border text-muted-foreground hover:bg-accent hover:text-foreground text-xs"
                 onClick={handleDemoLogin}
                 disabled={isLoading}
               >

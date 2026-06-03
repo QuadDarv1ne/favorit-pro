@@ -105,7 +105,7 @@ export function BetCalculator() {
                     variant="outline"
                     size="sm"
                     onClick={() => setStake(String(amount))}
-                    className="flex-1 border-border text-muted-foreground hover:text-white hover:bg-accent text-xs"
+                    className="flex-1 border-border text-muted-foreground hover:text-foreground hover:bg-accent text-xs"
                   >
                     {amount} ₽
                   </Button>
@@ -216,7 +216,7 @@ export function BetCalculator() {
                   Система <span className="text-emerald-400 font-medium">{systemSize || '?'} из {expressLegs.length}</span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Количество комбинаций: <span className="text-white font-medium">
+                  Количество комбинаций: <span className="text-foreground font-medium">
                     {systemSize && Number.isInteger(parseInt(systemSize)) ? combinations(expressLegs.length, parseInt(systemSize)) : '—'}
                   </span>
                 </p>

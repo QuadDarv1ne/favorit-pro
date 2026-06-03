@@ -75,7 +75,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -93,7 +93,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
           <h2 className="text-xl font-bold text-foreground">Рейтинг экспертов</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             Все эксперты <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -174,7 +174,7 @@ export const ExpertsRating = React.memo(function ExpertsRating({ detailed = fals
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full mt-4 border-border text-muted-foreground hover:bg-accent hover:text-white hover:border-yellow-500/50"
+                    className="w-full mt-4 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-yellow-500/50"
                     onClick={(e) => { e.stopPropagation(); }}
                   >
                     <Users className="w-3.5 h-3.5 mr-1.5" />

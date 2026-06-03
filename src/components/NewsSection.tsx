@@ -81,7 +81,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -99,7 +99,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
           <h2 className="text-xl font-bold text-foreground">Медиа</h2>
         </div>
         {!detailed && (
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             Все новости <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}
@@ -149,7 +149,7 @@ export const NewsSection = React.memo(function NewsSection({ detailed = false }:
 
       {detailed && (
         <div className="mt-6 flex justify-center">
-          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-white">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent hover:text-foreground">
             Загрузить ещё
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

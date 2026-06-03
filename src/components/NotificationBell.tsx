@@ -183,7 +183,7 @@ export function NotificationBell() {
 
             {/* Footer */}
             <div className="p-2 border-t border-border">
-              <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground hover:text-white">
+              <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground hover:text-foreground">
                 Все уведомления
               </Button>
             </div>

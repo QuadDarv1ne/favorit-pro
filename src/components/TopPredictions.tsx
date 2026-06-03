@@ -90,7 +90,7 @@ export const TopPredictions = React.memo(function TopPredictions({ onPredictionC
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить
@@ -106,7 +106,7 @@ export const TopPredictions = React.memo(function TopPredictions({ onPredictionC
           <TrendingUp className="w-5 h-5 text-emerald-400" />
           <h2 className="text-xl font-bold text-foreground">Топ прогнозы</h2>
         </div>
-        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
           Все прогнозы <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </div>

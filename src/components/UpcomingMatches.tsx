@@ -102,7 +102,7 @@ export function UpcomingMatches({ onMatchClick }: UpcomingMatchesProps) {
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="border-border text-muted-foreground hover:bg-accent hover:text-white"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Повторить

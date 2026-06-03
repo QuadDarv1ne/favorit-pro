@@ -60,7 +60,7 @@ export function CookieBanner() {
                   variant="outline"
                   size="sm"
                   onClick={acceptMinimal}
-                  className="border-border text-muted-foreground text-xs hover:text-white"
+                  className="border-border text-muted-foreground text-xs hover:text-foreground"
                 >
                   Только необходимые
                 </Button>

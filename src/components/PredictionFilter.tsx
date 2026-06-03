@@ -63,7 +63,7 @@ export function PredictionFilter({ onPredictionClick }: PredictionFilterProps) {
           variant="outline"
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className={`border-border text-muted-foreground hover:text-white hover:bg-accent gap-1.5 ${
+          className={`border-border text-muted-foreground hover:text-foreground hover:bg-accent gap-1.5 ${
             showFilters ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : ''
           }`}
         >

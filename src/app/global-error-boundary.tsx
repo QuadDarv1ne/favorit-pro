@@ -36,12 +36,12 @@ export class GlobalErrorBoundary extends Component<Props, State> {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Что-то пошло не так</h1>
-            <p className="text-sm text-gray-400 mb-6">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Что-то пошло не так</h1>
+            <p className="text-sm text-muted-foreground mb-6">
               Произошла непредвиденная ошибка. Попробуйте обновить страницу.
             </p>
             {this.state.error && process.env.NODE_ENV === 'development' && (
-              <details className="text-left bg-gray-800/50 rounded-lg p-3 mb-6 text-xs text-gray-500 font-mono max-h-32 overflow-auto">
+              <details className="text-left bg-muted/50 rounded-lg p-3 mb-6 text-xs text-muted-foreground font-mono max-h-32 overflow-auto">
                 {this.state.error.message}
               </details>
             )}
@@ -55,7 +55,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
               <Button
                 variant="outline"
                 onClick={() => this.setState({ hasError: false, error: null })}
-                className="border-gray-700 text-gray-300"
+                className="border-border text-muted-foreground"
               >
                 Попробовать снова
               </Button>

@@ -246,7 +246,7 @@ export function ExpertProfileModal({ expert, open, onClose }: ExpertProfileModal
           </Button>
           <Button
             variant="outline"
-            className={`flex-1 border-border hover:bg-accent hover:text-white ${
+            className={`flex-1 border-border hover:bg-accent hover:text-foreground ${
               isFavorite ? 'text-red-400 border-red-500/30 hover:bg-red-500/10' : 'text-muted-foreground'
             }`}
             onClick={handleFavorite}

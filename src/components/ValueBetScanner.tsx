@@ -93,7 +93,7 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-muted-foreground hover:text-white"
+          className="text-muted-foreground hover:text-foreground"
           onClick={() => setSortBy(sortBy === 'value' ? 'confidence' : 'value')}
         >
           <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
@@ -180,7 +180,7 @@ export const ValueBetScanner = React.memo(function ValueBetScanner() {
       </div>
 
       <div className="flex justify-center mt-5">
-        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
           Все value-ставки <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </div>

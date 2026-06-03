@@ -148,7 +148,7 @@ export function KeyboardShortcutsHelp() {
         <div className="px-5 py-3 border-t border-border bg-muted/20">
           <button
             onClick={() => setIsOpen(false)}
-            className="w-full text-xs text-muted-foreground hover:text-white transition-colors text-center"
+            className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors text-center"
           >
             Нажмите Esc или Alt+K чтобы закрыть
           </button>

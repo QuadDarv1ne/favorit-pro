@@ -58,7 +58,7 @@ export function LiveTicker() {
                 className="absolute inset-0 flex items-center justify-center gap-2 text-sm"
               >
                 <span className="text-xs">{item.sport}</span>
-                <span className="text-white font-medium text-xs">{item.text}</span>
+                <span className="text-foreground font-medium text-xs">{item.text}</span>
                 {item.minute && (
                   <span className="text-emerald-400 text-xs">{item.minute}</span>
                 )}
