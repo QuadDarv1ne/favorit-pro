@@ -62,7 +62,8 @@ export const Header = React.memo(function Header({ activeSection, onSectionChang
       toast.success('Ставка принята', {
         description: `${bets.length} ${bets.length === 1 ? 'событие' : 'событий'}, ${stake} ₽`,
       });
-    } catch {
+    } catch (err) {
+      console.error('Bet placement failed:', err);
       toast.error('Ошибка сети. Попробуйте ещё раз');
     }
   }, []);

@@ -38,6 +38,7 @@ import { KeyboardShortcutsHelp, useKeyboardShortcuts } from '@/components/Keyboa
 import { SearchBar } from '@/components/SearchBar';
 import { Match, Expert, Prediction } from '@/lib/data';
 import { ApiMatch, ApiExpert, ApiPrediction } from '@/hooks/use-api';
+import { mapApiMatchToMatch, mapApiExpertToExpert, mapApiPredictionToPrediction } from '@/lib/mappers';
 import { ActiveSection } from '@/types/navigation';
 import { useAppStore } from '@/stores/app-store';
 import { Toaster } from 'sonner';
@@ -83,17 +84,26 @@ export default function Home() {
   });
 
   const handleMatchClick = (match: Match | ApiMatch) => {
-    setSelectedMatch(match as Match);
+    const mapped = typeof match.sport === 'object' && match.sport !== null
+      ? mapApiMatchToMatch(match as ApiMatch)
+      : match as Match;
+    setSelectedMatch(mapped);
     setMatchModalOpen(true);
   };
 
   const handleExpertClick = (expert: Expert | ApiExpert) => {
-    setSelectedExpert(expert as Expert);
+    const mapped = typeof expert.specialty === 'object' && expert.specialty !== null
+      ? mapApiExpertToExpert(expert as ApiExpert)
+      : expert as Expert;
+    setSelectedExpert(mapped);
     setExpertModalOpen(true);
   };
 
   const handlePredictionClick = (prediction: Prediction | ApiPrediction) => {
-    setSelectedPrediction(prediction as Prediction);
+    const mapped = 'matchTitle' in prediction
+      ? (prediction as Prediction)
+      : mapApiPredictionToPrediction(prediction as ApiPrediction);
+    setSelectedPrediction(mapped);
     setPredictionModalOpen(true);
   };
 

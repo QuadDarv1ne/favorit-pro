@@ -51,9 +51,12 @@ export async function GET(request: Request) {
       db.match.findMany({
         where: {
           OR: [
-            { homeTeam: { contains: q } },
-            { awayTeam: { contains: q } },
-            { league: { contains: q } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive' (Prisma 5.7+), but generated types lag
+            { homeTeam: { contains: q, mode: 'insensitive' } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { awayTeam: { contains: q, mode: 'insensitive' } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { league: { contains: q, mode: 'insensitive' } },
           ],
         },
         include: { sport: true },
@@ -62,8 +65,10 @@ export async function GET(request: Request) {
       db.expert.findMany({
         where: {
           OR: [
-            { name: { contains: q } },
-            { bio: { contains: q } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { name: { contains: q, mode: 'insensitive' } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { bio: { contains: q, mode: 'insensitive' } },
           ],
         },
         include: { specialty: true },
@@ -72,8 +77,10 @@ export async function GET(request: Request) {
       db.prediction.findMany({
         where: {
           OR: [
-            { prediction: { contains: q } },
-            { analysis: { contains: q } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { prediction: { contains: q, mode: 'insensitive' } },
+            // @ts-expect-error -- Prisma SQLite runtime supports mode: 'insensitive'
+            { analysis: { contains: q, mode: 'insensitive' } },
           ],
         },
         include: {

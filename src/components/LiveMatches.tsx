@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { liveMatches, Match } from '@/lib/data';
-import { useMatches, ApiMatch } from '@/hooks/use-api';
+import { useMatches } from '@/hooks/use-api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { useSyncFavorites } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { AnimatedOdds } from '@/components/AnimatedOdds';
 import { MatchCardSkeleton } from '@/components/Skeletons';
+import { mapApiMatchToMatch } from '@/lib/mappers';
 
 interface LiveMatchesProps {
   onMatchClick?: (match: Match) => void;
@@ -27,36 +28,6 @@ interface OddsState {
   drawDirection: 'up' | 'down' | null;
 }
 
-function formatApiStartTime(startTime: string): string {
-  try {
-    const date = new Date(startTime);
-    if (isNaN(date.getTime())) return startTime;
-    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  } catch {
-    return startTime;
-  }
-}
-
-function mapApiMatch(m: ApiMatch): Match {
-  return {
-    id: m.id,
-    sport: m.sport?.slug || m.sportId || 'football',
-    league: m.league,
-    homeTeam: m.homeTeam,
-    awayTeam: m.awayTeam,
-    homeOdds: m.homeOdds,
-    drawOdds: m.drawOdds ?? undefined,
-    awayOdds: m.awayOdds,
-    startTime: formatApiStartTime(m.startTime),
-    status: m.status as Match['status'],
-    homeScore: m.homeScore ?? undefined,
-    awayScore: m.awayScore ?? undefined,
-    prediction: m.predictions?.[0]?.prediction,
-    confidence: m.predictions?.[0]?.confidence,
-    isHot: m.isHot,
-  };
-}
-
 export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: LiveMatchesProps) {
   const addBet = useAppStore((s) => s.addBet);
   const setBetSlipOpen = useAppStore((s) => s.setBetSlipOpen);
@@ -66,14 +37,14 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
 
   const { data, isLoading, isError, refetch } = useMatches('live');
   const matches = data?.matches?.length
-    ? data.matches.map(mapApiMatch)
+    ? data.matches.map(mapApiMatchToMatch)
     : liveMatches;
 
   // Ref for simulation effects to always see current matches
   const matchesRef = useRef(matches);
   useEffect(() => { matchesRef.current = matches; }, [matches]);
 
-  // Compute initial odds and scores for the first render
+  // Compute initial odds and scores — refs are synced in useEffect below
   const initialOdds: Record<string, OddsState> = useMemo(() => {
     const initial: Record<string, OddsState> = {};
     matches.forEach(m => {
@@ -87,7 +58,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       };
     });
     return initial;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only for first render
+  }, [matches]);
 
   const initialScores: Record<string, { home: number; away: number }> = useMemo(() => {
     const initial: Record<string, { home: number; away: number }> = {};
@@ -95,7 +66,7 @@ export const LiveMatches = React.memo(function LiveMatches({ onMatchClick }: Liv
       initial[m.id] = { home: m.homeScore ?? 0, away: m.awayScore ?? 0 };
     });
     return initial;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only for first render
+  }, [matches]);
 
   // Use refs instead of useState so we can sync when matches change.
   // useState(initialOdds) only uses the initial value on first render,

@@ -286,7 +286,8 @@ export function useSyncFavorites() {
     useAppStore.getState().toggleFavoriteExpertId(expertId);
     try {
       await toggleFavoriteAsync({ entityType: 'expert', entityId: expertId });
-    } catch {
+    } catch (err) {
+      console.error('Favorite expert toggle failed:', err);
       useAppStore.getState().toggleFavoriteExpertId(expertId);
     }
   };
@@ -295,7 +296,8 @@ export function useSyncFavorites() {
     useAppStore.getState().toggleFavoriteMatchId(matchId);
     try {
       await toggleFavoriteAsync({ entityType: 'match', entityId: matchId });
-    } catch {
+    } catch (err) {
+      console.error('Favorite match toggle failed:', err);
       useAppStore.getState().toggleFavoriteMatchId(matchId);
     }
   };
@@ -304,7 +306,8 @@ export function useSyncFavorites() {
     useAppStore.getState().toggleFavoritePredictionId(predictionId);
     try {
       await toggleFavoriteAsync({ entityType: 'prediction', entityId: predictionId });
-    } catch {
+    } catch (err) {
+      console.error('Favorite prediction toggle failed:', err);
       useAppStore.getState().toggleFavoritePredictionId(predictionId);
     }
   };

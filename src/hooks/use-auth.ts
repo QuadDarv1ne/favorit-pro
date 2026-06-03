@@ -81,8 +81,8 @@ export function useAuth() {
                 favData.predictionIds ?? [],
               );
             }
-          } catch {
-            // Non-critical: favorites will load on next refresh
+          } catch (err) {
+            console.error('Favorites sync failed:', err);
           }
 
           const currentUser = useAppStore.getState().user;
