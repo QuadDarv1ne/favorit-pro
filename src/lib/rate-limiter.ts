@@ -55,7 +55,7 @@ function cleanupExpiredEntries(cleanupIntervalMs: number) {
  * Evict oldest entries if store is at capacity.
  */
 function evictIfNeeded(maxSize: number) {
-  if (rateLimitStore.size >= maxSize) {
+  while (rateLimitStore.size >= maxSize) {
     const firstKey = rateLimitStore.keys().next().value;
     if (firstKey) rateLimitStore.delete(firstKey);
   }
